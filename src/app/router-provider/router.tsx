@@ -11,6 +11,11 @@ export const router = createBrowserRouter([
     element: <CommonLayout />,
     children: [
       {
+        index: true,
+        element: <div>HomePage</div>
+      },
+
+      {
         path: routes.login(),
         element: <LazyLoginPage />
       },
@@ -25,6 +30,25 @@ export const router = createBrowserRouter([
           {
             path: '*',
             element: <LazyNotFound />
+          },
+          {
+            path: routes.questions(),
+            element: <div>Questions</div>
+          },
+
+          {
+            path: routes.surveys(),
+            element: <div>Surveys</div>
+          },
+
+          {
+            path: routes.new_surveys(),
+            element: <div>Creating Surveys</div>
+          },
+
+          {
+            path: routes.results_surveys(),
+            element: <div>Results Surveys</div>
           }
         ]
       }
