@@ -3,7 +3,7 @@ export const getCookie = (name: string): object | undefined => {
     return undefined
   }
 
-  const cookiesStrArr = document.cookie ? document.cookie.split('; ') : [] //arr
+  const cookiesStrArr = document.cookie ? document.cookie.split('; ') : []
 
   for (const cookie of cookiesStrArr) {
     const [name, value] = cookie.split('=')
