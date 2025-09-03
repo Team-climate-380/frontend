@@ -1,5 +1,5 @@
 import React from 'react'
 
-const LazyNotFound = React.lazy(() => import('./ui/not-found.tsx'))
+const LazyNotFoundPage = React.lazy(() => import('./ui/not-found-page'))
 
-export { LazyNotFound }
+export { LazyNotFoundPage }

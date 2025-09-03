@@ -1,0 +1,20 @@
+$minWidth: 384px; // NOTE: minimal width or width ?
+$borderColor: #ECECEC; // TODO: Взять из общей палитры
+
+.notFound {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    transform: translate(-50%, -50%);
+    min-width: $minWidth;
+    border: 1px solid $borderColor;
+    border-radius: 8px;
+    padding-inline-start: 60px;
+    padding-block-start: 35px;
+    padding-block-end: 45px;
+}
+
+.notFound_back_link {
+    text-underline-offset: 3px;
+    text-decoration-color: #1077dd67; // FIX: Узнать критичен ли % прозрачности или значение
+}

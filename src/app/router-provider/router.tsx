@@ -1,7 +1,7 @@
 import { createBrowserRouter } from 'react-router'
 import { routes } from '@shared/configs/routs'
 import { LazyLoginPage } from '@pages/login'
-import { LazyNotFound } from '@pages/not-found'
+import { LazyNotFoundPage } from '@pages/not-found'
 import { CommonLayout } from '@widgets/common-layout'
 import { DashboardLayout } from '@widgets/dashboard-layout'
 
@@ -24,7 +24,7 @@ export const router = createBrowserRouter([
           },
           {
             path: '*',
-            element: <LazyNotFound />
+            element: <LazyNotFoundPage />
           }
         ]
       }
