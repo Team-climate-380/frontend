@@ -1,0 +1,31 @@
+.container {
+  display: flex;
+  gap: 8px;
+  flex-direction: row;
+  padding: 9px 8px;
+  min-inline-size: 1154px;
+  block-size: 1052px;
+  background:
+    linear-gradient(180deg, #0085ca 0%, #69a1e0 50.96%, #9094b8 66.35%, #d36400 100%),
+    linear-gradient(179.02deg, #230840 18.58%, #2c8ea9 99.16%), #06121e;
+}
+
+.navbar {
+  block-size: 100%;
+  min-inline-size: 193px;
+  align-content: space-between;
+  display: grid;
+}
+
+.logo {
+  margin-block: 14px 47px;
+  margin-inline-start: 18px;
+}
+
+.scrollArea {
+  margin-inline-start: 23px;
+}
+
+.sidebar {
+  margin-inline-start: 13px;
+}
