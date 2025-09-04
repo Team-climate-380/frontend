@@ -1,37 +1,43 @@
-import { Anchor, Flex, List, Text, Title } from '@mantine/core'
+import { Anchor, Flex, List, Text } from '@mantine/core'
 import style from './not-found.module.scss'
 
 const NotFound: React.FC = () => {
   return (
     <Flex mih={431} direction="column" wrap="nowrap" className={style.notFound} justify="space-between">
       <Flex direction="column" gap="50px">
-        <Flex
-          className={style.notFound_header}
-          gap="md"
-          justify="flex-start"
-          align="center"
-          direction="row"
-          wrap="nowrap"
-        >
+        <Flex className={style.notFound_header} justify="flex-start" align="center" direction="row" wrap="nowrap">
           <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" fill="none">
             <path
               fill="#000"
               d="M21.098 33.499A16.953 16.953 0 0 1 17 34c-2.68 0-5.215-.624-7.47-1.735l3.986-10.322 2.115-1.267 5.467 12.823ZM32.734 10.433A17.115 17.115 0 0 1 34 16.91a17.09 17.09 0 0 1-6.647 13.553l-5.708-13.39 11.09-6.641ZM3.84 27.728A17.073 17.073 0 0 1 0 16.91C0 8.31 6.319 1.197 14.544 0L3.839 27.728ZM21.79.51a16.963 16.963 0 0 1 7.048 4.138l-11.245 6.734L21.79.51Z"
             />
           </svg>
-          <Title order={1}>404</Title>
+          <svg xmlns="http://www.w3.org/2000/svg" width="70" height="27" fill="none">
+            <path
+              fill="#000"
+              d="M12.105 26.441c-.412 0-.619-.198-.619-.595v-3.874H.658c-.387 0-.58-.186-.58-.558V17.28c0-.248.077-.509.231-.782L11.254.745c.155-.248.4-.373.735-.373h5.414c.387 0 .58.187.58.559v15.902h2.166c.18 0 .335.062.464.186.13.1.194.236.194.41v3.948a.598.598 0 0 1-.194.446.738.738 0 0 1-.464.15h-2.166v3.873c0 .397-.206.595-.618.595h-5.26Zm-5.724-9.608h5.105v-7.3l-5.105 7.3ZM35.13 26.926a11.2 11.2 0 0 1-4.061-.745c-1.29-.497-2.488-1.254-3.597-2.272-1.108-1.018-1.985-2.42-2.63-4.208-.644-1.788-.966-3.849-.966-6.182 0-2.334.322-4.395.966-6.182.645-1.788 1.522-3.19 2.63-4.209C28.581 2.11 29.78 1.353 31.07.857a10.73 10.73 0 0 1 4.06-.783c1.445 0 2.811.261 4.1.783 1.29.496 2.475 1.253 3.558 2.271 1.109 1.018 1.985 2.421 2.63 4.209.645 1.787.967 3.848.967 6.182 0 2.333-.322 4.394-.967 6.182-.645 1.787-1.521 3.19-2.63 4.208-1.083 1.018-2.269 1.775-3.558 2.272-1.289.496-2.655.744-4.1.744Zm0-5.773c1.753 0 3.016-.695 3.79-2.085.8-1.416 1.199-3.265 1.199-5.55 0-2.284-.4-4.133-1.2-5.548-.798-1.416-2.062-2.123-3.79-2.123-1.727 0-2.99.707-3.79 2.123-.773 1.415-1.16 3.264-1.16 5.549 0 2.284.387 4.133 1.16 5.549.8 1.39 2.063 2.085 3.79 2.085Zm25.997 5.288c-.412 0-.618-.198-.618-.595v-3.874h-10.83c-.386 0-.58-.186-.58-.558V17.28c0-.248.078-.509.233-.782L60.277.745c.154-.248.4-.373.734-.373h5.415c.386 0 .58.187.58.559v15.902h2.166c.18 0 .335.062.464.186a.49.49 0 0 1 .193.41v3.948a.599.599 0 0 1-.193.446.738.738 0 0 1-.464.15h-2.166v3.873c0 .397-.206.595-.619.595h-5.26Zm-5.723-9.608h5.105v-7.3l-5.105 7.3Z"
+            />
+          </svg>
         </Flex>
-        <Flex className={style.notFound_message} direction="column" wrap="nowrap" c="#06121E">
-          <Text fw={700} c="#06121E">
+        <Flex className={style.notFound_message} direction="column" wrap="nowrap" c="#06121E" gap="10px">
+          <Text fw={700} c="#06121E" size="17px">
             Страница не найдена
           </Text>
-          <List>
-            <List.Item>или неправильный адрес,</List.Item>
-            <List.Item>или страница удалена.</List.Item>
+          <List withPadding className={style.notFound_message_list}>
+            <List.Item className={style.notFound_message_item}>
+              <Text size="17px" fw={500}>
+                или неправильный адрес,
+              </Text>
+            </List.Item>
+            <List.Item className={style.notFound_message_item}>
+              <Text size="17px" fw={500}>
+                или страница удалена.
+              </Text>
+            </List.Item>
           </List>
         </Flex>
       </Flex>
-      <Anchor href="/" underline="always" className={style.notFound_back_link}>
+      <Anchor href="/" underline="always" className={style.notFound_back_link} size="18px" fw={500}>
         На главный экран →
       </Anchor>
     </Flex>

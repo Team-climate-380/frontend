@@ -14,6 +14,24 @@ $borderColor: #ececec; // TODO: Взять из общей палитры
     padding-block-end: 45px;
 }
 
+.notFound_header {
+    gap: 25px;
+}
+
+.notFound_message_list {
+    padding-left: 30px;
+
+}
+
+.notFound_message_item {
+    list-style-position: outside;
+    padding-bottom: 5px;
+}
+
+.notFound_message_item::marker {
+    padding-left: 50px;
+}
+
 .notFound_back_link {
     text-underline-offset: 3px;
     text-decoration-color: #1077dd67; // FIX: Узнать критичен ли % прозрачности или значение
