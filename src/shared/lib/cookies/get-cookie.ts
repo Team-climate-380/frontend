@@ -6,10 +6,10 @@ export const getCookie = (name: string): object | undefined => {
   const cookiesStrArr = document.cookie ? document.cookie.split('; ') : []
 
   for (const cookie of cookiesStrArr) {
-    const [name, value] = cookie.split('=')
-    if (decodeURIComponent(name) === name) {
+    const [cookieName, cookieValue] = cookie.split('=')
+    if (decodeURIComponent(cookieName) === name) {
       try {
-        return JSON.parse(decodeURIComponent(value))
+        return JSON.parse(decodeURIComponent(cookieValue))
       } catch {
         return undefined
       }
