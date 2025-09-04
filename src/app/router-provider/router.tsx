@@ -4,6 +4,13 @@ import { LazyLoginPage } from '@pages/login'
 import { LazyNotFound } from '@pages/not-found'
 import { CommonLayout } from '@widgets/common-layout'
 import { DashboardLayout } from '@widgets/dashboard-layout'
+import { LazyHomePage } from '@/pages/home-page'
+import { LazyQuestions } from '@/pages/questions'
+import { LazySurveys } from '@/pages/surveys'
+import { LazyCreatingSurvey } from '@/pages/creating-survey'
+import { LazySurveyResults } from '@/pages/survey-results'
+import { LazyEmployees } from '@/pages/employees'
+import { LazyDepartments } from '@/pages/departments'
 
 export const router = createBrowserRouter([
   {
@@ -12,7 +19,7 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <div>HomePage</div>
+        element: <LazyHomePage />
       },
 
       {
@@ -33,22 +40,32 @@ export const router = createBrowserRouter([
           },
           {
             path: routes.questions(),
-            element: <div>Questions</div>
+            element: <LazyQuestions />
           },
 
           {
             path: routes.surveys(),
-            element: <div>Surveys</div>
+            element: <LazySurveys />
           },
 
           {
-            path: routes.new_surveys(),
-            element: <div>Creating Surveys</div>
+            path: routes.new_survey(),
+            element: <LazyCreatingSurvey />
           },
 
           {
-            path: routes.results_surveys(),
-            element: <div>Results Surveys</div>
+            path: routes.results_survey(),
+            element: <LazySurveyResults />
+          },
+
+          {
+            path: routes.employees(),
+            element: <LazyEmployees />
+          },
+
+          {
+            path: routes.departments(),
+            element: <LazyDepartments />
           }
         ]
       }

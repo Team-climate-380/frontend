@@ -5,8 +5,8 @@ export const routes = {
   login: () => '/login',
   questions: () => '/questions',
   surveys: () => '/surveys',
-  new_surveys: () => '/new-surveys',
-  results_surveys: () => '/results-surveys',
+  new_survey: () => '/new-survey',
+  results_survey: () => '/results-survey',
   employees: () => '/employees',
   departments: () => '/departments'
 
