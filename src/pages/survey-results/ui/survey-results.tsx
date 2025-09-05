@@ -1,9 +1,5 @@
 const SurveyResults: React.FC = () => {
-  return (
-    <div>
-      <div>Survey Results</div>
-    </div>
-  )
+  return <div>Survey Results</div>
 }
 
 export default SurveyResults

@@ -1,9 +1,5 @@
 const Questions: React.FC = () => {
-  return (
-    <div>
-      <div>Questions</div>
-    </div>
-  )
+  return <div>Questions</div>
 }
 
 export default Questions

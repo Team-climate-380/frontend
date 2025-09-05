@@ -1,9 +1,5 @@
 const Departments: React.FC = () => {
-  return (
-    <div>
-      <div>Departments</div>
-    </div>
-  )
+  return <div>Departments</div>
 }
 
 export default Departments

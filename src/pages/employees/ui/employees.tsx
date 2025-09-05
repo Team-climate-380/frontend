@@ -1,9 +1,5 @@
 const Employees: React.FC = () => {
-  return (
-    <div>
-      <div>Employees</div>
-    </div>
-  )
+  return <div>Employees</div>
 }
 
 export default Employees

@@ -1,9 +1,5 @@
-const CreatingSurvey: React.FC = () => {
-  return (
-    <div>
-      <div>Creating Survey</div>
-    </div>
-  )
+export const CreatingSurvey: React.FC = () => {
+  return <div>Creating Survey</div>
 }
 
 export default CreatingSurvey
