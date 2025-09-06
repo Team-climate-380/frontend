@@ -1,7 +1,9 @@
 .container {
-  display: flex;
+  align-content: space-between;
+  display: grid;
   gap: 8px;
-  flex-direction: row;
+  grid-template-columns: 193px auto;
+  grid-template-rows: 96px 100vb 1fr;
   padding: 9px 8px;
   min-inline-size: 1154px;
   block-size: 1052px;
@@ -11,21 +13,22 @@
 }
 
 .navbar {
-  block-size: 100%;
   min-inline-size: 193px;
-  align-content: space-between;
-  display: grid;
+  grid-row: 2;
+  margin-inline-start: 23px;
 }
 
 .logo {
-  margin-block: 14px 47px;
+  margin-block-start: 14px;
   margin-inline-start: 18px;
 }
 
 .scrollArea {
-  margin-inline-start: 23px;
+  block-size: 453px;
 }
 
 .sidebar {
   margin-inline-start: 13px;
+  grid-row: 3;
+  align-self: flex-end;
 }
