@@ -9,7 +9,7 @@
     "lint": "eslint ./src ",
     "format": "npx prettier ./src --write",
     "preview": "vite preview",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx}": [
