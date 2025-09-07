@@ -1,38 +1,32 @@
-$minWidth: 384px; // NOTE: minimal width or width ?
+$width: 384px; // NOTE: minimal width or width ?
 $borderColor: #ececec; // TODO: Взять из общей палитры
 
 .notFound {
-    position: absolute;
-    inset-block-start: 50%;
-    inset-inline-start: 50%;
-    transform: translate(-50%, -50%);
-    min-width: $minWidth;
-    border: 1px solid $borderColor;
-    border-radius: 8px;
-    padding-inline-start: 60px;
-    padding-block-start: 35px;
-    padding-block-end: 45px;
+  margin: auto;
+  transform: translateY(50%);
+  width: $width;
+  border: 1px solid $borderColor;
+  border-radius: 8px;
+  padding-inline-start: 60px;
+  padding-block-start: 35px;
+  padding-block-end: 45px;
 }
 
 .notFound_header {
-    gap: 25px;
+  gap: 25px;
 }
 
 .notFound_message_list {
-    padding-left: 30px;
-
+  padding-left: 29px;
 }
 
 .notFound_message_item {
-    list-style-position: outside;
-    padding-bottom: 5px;
-}
-
-.notFound_message_item::marker {
-    padding-left: 50px;
+  list-style-position: outside;
+  padding-bottom: 3px;
+  letter-spacing: -0.4px;
 }
 
 .notFound_back_link {
-    text-underline-offset: 3px;
-    text-decoration-color: #1077dd67; // FIX: Узнать критичен ли % прозрачности или значение
+  text-underline-offset: 3px;
+  text-decoration-color: #1077dd67; // FIX: Узнать критичен ли % прозрачности или значение
 }
