@@ -3,17 +3,16 @@
   display: grid;
   gap: 8px;
   grid-template-columns: 193px auto;
-  grid-template-rows: 96px 100vb 1fr;
+  grid-template-rows: 96px auto 1fr;
   padding: 9px 8px;
   min-inline-size: 1154px;
-  block-size: 1052px;
+  min-block-size: 1052px;
   background:
     linear-gradient(180deg, #0085ca 0%, #69a1e0 50.96%, #9094b8 66.35%, #d36400 100%),
     linear-gradient(179.02deg, #230840 18.58%, #2c8ea9 99.16%), #06121e;
 }
 
 .navbar {
-  min-inline-size: 193px;
   grid-row: 2;
   margin-inline-start: 23px;
 }
@@ -21,10 +20,6 @@
 .logo {
   margin-block-start: 14px;
   margin-inline-start: 18px;
-}
-
-.scrollArea {
-  block-size: 453px;
 }
 
 .sidebar {
