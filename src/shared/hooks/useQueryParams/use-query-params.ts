@@ -22,7 +22,7 @@ export function useQueryParams() {
   )
 
   const setParams = useCallback(
-    (newParams: Record<string, string>) => {
+    (newParams: Record<string, string>, replaceHistory: boolean) => {
       const searchParams = new URLSearchParams()
       Object.entries(newParams).forEach(([key, value]) => {
         searchParams.set(key, value)
@@ -33,7 +33,7 @@ export function useQueryParams() {
           pathname: location.pathname,
           search: `?${searchParams.toString()}`
         },
-        { replace: true }
+        { replace: replaceHistory }
       )
     },
     [navigate, location.pathname]
