@@ -5,13 +5,12 @@ interface AuthorizationLayoutProps {
   children: React.ReactNode
 }
 
-const CONTAINER_HEIGHT = 431
 const SCROLL_WIDTH = 6
 
-export const AuthorizationLayout: React.FC<AuthorizationLayoutProps> = ({ children }: AuthorizationLayoutProps) => {
+export const AuthorizationLayout: React.FC<AuthorizationLayoutProps> = ({ children }) => {
   return (
     <div className={style.container_layout}>
-      <ScrollArea type="hover" h={CONTAINER_HEIGHT} scrollbarSize={SCROLL_WIDTH}>
+      <ScrollArea type="hover" className={style.scroll_area} scrollbarSize={SCROLL_WIDTH}>
         {children}
       </ScrollArea>
     </div>
