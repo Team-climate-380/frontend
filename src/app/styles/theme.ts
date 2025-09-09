@@ -1,15 +1,20 @@
-import { colorsTuple, createTheme } from '@mantine/core'
+import { createTheme, MantineColorsTuple } from '@mantine/core'
+
+const usedColors: MantineColorsTuple = [
+  '#ffffff',
+  '#f6f8fA',
+  '#cdcdcd',
+  '#b2b2b2',
+  '#9a9a9a',
+  '#8b8b8b',
+  '#06121e',
+  '#848484',
+  '#717171',
+  '#000000'
+]
 
 export const theme = createTheme({
-  colors: {
-    'main-color': colorsTuple('#06121E'),
-    'main-black-color': colorsTuple('#000000'),
-    'light-text-color': colorsTuple('#898989'),
-    white: colorsTuple('#FFFFFF'),
-    yellow: colorsTuple('#FFD014'),
-    grey: colorsTuple('#49525A'),
-    'light-grey-bg': colorsTuple('#F6F8FA'),
-    'dark-grey': colorsTuple('#9BAABC')
-  },
-  primaryColor: 'main-color'
+  colors: { 'used-colors': usedColors },
+  primaryColor: 'usedColors',
+  primaryShade: 6
 })
