@@ -2,17 +2,19 @@ import { NavLink } from '@mantine/core'
 import styles from '../styles/menu-link.module.scss'
 import clsx from 'clsx'
 import { TMenuLink } from '../types/menu-link-type'
-import { useNavigate, useSearchParams } from 'react-router'
+import { useNavigate } from 'react-router'
+import { useQueryParams } from '@/shared/hooks/useQueryParams'
 
 export const MenuLink: React.FC<TMenuLink> = ({ id, link, name, children }: TMenuLink) => {
-  const [searchParams, setSearchParams] = useSearchParams()
   const navigate = useNavigate()
+  const setParams = useQueryParams().setParams
+  const getParam = useQueryParams().getParam
   const isActive = window.location.pathname === link
   const onChildClick = (queryParam: string) => {
     if (!isActive) {
       navigate(link)
     }
-    setSearchParams({ department: `${queryParam}` })
+    setParams({ department: `${queryParam}` }, false)
   }
 
   return (
@@ -28,7 +30,7 @@ export const MenuLink: React.FC<TMenuLink> = ({ id, link, name, children }: TMen
       {children && (
         <div className={styles.childLinksContainer}>
           {children.map(child => {
-            const isActiveChild = searchParams.get('department') === child.queryParam
+            const isActiveChild = getParam('department') === child.queryParam
             return (
               <NavLink
                 label={child.name}
