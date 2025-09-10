@@ -1,0 +1,20 @@
+.container_layout {
+    margin: 0 auto;
+    max-width: 384px;
+    width: 100%;
+    min-height: 431px;
+    max-height: 431px;
+    border-radius: 8px;
+    background-color: #fff098;
+    scrollbar-width: none;
+    display: flex;
+}
+
+/* поддержка для браузера Safari */
+.container_layout::-webkit-scrollbar {
+  display: none;
+}
+
+.scroll_area {
+  flex: 1;
+} 

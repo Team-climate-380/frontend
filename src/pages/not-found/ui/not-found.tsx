@@ -1,5 +1,7 @@
-const NotFound: React.FC = () => {
-  return <div>404</div>
+import NotFound from '@/shared/not-found/ui/not-found'
+
+const NotFoundPage: React.FC = () => {
+  return <NotFound />
 }
 
-export default NotFound
+export default NotFoundPage
