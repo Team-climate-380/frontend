@@ -5,7 +5,7 @@ import { AppShell } from '@mantine/core'
 import classes from './dashboard-layout.module.css'
 
 interface DashboardLayoutProps {
-  contentSidebar: ReactNode
+  contentSidebar?: ReactNode
 }
 
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ contentSidebar }) => {
