@@ -1,0 +1,26 @@
+---
+name: Check npm build
+on:  # yamllint disable-line rule:truthy
+  pull_request:
+    branches: [main, develop]
+
+#  env:
+#    API_URL: 'https://teamclimate.rassokha.pro:8000/api'
+
+jobs:
+  npm-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 1. Check out branch
+        uses: actions/checkout@v3
+
+      - name: 2. Create .env file for CI
+        run: |
+          pip3 install dump-env
+          dump-env \
+            -t .env.template \
+            -p 'CI_' > .env
+
+      - name: 3. Build docker-image with npm build
+        run: |
+          docker build -t teamclimate-frontend:dev .
