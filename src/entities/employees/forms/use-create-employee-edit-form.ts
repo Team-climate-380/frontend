@@ -18,7 +18,7 @@ export const useCreateEmployeeEditForm = (initialValues?: TInitialValues) => {
     },
     validate: {
       name: value => {
-        if (!value) {
+        if (!value || value.trim() === '') {
           return 'Заполните имя'
         }
         if (value.length > 256) {
