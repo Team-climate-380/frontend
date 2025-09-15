@@ -15,7 +15,12 @@ export const useCreateEditQuestionForm = (initialValue?: IQuestionForm) => {
 
     validate: {
       typeOfQuestion: value => (value ? null : 'Выберите тип вопроса'),
-      question: value => (value === undefined ? 'Введите вопрос' : null)
+      question: value => {
+        if (!value || value.trim() === '') {
+          return 'Введите вопрос'
+        }
+        return null
+      }
     }
   })
 
