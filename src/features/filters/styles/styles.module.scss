@@ -1,0 +1,21 @@
+.tab_list {
+  gap: 30px;
+  color: #49525a;
+
+  &::before {
+    display: none;
+  }
+}
+
+.tab {
+  transition: all 0.3s ease-out;
+
+  &:hover {
+    background-color: transparent;
+    color: #000000;
+  }
+
+  &[data-active] {
+    color: #000000;
+  }
+}
