@@ -35,8 +35,15 @@ export const useCreateEmployeeEditForm = (initialValues?: TInitialValues) => {
         }
         return null
       },
-      telegram_id: value =>
-        value?.length > 128 ? 'Слишком длинный ник в телеграме. Длина должна быть не больше 128 символов.' : null
+      telegram_id: value => {
+        if (value && !/[0-9]+/.test(value)) {
+          return 'Введите корректный Telegram ID в виде числа'
+        }
+        if (value && value.length > 19) {
+          return 'Слишком длинный Telegram ID. Длина должна быть не больше 19 символов.'
+        }
+        return null
+      }
     },
     validateInputOnChange: true
   })
