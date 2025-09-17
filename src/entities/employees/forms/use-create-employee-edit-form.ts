@@ -19,7 +19,7 @@ export const useCreateEmployeeEditForm = (initialValues?: TInitialValues) => {
     validate: {
       name: value => {
         if (!value || value.trim() === '') {
-          return 'Заполните имя'
+          return 'Имя не может быть пустым'
         }
         if (value.length > 256) {
           return 'Слишком длинное имя. Длина должна быть не больше 256 символов.'
@@ -28,16 +28,16 @@ export const useCreateEmployeeEditForm = (initialValues?: TInitialValues) => {
       },
       email: value => {
         if (!value) {
-          return 'Заполните email'
+          return 'Почта не может быть пустой'
         }
         if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
-          return 'Введите корректный email'
+          return 'Неверный формат почты'
         }
         return null
       },
       telegram_id: value => {
         if (value && !/[0-9]+/.test(value)) {
-          return 'Введите корректный Telegram ID в виде числа'
+          return 'Неверный формат Telegram ID'
         }
         if (value && value.length > 19) {
           return 'Слишком длинный Telegram ID. Длина должна быть не больше 19 символов.'
