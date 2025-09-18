@@ -1,0 +1,26 @@
+---
+name: Test deploy
+on:  
+  push:
+    branches: [develop, devops/test-deploy-dev]
+
+#  env:
+#    API_URL: 'https://teamclimate.rassokha.pro:8000/api'
+
+jobs:
+  npm-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 1. Check out branch
+        uses: actions/checkout@v3
+
+      - name: 2. Create .env file for CI
+        run: |
+          pip3 install dump-env
+          dump-env \
+            -t .env.template \
+            -p 'CI_' > .env
+
+      - name: 3. Build docker-image with npm build
+        run: |
+          docker build --target build -t teamclimate-frontend:dev .
