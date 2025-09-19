@@ -11,6 +11,9 @@ import { LazyCreatingSurvey } from '@/pages/creating-survey'
 import { LazySurveyResults } from '@/pages/survey-results'
 import { LazyEmployees } from '@/pages/employees'
 import { LazyDepartments } from '@/pages/departments'
+import { stateInitialization } from '@/features/session/model/store'
+
+stateInitialization()
 
 export const router = createBrowserRouter([
   {
