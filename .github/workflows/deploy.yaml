@@ -23,7 +23,7 @@ jobs:
 
       - name: 3. Build docker-image with npm build
         run: |
-          docker build --target build -t teamclimate-frontend:dev 
+          docker build --target build -t teamclimate-frontend:dev .
   ssh-commands:
     runs-on: ubuntu-latest
     needs: npm-build
