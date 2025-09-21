@@ -5,6 +5,9 @@ import { Input } from '@/shared/ui/input'
 import { Checkbox } from '@/shared/ui/checkbox'
 import { PasswordInput } from '@/shared/ui/password-input'
 import { useFormData } from '../model/use-login-form'
+import { useSessionState } from '@/features/session'
+import { useNavigate } from 'react-router'
+import { routes } from '@/shared/configs/routs'
 
 export interface InitialFormData {
   email: string
@@ -19,8 +22,17 @@ interface LoginFormProps {
 
 export const LoginForm: FC<LoginFormProps> = ({ onRestorePassword, initialValues }) => {
   const formData = useFormData(initialValues)
+  const sessionState = useSessionState()
+  const navigate = useNavigate()
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (formData.isValid()) {
+      sessionState.login(formData.values.email)
+      navigate(routes.home())
+    }
+  }
   return (
-    <form onSubmit={formData.onSubmit(data => console.log(data))}>
+    <form onSubmit={handleSubmit}>
       <Flex direction="column" gap="36px" w="258px">
         <Flex direction="column" gap="26px">
           <Flex direction="column" gap="20px">
@@ -36,7 +48,7 @@ export const LoginForm: FC<LoginFormProps> = ({ onRestorePassword, initialValues
         </Flex>
 
         <Group justify="space-between">
-          <Button type="submit" disabled={!formData.isValid} size="md">
+          <Button type="submit" disabled={!formData.isValid()} size="md">
             Войти
           </Button>
           <Button onClick={onRestorePassword} variant="ghost" size="md">

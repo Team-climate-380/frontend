@@ -1,13 +1,13 @@
 .container_layout {
-    margin: 0 auto;
-    max-width: 384px;
-    width: 100%;
-    min-height: 431px;
-    max-height: 431px;
-    border-radius: 8px;
-    background-color: #fff098;
-    scrollbar-width: none;
-    display: flex;
+  margin: 0 auto;
+  max-width: 384px;
+  width: 100%;
+  min-height: 431px;
+  max-height: 431px;
+  border-radius: 8px;
+  background-color: var(--mantine-color-black-0);
+  scrollbar-width: none;
+  display: flex;
 }
 
 /* поддержка для браузера Safari */
@@ -17,4 +17,4 @@
 
 .scroll_area {
   flex: 1;
-} 
+}

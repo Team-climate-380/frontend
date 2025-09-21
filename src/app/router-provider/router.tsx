@@ -12,6 +12,8 @@ import { LazySurveyResults } from '@/pages/survey-results'
 import { LazyEmployees } from '@/pages/employees'
 import { LazyDepartments } from '@/pages/departments'
 import { stateInitialization } from '@/features/session/model/store'
+import { ProtectedRoute } from '@/features/auth/index'
+import { LazyPasswordRecovery } from '@/pages/password-recovery'
 
 stateInitialization()
 
@@ -22,12 +24,29 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <LazyHomePage />
+        element: (
+          <ProtectedRoute>
+            <LazyHomePage />
+          </ProtectedRoute>
+        )
       },
 
       {
         path: routes.login(),
-        element: <LazyLoginPage />
+        element: (
+          <ProtectedRoute onlyUnAuth={true}>
+            <LazyLoginPage />
+          </ProtectedRoute>
+        )
+      },
+
+      {
+        path: routes.password_recovery(),
+        element: (
+          <ProtectedRoute onlyUnAuth={true}>
+            <LazyPasswordRecovery />
+          </ProtectedRoute>
+        )
       },
 
       {
@@ -35,7 +54,11 @@ export const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <div>Dashboard</div>
+            element: (
+              <ProtectedRoute>
+                <div>Dashboard</div>
+              </ProtectedRoute>
+            )
           },
           {
             path: '*',
@@ -43,32 +66,56 @@ export const router = createBrowserRouter([
           },
           {
             path: routes.questions(),
-            element: <LazyQuestions />
+            element: (
+              <ProtectedRoute>
+                <LazyQuestions />
+              </ProtectedRoute>
+            )
           },
 
           {
             path: routes.surveys(),
-            element: <LazySurveys />
+            element: (
+              <ProtectedRoute>
+                <LazySurveys />
+              </ProtectedRoute>
+            )
           },
 
           {
             path: routes.new_survey(),
-            element: <LazyCreatingSurvey />
+            element: (
+              <ProtectedRoute>
+                <LazyCreatingSurvey />
+              </ProtectedRoute>
+            )
           },
 
           {
             path: routes.results_survey(),
-            element: <LazySurveyResults />
+            element: (
+              <ProtectedRoute>
+                <LazySurveyResults />
+              </ProtectedRoute>
+            )
           },
 
           {
             path: routes.employees(),
-            element: <LazyEmployees />
+            element: (
+              <ProtectedRoute>
+                <LazyEmployees />
+              </ProtectedRoute>
+            )
           },
 
           {
             path: routes.departments(),
-            element: <LazyDepartments />
+            element: (
+              <ProtectedRoute>
+                <LazyDepartments />
+              </ProtectedRoute>
+            )
           }
         ]
       }
