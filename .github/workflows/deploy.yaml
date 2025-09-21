@@ -26,7 +26,7 @@ jobs:
           docker build --target build -t teamclimate-frontend:dev 
   ssh-commands:
     runs-on: ubuntu-latest
-    needs: build-and-push-docker
+    needs: npm-build
     steps:
       - uses: actions/checkout@v3
         name: Check out branch
