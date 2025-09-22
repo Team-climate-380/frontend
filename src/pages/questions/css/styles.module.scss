@@ -1,0 +1,15 @@
+.main {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    height: 100%;
+    grid-row: 1 / -1; 
+    border-radius: 10px;
+    
+    & .questions-list {
+        // background-color: rgb(234, 234, 234);
+        margin: 52px 98px 90px 31px;
+        height: 100%;
+    }
+}
+
