@@ -1,0 +1,42 @@
+---
+name: Test deploy
+on:  
+  push:
+    branches: [develop, devops/test-deploy-dev]
+
+#  env:
+#    API_URL: 'https://teamclimate.rassokha.pro:8000/api'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: 1. Check out branch
+        uses: actions/checkout@v3
+
+      - name: 2. Create .env file for CI
+        run: |
+          pip3 install dump-env
+          dump-env \
+            -t .env.template \
+            -p 'CI_' > .env
+
+      - name: 3. Install npm
+        run: |
+          sudo apt install nodejs npm -y
+          npm ci 
+
+      - name: 4. Build dist folder
+        run: |
+          npm run build
+
+      - name: Copy dist folder to server
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ vars.SSH_DEPLOY_HOST }}
+          username: ${{ secrets.SSH_DEPLOY_USER }}
+          key: ${{ secrets.SSH_DEPLOY_KEY }}
+          overwrite: true
+          source: 'dist'
+          target: '~/frontend/dev/'
