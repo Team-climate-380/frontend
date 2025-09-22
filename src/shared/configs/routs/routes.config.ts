@@ -8,7 +8,8 @@ export const routes = {
   new_survey: () => '/new-survey',
   results_survey: () => '/results-survey',
   employees: () => '/employees',
-  departments: () => '/departments'
+  departments: () => '/departments',
+  password_recovery: () => '/password-recovery'
 
   // TODO: remove it, just example
   // chunkDetails: (params: { id: string }, queryParams: typeParams) => createUrl('/chunk/:id', params, queryParams),

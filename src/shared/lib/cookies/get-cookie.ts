@@ -1,4 +1,4 @@
-export const getCookie = (name: string): object | undefined => {
+export const getCookie = <T extends object>(name: string): T | undefined => {
   if (!name) {
     return undefined
   }

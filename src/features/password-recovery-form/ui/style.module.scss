@@ -1,0 +1,14 @@
+.controls {
+  // Адаптивное изменение направления флекс-контейнера на малых экранах
+  @media (max-width: 36em) {
+    flex-direction: column-reverse;
+  }
+}
+
+.control {
+  // Адаптивное изменение ширины контейнера на малых экранах
+  @media (max-width: 36em) {
+    width: 100%;
+    text-align: center;
+  }
+}
