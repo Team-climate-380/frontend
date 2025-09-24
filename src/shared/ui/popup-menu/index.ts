@@ -1,1 +1,1 @@
-export { PopupMenu } from './ui/popup-menu'
+export { PopupMenu, type PopupMenuButton } from './ui/popup-menu'
