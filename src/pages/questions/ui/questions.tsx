@@ -4,76 +4,96 @@ import { Button } from '@/shared/ui/button'
 import { Filter } from '@/features/filters'
 import { FavoriteIcon } from '@/features/filters/ui/favorite-icon'
 import { SearchIcon } from '@/shared/ui/icons/search'
-import { Input } from '@/shared/ui/input'
-import { useState } from 'react'
+// import { Input } from '@/shared/ui/input'
+import { useState, useEffect } from 'react'
+import { useQueryParams } from '@/shared/hooks/useQueryParams'
 
-//filters and questions - mock data, TODO: delete after back-end requests implementation
-const filters = [
-  {
-    icon: <FavoriteIcon />,
-    setValue: () => {
-      console.log('only favorite quest')
-    }
-  },
-  {
-    title: 'Все',
-    setValue: () => {
-      console.log('all quest')
-    }
-  }
-]
-const questions = {
-  count: 123,
-  next: 'http://api.example.org/accounts/?page=4',
-  previous: 'http://api.example.org/accounts/?page=2',
-  results: [
-    {
-      id: 0,
-      text: 'question_1',
-      question_type: 'ratingScale',
-      is_favorite: true
-    },
-    {
-      id: 1,
-      text: 'question_2',
-      question_type: 'ratingScale',
-      is_favorite: true
-    },
-    {
-      id: 2,
-      text: 'question_3',
-      question_type: 'ratingScale',
-      is_favorite: true
-    },
-    {
-      id: 3,
-      text: 'question_4',
-      question_type: 'ratingScale',
-      is_favorite: true
-    }
-  ]
-}
+//const filters and const questions - mock data, TODO: delete after back-end requests implementation
+// const questionsList = {
+//   count: 123,
+//   next: 'http://api.example.org/accounts/?page=4',
+//   previous: 'http://api.example.org/accounts/?page=2',
+//   results: [
+//     {
+//       id: 0,
+//       text: 'question_1',
+//       question_type: 'ratingScale',
+//       is_favorite: true
+//     },
+//     {
+//       id: 1,
+//       text: 'question_2',
+//       question_type: 'ratingScale',
+//       is_favorite: true
+//     },
+//     {
+//       id: 2,
+//       text: 'question_3',
+//       question_type: 'ratingScale',
+//       is_favorite: true
+//     },
+//     {
+//       id: 3,
+//       text: 'question_4',
+//       question_type: 'ratingScale',
+//       is_favorite: true
+//     }
+//   ]
+// }
 
 const QuestionPage = () => {
-  const [inputVisible, setInputVisible] = useState(false) //search input visibility
-  const [filterValue, setFilterValue] = useState('') //filtration question list
-  const [newQuestionFormIsVisible, setNewQuestionFormIsVisible] = useState(false) //new Q Form Visibility
+  // const [inputVisible, setInputVisible] = useState(false) //search input visibility. Replace after
+  const [questionFormIsVisible, setQuestionFormIsVisible] = useState(false) //new question form visibility
+  // const [questions, setQuestions] = useState(questionsList) //save backend data into variable
+  const { queryParams, getParam, setParams } = useQueryParams()
 
-  const setSearchFieldVisibility = () => {
-    setInputVisible(prev => !prev)
+  const filter = getParam('filter') || 'all'
+  // const search = getParam('search') || ''
+
+  // filters mockData
+  const filters = [
+    {
+      icon: <FavoriteIcon />,
+      setValue: () => {
+        setParams({ ...queryParams, filter: 'favorite' }, false)
+      }
+    },
+    {
+      title: 'Все',
+      setValue: () => {
+        setParams({ ...queryParams, filter: 'all' }, false)
+      }
+    }
+  ]
+
+  // const setSearchFieldVisibility = () => {
+  //   setInputVisible(prev => !prev)
+  // }
+
+  // const changeFilterValue = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const inputValue = event.target.value.trim()
+
+  //   if (inputValue) {
+  //     setParams({ ...queryParams, search: inputValue }, false)
+  //   } else {
+  //     const { search, ...rest } = queryParams
+  //     setParams({ ...rest }, false)
+  //   }
+  // }
+
+  const setQuestionFormVisibility = () => {
+    setQuestionFormIsVisible(prev => !prev)
   }
 
-  const changeFilterValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFilterValue(e.target.value)
-  }
+  useEffect(() => {
+    if (!getParam(filter)) {
+      setParams({ ...queryParams, filter: 'all' }, false)
+    }
+  }, [])
 
-  const setNewQuestionFormVisibility = () => {
-    setNewQuestionFormIsVisible(prev => !prev)
-  }
-
-  const filteredQuestionList = questions.results.filter(question => {
-    return question.text.toLowerCase().trim().includes(filterValue.toLowerCase().trim())
-  })
+  // const filteredQuestionList = questions.results.filter(question => {
+  //   return question.text.toLowerCase().includes(search.toLowerCase().trim())
+  // }) //uncomment after #49 task component implementation
 
   return (
     <div className={styles.main}>
@@ -81,23 +101,17 @@ const QuestionPage = () => {
         title="Вопросы"
         actions={
           <>
-            {inputVisible && (
+            {/* {inputVisible && (
               <Input
-                value={filterValue}
-                onChange={e => {
-                  changeFilterValue(e)
+                onChange={event => {
+                  changeFilterValue(event)
                 }}
               />
-            )}
-            <Button variant="ghost" size="md" onClick={setSearchFieldVisibility}>
+            )} */}
+            <Button variant="ghost" size="md" onClick={() => console.log('test') /*setSearchFieldVisibility*/}>
               <SearchIcon />
             </Button>
-            <Button
-              onClick={setNewQuestionFormVisibility}
-              variant="primary"
-              size="md"
-              disabled={newQuestionFormIsVisible}
-            >
+            <Button onClick={setQuestionFormVisibility} variant="primary" size="md" disabled={questionFormIsVisible}>
               Новый вопрос
             </Button>
           </>
@@ -105,14 +119,15 @@ const QuestionPage = () => {
       >
         <Filter filters={filters} />
       </Header>
-      <div className={styles['questions-list']}>
-        {newQuestionFormIsVisible && <div>new question form</div>} {/* TODO implement from #52 task*/}
-        {/*question list feature. TODO: implement it from #49 task */}
-        {filteredQuestionList.map(question => {
-          return (
-            <div key={question.id}>{question.text}</div> //delete after #49 task implementation
-          )
-        })}
+      <div className={styles['main-content']}>
+        {questionFormIsVisible && (
+          <div className={styles['question-form']}>
+            <div>new question form</div>
+          </div>
+        )}{' '}
+        {/* TODO implement form from #52 task*/}
+        <div className={styles['questions-list']}></div>
+        {/*<QuestionList questions={filteredQuestionList}/> TODO implement after #49 task*/}
       </div>
     </div>
   )
