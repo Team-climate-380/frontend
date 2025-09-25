@@ -1,54 +1,56 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */ //remove after
+
 import styles from '../css/styles.module.scss'
 import { Header } from '@/widgets/header/header'
 import { Button } from '@/shared/ui/button'
 import { Filter } from '@/features/filters'
 import { FavoriteIcon } from '@/features/filters/ui/favorite-icon'
 import { SearchIcon } from '@/shared/ui/icons/search'
-// import { Input } from '@/shared/ui/input'
+import { Input } from '@/shared/ui/input'
 import { useState, useEffect } from 'react'
 import { useQueryParams } from '@/shared/hooks/useQueryParams'
 
 //const filters and const questions - mock data, TODO: delete after back-end requests implementation
-// const questionsList = {
-//   count: 123,
-//   next: 'http://api.example.org/accounts/?page=4',
-//   previous: 'http://api.example.org/accounts/?page=2',
-//   results: [
-//     {
-//       id: 0,
-//       text: 'question_1',
-//       question_type: 'ratingScale',
-//       is_favorite: true
-//     },
-//     {
-//       id: 1,
-//       text: 'question_2',
-//       question_type: 'ratingScale',
-//       is_favorite: true
-//     },
-//     {
-//       id: 2,
-//       text: 'question_3',
-//       question_type: 'ratingScale',
-//       is_favorite: true
-//     },
-//     {
-//       id: 3,
-//       text: 'question_4',
-//       question_type: 'ratingScale',
-//       is_favorite: true
-//     }
-//   ]
-// }
+const questionsList = {
+  count: 123,
+  next: 'http://api.example.org/accounts/?page=4',
+  previous: 'http://api.example.org/accounts/?page=2',
+  results: [
+    {
+      id: 0,
+      text: 'question_1',
+      question_type: 'ratingScale',
+      is_favorite: true
+    },
+    {
+      id: 1,
+      text: 'question_2',
+      question_type: 'ratingScale',
+      is_favorite: true
+    },
+    {
+      id: 2,
+      text: 'question_3',
+      question_type: 'ratingScale',
+      is_favorite: true
+    },
+    {
+      id: 3,
+      text: 'question_4',
+      question_type: 'ratingScale',
+      is_favorite: true
+    }
+  ]
+}
 
 const QuestionPage = () => {
-  // const [inputVisible, setInputVisible] = useState(false) //search input visibility. Replace after
+  const [inputVisible, setInputVisible] = useState(false) //search input visibility. Replace after
   const [questionFormIsVisible, setQuestionFormIsVisible] = useState(false) //new question form visibility
-  // const [questions, setQuestions] = useState(questionsList) //save backend data into variable
+  const [questions, setQuestions] = useState(questionsList) //save backend data into variable
   const { queryParams, getParam, setParams } = useQueryParams()
 
   const filter = getParam('filter') || 'all'
-  // const search = getParam('search') || ''
+  const search = getParam('search') || ''
 
   // filters mockData
   const filters = [
@@ -66,20 +68,20 @@ const QuestionPage = () => {
     }
   ]
 
-  // const setSearchFieldVisibility = () => {
-  //   setInputVisible(prev => !prev)
-  // }
+  const setSearchFieldVisibility = () => {
+    setInputVisible(prev => !prev)
+  }
 
-  // const changeFilterValue = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   const inputValue = event.target.value.trim()
+  const changeFilterValue = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = event.target.value.trim()
 
-  //   if (inputValue) {
-  //     setParams({ ...queryParams, search: inputValue }, false)
-  //   } else {
-  //     const { search, ...rest } = queryParams
-  //     setParams({ ...rest }, false)
-  //   }
-  // }
+    if (inputValue) {
+      setParams({ ...queryParams, search: inputValue }, false)
+    } else {
+      const { search, ...rest } = queryParams
+      setParams({ ...rest }, false)
+    }
+  }
 
   const setQuestionFormVisibility = () => {
     setQuestionFormIsVisible(prev => !prev)
@@ -101,14 +103,14 @@ const QuestionPage = () => {
         title="Вопросы"
         actions={
           <>
-            {/* {inputVisible && (
+            {inputVisible && (
               <Input
                 onChange={event => {
                   changeFilterValue(event)
                 }}
               />
-            )} */}
-            <Button variant="ghost" size="md" onClick={() => console.log('test') /*setSearchFieldVisibility*/}>
+            )}
+            <Button variant="ghost" size="md" onClick={setSearchFieldVisibility}>
               <SearchIcon />
             </Button>
             <Button onClick={setQuestionFormVisibility} variant="primary" size="md" disabled={questionFormIsVisible}>
