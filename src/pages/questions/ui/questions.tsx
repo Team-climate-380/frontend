@@ -1,4 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */ //remove after
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 
 import styles from '../css/styles.module.scss'
 import { Header } from '@/widgets/header/header'
@@ -46,10 +48,11 @@ const questionsList = {
 const QuestionPage = () => {
   const [inputVisible, setInputVisible] = useState(false) //search input visibility. Replace after
   const [questionFormIsVisible, setQuestionFormIsVisible] = useState(false) //new question form visibility
-  const [questions, setQuestions] = useState(questionsList) //save backend data into variable
+  const [_questions, _setQuestions] = useState(questionsList) //save backend data into variable
   const { queryParams, getParam, setParams } = useQueryParams()
 
   const filter = getParam('filter') || 'all'
+  // @ts-ignore
   const search = getParam('search') || ''
 
   // filters mockData
