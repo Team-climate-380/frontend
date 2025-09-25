@@ -23,7 +23,7 @@ export interface QuestionFormProps {
 const questionTypeData = Object.values(QuestionTypeEnum)
 
 export const QuestionForm: React.FC<QuestionFormProps> = ({ isOpen, isNewQuestion, closeForm, questionData }) => {
-  const questionForm = useCreateEditQuestionForm<IQuestionForm>(questionData)
+  const questionForm = useCreateEditQuestionForm(questionData)
   const [openedDropdown, setOpenedDropdown] = useState(false)
 
   const sendData = (data: TQuestionData) => {
