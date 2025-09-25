@@ -7,7 +7,7 @@
   grid-row: 1 / -1;
   border-radius: 10px;
 
-    .main-content {
+  .main-content {
     display: flex;
     flex-direction: column;
     padding: 20px;
@@ -15,7 +15,7 @@
     border-bottom-right-radius: 10px;
     border-bottom-left-radius: 10px;
   }
-  
+
   .question-form {
     background-color: rgb(252, 252, 252);
     min-height: 134px;
