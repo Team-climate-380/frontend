@@ -1,0 +1,5 @@
+.employees_list__item {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(61px, 206px));
+  gap: 10px;
+}
