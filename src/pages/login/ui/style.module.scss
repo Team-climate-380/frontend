@@ -1,0 +1,12 @@
+$bg_color: #e3e9f0; //TODO: добавить цвет в theme.ts
+
+.login_wrapper {
+  background-color: $bg_color;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+.login_form__wrapper {
+  margin: 52px 63px 37px;
+}
