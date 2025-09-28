@@ -9,12 +9,14 @@
 }
 
 .menu {
-  background-color: #F6F8FA;
+  background-color: #f6f8fa;
   border-radius: 6px;
   width: 296px;
   padding: 4px 2px 4px 4px;
   flex-direction: column;
-  box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.09), 0px 9px 14px -2px rgba(0, 0, 0, 0.09);
+  box-shadow:
+    0px 1px 5px rgba(0, 0, 0, 0.09),
+    0px 9px 14px -2px rgba(0, 0, 0, 0.09);
   position: absolute;
   z-index: 3;
 }
@@ -24,7 +26,7 @@
   height: 39px;
   padding-left: 10px;
   border-radius: 0;
-  color: #06121E;
+  color: #06121e;
   font-size: 16px;
   font-weight: 500;
 
@@ -39,9 +41,7 @@
 }
 
 .menu-button_delete {
-  color: #A81316;
+  color: #a81316;
   border-top: 1px dotted rgb(59, 74, 123, 0.2);
   margin-top: 10px;
 }
-
-

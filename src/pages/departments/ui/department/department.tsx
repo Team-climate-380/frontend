@@ -1,8 +1,8 @@
-import { DepartmentListItem } from '@/shared/ui/department-list-item'
-import { DepartmentInfo } from '../../types/types'
+import { DepartmentInfo } from '../../../../entities/groups/types/department-types'
 import { SyntheticEvent } from 'react'
 import { ValuesFormGroups } from '@/entities/groups/forms/use-create-edit-form-group'
 import { GroupForm } from '@/entities/groups'
+import { DepartmentListItem } from '../department-list-item/ui/department-list-item'
 
 type DepartmentProps = {
   department: DepartmentInfo

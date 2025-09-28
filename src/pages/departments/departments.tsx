@@ -1,41 +1,59 @@
 import { useState } from 'react'
 import DepartmentsUI from './ui/departments-ui'
-import { useDepartmentContextMenu } from './ui/department-context-menu'
+import { useContextMenu } from '@shared/hooks/use-context-menu'
 import { ValuesFormGroups } from '@/entities/groups/forms/use-create-edit-form-group'
-
-const mockData = [
-  {
-    id: 100,
-    department_name: 'Маркетинг',
-    employees_count: 3,
-    employees: [
-      {
-        id: '101',
-        name: 'маркетолог'
-      },
-      {
-        id: '102',
-        name: 'еще один'
-      },
-      {
-        id: '103',
-        name: 'и еще один'
-      }
-    ]
-  },
-  {
-    id: 200,
-    department_name: 'Новая группа',
-    employees_count: 0,
-    employees: []
-  }
-]
+import {
+  createDepartment,
+  deleteDepartment,
+  editDepartment,
+  getDepartments
+} from '@/entities/groups/api/departments-api'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { DepartmentInfo } from '../../entities/groups/types/department-types'
 
 export const Departments: React.FC = () => {
-  const [departments, setDepartments] = useState(mockData)
   const [isCreateNewFormVisible, setIsCreateNewFormVisible] = useState(false)
   const [selectedForEdit, setSelectedForEdit] = useState<null | number>(null)
-  const { contextMenu, setContextMenu, handleRightClick, handleContextMenuClose } = useDepartmentContextMenu()
+  const { contextMenu, setContextMenu, handleRightClick, handleContextMenuClose } = useContextMenu()
+
+  const queryClient = useQueryClient()
+  const { data, isPending } = useQuery({
+    queryKey: ['departments'],
+    queryFn: getDepartments
+  })
+
+  const createNewGroup = useMutation({
+    mutationFn: (newGroupName: string) => {
+      return createDepartment(newGroupName)
+    },
+    onSuccess: async () => {
+      setIsCreateNewFormVisible(false)
+      await queryClient.invalidateQueries({ queryKey: ['departments'] })
+    }
+  })
+
+  const editGroupName = useMutation({
+    mutationFn: ({ id, new_name }: { id: number; new_name: string }) => {
+      return editDepartment(id, new_name)
+    },
+    onSuccess: res => {
+      setSelectedForEdit(null)
+      queryClient.setQueryData(['departments'], (data: DepartmentInfo[]) => {
+        if (!res) return data
+
+        return data.map(department => (department.id === res?.id ? { ...department, ...res } : department))
+      })
+    }
+  })
+
+  const deleteGroup = useMutation({
+    mutationFn: (id: number) => {
+      return deleteDepartment(id)
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['departments'] })
+    }
+  })
 
   const onNewGroupClick = () => {
     setIsCreateNewFormVisible(!isCreateNewFormVisible)
@@ -46,20 +64,9 @@ export const Departments: React.FC = () => {
       return
     }
     if (selectedForEdit) {
-      const edited = departments.find(department => department.id === selectedForEdit)
-      if (edited) {
-        edited.department_name = values.name
-      }
-      setSelectedForEdit(null)
+      editGroupName.mutate({ id: selectedForEdit, new_name: values.name })
     } else {
-      const newId = departments[departments.length - 1].id + 100
-      departments.push({
-        id: newId,
-        department_name: values.name,
-        employees_count: 0,
-        employees: []
-      })
-      setIsCreateNewFormVisible(false)
+      createNewGroup.mutate(values.name)
     }
   }
 
@@ -69,13 +76,13 @@ export const Departments: React.FC = () => {
   }
 
   const handleDeleteClick = (id: number) => {
-    setDepartments(departments.filter(department => department.id !== id))
+    deleteGroup.mutate(id)
     setContextMenu({ ...contextMenu, isVisible: false, selectedId: null })
   }
 
   return (
     <DepartmentsUI
-      departments={departments}
+      departments={data}
       isCreateNewFormVisible={isCreateNewFormVisible}
       contextMenu={contextMenu}
       selectedForEdit={selectedForEdit}
@@ -85,6 +92,7 @@ export const Departments: React.FC = () => {
       handleEditClick={handleEditClick}
       handleDeleteClick={handleDeleteClick}
       handleContextMenuClose={handleContextMenuClose}
+      isDepartmentDataLoading={isPending}
     />
   )
 }

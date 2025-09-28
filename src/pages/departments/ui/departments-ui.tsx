@@ -1,16 +1,17 @@
-import { Flex, List } from '@mantine/core'
-import { Department } from './department'
+import { Flex, List, ScrollArea } from '@mantine/core'
+import { Department } from './department/department'
 import { Button } from '@/shared/ui/button'
-import styles from '../styles/departments.module.scss'
-import { DepartmentContextMenu } from './department-context-menu'
-import { DepartmentInfo } from '../types/types'
+import styles from '../styles/departments-ui.module.scss'
+import { DepartmentContextMenu } from './department-context-menu/ui/department-context-menu'
+import { DepartmentInfo } from '../../../entities/groups/types/department-types'
 import { SyntheticEvent } from 'react'
-import { TContextMenu } from './department-context-menu/use-department-context-menu'
+import { TContextMenu } from '../../../shared/hooks/use-context-menu'
 import { ValuesFormGroups } from '@/entities/groups/forms/use-create-edit-form-group'
 import { GroupForm } from '@/entities/groups'
+import { Loader } from '@/shared/ui/loader'
 
 type DepartmentsUIProps = {
-  departments: DepartmentInfo[]
+  departments: DepartmentInfo[] | undefined
   isCreateNewFormVisible: boolean
   contextMenu: TContextMenu
   selectedForEdit: number | null
@@ -20,6 +21,7 @@ type DepartmentsUIProps = {
   handleEditClick: (id: number) => void
   handleDeleteClick: (id: number) => void
   handleContextMenuClose: () => void
+  isDepartmentDataLoading: boolean
 }
 
 const DepartmentsUI: React.FC<DepartmentsUIProps> = ({
@@ -32,7 +34,8 @@ const DepartmentsUI: React.FC<DepartmentsUIProps> = ({
   handleRightClick,
   handleEditClick,
   handleDeleteClick,
-  handleContextMenuClose
+  handleContextMenuClose,
+  isDepartmentDataLoading
 }) => {
   return (
     <div className={styles['page-wrapper']}>
@@ -43,36 +46,39 @@ const DepartmentsUI: React.FC<DepartmentsUIProps> = ({
           <Button onClick={onNewGroupClick}>Создать группу</Button>
         </Flex>
       </header>
-      <main className={styles.main}>
-        {isCreateNewFormVisible && <GroupForm onSubmit={handleSubmit} />}
-        <List listStyleType="none">
-          {departments &&
-            departments.map(department => {
-              return (
-                <List.Item key={department.id}>
-                  <Department
-                    department={department}
-                    onContextMenu={e => {
-                      handleRightClick(e, department.id)
-                    }}
-                    isEdited={department.id === selectedForEdit ? true : false}
-                    onSubmit={handleSubmit}
-                  />
-                </List.Item>
-              )
-            })}
-        </List>
-        {contextMenu.isVisible && contextMenu.selectedId && (
-          <DepartmentContextMenu
-            id={contextMenu.selectedId}
-            onEditClick={handleEditClick}
-            onDeleteClick={handleDeleteClick}
-            onClose={handleContextMenuClose}
-            positionX={contextMenu.left}
-            positionY={contextMenu.top}
-          />
-        )}
-      </main>
+      <ScrollArea type="scroll">
+        <main className={styles.main}>
+          {isCreateNewFormVisible && <GroupForm onSubmit={handleSubmit} />}
+          <List listStyleType="none">
+            {isDepartmentDataLoading && <Loader />}
+            {departments &&
+              departments.map(department => {
+                return (
+                  <List.Item key={department.id}>
+                    <Department
+                      department={department}
+                      onContextMenu={e => {
+                        handleRightClick(e, department.id)
+                      }}
+                      isEdited={department.id === selectedForEdit ? true : false}
+                      onSubmit={handleSubmit}
+                    />
+                  </List.Item>
+                )
+              })}
+          </List>
+        </main>
+      </ScrollArea>
+      {contextMenu.isVisible && contextMenu.selectedId && (
+        <DepartmentContextMenu
+          id={contextMenu.selectedId}
+          onEditClick={handleEditClick}
+          onDeleteClick={handleDeleteClick}
+          onClose={handleContextMenuClose}
+          positionX={contextMenu.left}
+          positionY={contextMenu.top}
+        />
+      )}
     </div>
   )
 }

@@ -1,6 +1,6 @@
 export type EmployeeInfo = {
   id: string
-  name: string
+  full_name: string
 }
 
 export type DepartmentInfo = {

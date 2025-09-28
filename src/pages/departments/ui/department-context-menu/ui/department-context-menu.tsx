@@ -12,6 +12,7 @@ type DepartmentContextMenuProps = {
   positionY: number
 }
 
+//TODO: заменить на общий компонент PopupMenu
 export const DepartmentContextMenu: React.FC<DepartmentContextMenuProps> = ({
   id,
   onEditClick,

@@ -1,7 +1,7 @@
 import { Accordion, List } from '@mantine/core'
 import styles from '../styles/department-list-item.module.scss'
 import { SyntheticEvent } from 'react'
-import { DepartmentInfo } from '@/pages/departments/types/types'
+import { DepartmentInfo } from '@/entities/groups/types/department-types'
 
 export const DepartmentListItem: React.FC<
   DepartmentInfo & { onContextMenu: (e: SyntheticEvent, id: number) => void }
@@ -24,7 +24,7 @@ export const DepartmentListItem: React.FC<
               {employees?.map(employee => {
                 return (
                   <List.Item key={employee.id} className={styles['employees-list-item']}>
-                    {employee.name}
+                    {employee.full_name}
                   </List.Item>
                 )
               })}
