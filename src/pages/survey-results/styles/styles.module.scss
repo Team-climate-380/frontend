@@ -3,7 +3,7 @@
   flex-direction: column;
   background-color: white;
   height: 100%;
-  grid-row: 1 / -1; 
+  grid-row: 1 / -1;
   border-radius: 10px;
 }
 
@@ -14,7 +14,7 @@
   padding: 24px 28px 34px;
   z-index: 10;
   top: 0;
-  left: 0; 
+  left: 0;
   background-color: #f6f8fa;
   width: 100%;
   border-radius: 10px;
@@ -23,7 +23,7 @@
 }
 
 .content {
-  padding: 42px 28px; 
+  padding: 42px 28px;
   height: 100%;
 }
 
@@ -46,10 +46,10 @@
   line-height: 22px;
   color: #06121e;
   margin-bottom: 38px;
-  flex-wrap: wrap ;
+  flex-wrap: wrap;
 }
 
-.subtitle:last-child{
+.subtitle:last-child {
   margin-bottom: 0;
 }
 
@@ -59,9 +59,8 @@
   width: 100%;
 }
 
-
 @media (max-width: 457px) {
-  .subtitle{
+  .subtitle {
     margin-bottom: 38px;
   }
 }
