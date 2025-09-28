@@ -5,7 +5,7 @@
   grid-template-columns: 193px auto;
   grid-template-rows: 96px auto 1fr;
   padding: 9px 8px;
-  min-inline-size: 1154px;
+  /* min-inline-size: 1154px; */
   min-block-size: 1052px;
   background:
     linear-gradient(180deg, #0085ca 0%, #69a1e0 50.96%, #9094b8 66.35%, #d36400 100%),

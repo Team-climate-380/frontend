@@ -10,9 +10,8 @@
 .header {
   position: sticky;
   box-sizing: border-box;
-
   width: 100%;
-  padding: 24px 28px;
+  padding: 24px 28px 34px;
   z-index: 10;
   top: 0;
   left: 0; 
@@ -47,5 +46,22 @@
   line-height: 22px;
   color: #06121e;
   margin-bottom: 38px;
+  flex-wrap: wrap ;
 }
 
+.subtitle:last-child{
+  margin-bottom: 0;
+}
+
+.comments {
+  background-color: white;
+  max-width: 768px;
+  width: 100%;
+}
+
+
+@media (max-width: 457px) {
+  .subtitle{
+    margin-bottom: 38px;
+  }
+}

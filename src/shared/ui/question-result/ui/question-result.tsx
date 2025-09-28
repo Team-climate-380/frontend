@@ -19,9 +19,10 @@ export interface QuestionResultProps {
 
 interface Props {
   question: QuestionResultProps
+  shortResults: boolean
 }
 
-export const QuestionResult: React.FC<Props> = ({ question }) => {
+export const QuestionResult: React.FC<Props> = ({ question, shortResults }) => {
   const counts: Record<string, number> = {}
 
   question.answer_options.forEach(answer => {
@@ -60,20 +61,26 @@ export const QuestionResult: React.FC<Props> = ({ question }) => {
           </li>
         ))}
       </ul>
-      <div>
-        {sortedCounts.map(([answerText]) => {
-          const employees = groupedAnswers[answerText] || []
-          return (
-            <div className={classes.user__list}>
-              {employees.map(employer => (
-                <div>
-                  {employer} - {answerText}
+      {shortResults ? (
+        <div>
+          {sortedCounts.map(([answerText]) => {
+            if (counts[answerText] !== 0) {
+              const employees = groupedAnswers[answerText] || []
+              return (
+                <div className={classes.user__list}>
+                  {employees.map(employer => (
+                    <div>
+                      {employer} - {answerText}
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          )
-        })}
-      </div>
+              )
+            }
+          })}
+        </div>
+      ) : (
+        <></>
+      )}
     </div>
   )
 }
