@@ -6,7 +6,7 @@ import { useEffect } from 'react'
 import { useQueryParams } from '@/shared/hooks/useQueryParams'
 
 interface SurveyResultsProps {
-  shortResults?: boolean // пропс опционален
+  shortResults?: boolean
 }
 
 const SurveyResults: React.FC<SurveyResultsProps> = ({ shortResults = true }) => {
