@@ -50,14 +50,6 @@ export const router = createBrowserRouter([
         )
       },
       {
-        path: routes.full_results_path(),
-        element: (
-          <ProtectedRoute>
-            <LazySurveyResults />
-          </ProtectedRoute>
-        )
-      },
-      {
         element: <ResultLayout />,
         children: [
           {
