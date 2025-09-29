@@ -12,7 +12,7 @@ export const EmployeesItem: React.FC<EmployeesItemProps> = ({ employee }) => {
       <div>{employee.department_name}</div>
       <div>{employee.email}</div>
       <div>{employee.tg_username}</div>
-      <div>{employee.id}</div>
+      <div>{employee.survey_count}</div>
     </div>
   )
 }
