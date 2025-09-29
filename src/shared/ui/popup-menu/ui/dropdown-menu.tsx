@@ -11,7 +11,7 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({ items, children, pos
         {items.map((item, index) => {
           const label = !(item.type === 'divider') ? item.label[0].toUpperCase() + item.label.slice(1) : ''
           return (
-            <div key={index}>
+            <div key={label ? label : index}>
               {item.type === 'action' && (
                 <Menu.Item
                   onClick={item.action}

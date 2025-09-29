@@ -11,7 +11,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ items, onClose, positi
         {items.map((item, index) => {
           const label = !(item.type === 'divider') ? item.label[0].toUpperCase() + item.label.slice(1) : ''
           return (
-            <div key={index}>
+            <div key={label ? label : index}>
               {item.type === 'action' && (
                 <Button
                   onClick={item.action}
