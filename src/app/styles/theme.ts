@@ -14,7 +14,7 @@ const usedColors: MantineColorsTuple = [
 ]
 
 export const theme = createTheme({
-  colors: { 'used-colors': usedColors },
+  colors: { usedColors: usedColors },
   primaryColor: 'usedColors',
   primaryShade: 6
 })

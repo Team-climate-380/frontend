@@ -1,0 +1,25 @@
+export const QuestionEnum = {
+  ratingScale: 'ratingScale',
+  score: 'score',
+  consentGiven: 'consentGiven'
+} as const
+export type QuestionType = keyof typeof QuestionEnum
+
+export interface IQuestionCreate {
+  text: string
+  type?: QuestionType
+}
+
+export interface TQuestion {
+  id: string
+  text: string
+  type?: string
+  is_favorite?: boolean
+  answers?: TAnswer[]
+}
+
+export interface TAnswer {
+  id: string
+  text: string
+  is_correct: boolean
+}
