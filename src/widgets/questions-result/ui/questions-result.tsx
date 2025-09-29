@@ -5,14 +5,14 @@ import { QuestionResultProps } from '@/shared/ui/question-result/ui/question-res
 
 interface QuestionsResultProps {
   questions: QuestionResultProps[]
-  shortResults: boolean
+  fullResults: boolean
 }
 
 export const QuestionsResult: React.FC<QuestionsResultProps> = props => {
   return (
     <div className={classes.container}>
       {props.questions.map(question => (
-        <QuestionResult key={question.id} question={question} shortResults={props.shortResults} />
+        <QuestionResult key={question.id} question={question} fullResults={props.fullResults} />
       ))}
     </div>
   )

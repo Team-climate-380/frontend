@@ -4,13 +4,6 @@ import { create } from 'zustand'
 
 const client = new ApiClient()
 
-const login = async () => {
-  const response = await client.post('/api/auth/login', {}, { email: 'admin@admin.mail', password: 'xPKHPWgx7EQNFeF' })
-  console.log(response)
-}
-
-login()
-
 export interface SurveyResults {
   id: number
   name: string

@@ -6,10 +6,10 @@ import { useEffect } from 'react'
 import { useQueryParams } from '@/shared/hooks/useQueryParams'
 
 interface SurveyResultsProps {
-  shortResults?: boolean
+  fullResults?: boolean
 }
 
-const SurveyResults: React.FC<SurveyResultsProps> = ({ shortResults = true }) => {
+const SurveyResults: React.FC<SurveyResultsProps> = ({ fullResults = true }) => {
   const { getParam } = useQueryParams()
 
   const { results, loading, error, fetchResults } = useSurveyResultsStore()
@@ -33,7 +33,7 @@ const SurveyResults: React.FC<SurveyResultsProps> = ({ shortResults = true }) =>
             {results.started_at} - <span>{results.finished_at}</span>
           </div>
         </div>
-        {shortResults ? (
+        {fullResults ? (
           <>
             <div>Комментарий</div>
             <div className={classes.comments}>{results.comment}</div>
@@ -43,7 +43,7 @@ const SurveyResults: React.FC<SurveyResultsProps> = ({ shortResults = true }) =>
         )}
       </div>
       <div className={classes.content}>
-        <QuestionsResult questions={results.questions} shortResults={shortResults} />
+        <QuestionsResult questions={results.questions} fullResults={fullResults} />
       </div>
     </div>
   )

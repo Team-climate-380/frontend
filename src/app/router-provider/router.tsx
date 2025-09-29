@@ -64,7 +64,7 @@ export const router = createBrowserRouter([
             path: routes.short_results_path(),
             element: (
               <ProtectedRoute>
-                <LazySurveyResults shortResults={false} />
+                <LazySurveyResults fullResults={false} />
               </ProtectedRoute>
             )
           }

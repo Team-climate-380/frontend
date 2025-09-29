@@ -19,10 +19,10 @@ export interface QuestionResultProps {
 
 interface Props {
   question: QuestionResultProps
-  shortResults: boolean
+  fullResults: boolean
 }
 
-export const QuestionResult: React.FC<Props> = ({ question, shortResults }) => {
+export const QuestionResult: React.FC<Props> = ({ question, fullResults }) => {
   const counts: Record<string, number> = {}
 
   question.answer_options.forEach(answer => {
@@ -61,7 +61,7 @@ export const QuestionResult: React.FC<Props> = ({ question, shortResults }) => {
           </li>
         ))}
       </ul>
-      {shortResults ? (
+      {fullResults ? (
         <div>
           {sortedCounts.map(([answerText]) => {
             if (counts[answerText] !== 0) {
