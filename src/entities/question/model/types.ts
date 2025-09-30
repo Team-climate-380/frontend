@@ -11,7 +11,7 @@ export interface IQuestionCreate {
 }
 
 export interface TQuestion {
-  id: string
+  id?: string
   text: string
   type?: string
   is_favorite?: boolean
@@ -19,7 +19,6 @@ export interface TQuestion {
 }
 
 export interface TAnswer {
-  id: string
   text: string
   is_correct: boolean
 }

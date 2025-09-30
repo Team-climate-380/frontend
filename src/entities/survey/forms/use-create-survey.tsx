@@ -1,15 +1,13 @@
 import { TQuestion } from '@/entities/question/model/types'
 import { useForm } from '@mantine/form'
 
-// TODO: Поменять типы группа/участник на реальные
-type TDepartment = { departmentName: string }
 // type TMember = 'memberTest'
 // type ParticipantsValue = (TDepartment | TMember)[]
 
 interface IInitialValues {
   name: string
   // participants: ParticipantsValue | []
-  department?: TDepartment | null
+  department?: string[]
   startedAt?: Date | null
   finishedAt?: Date | null
   comment?: string
@@ -34,6 +32,9 @@ export const useCreateSurvey = (initialValues: IInitialValues) => {
       department: value => {
         if (!value) {
           return 'Необходимо выбрать департамент'
+        }
+        if (value?.length > 1) {
+          return 'Нужно выбрать только один отдел'
         }
         return null
       },
@@ -75,6 +76,10 @@ export const useCreateSurvey = (initialValues: IInitialValues) => {
       comment: value => {
         if (!value) return null
         if (value.length > 254) return 'Слишком длинный комментарий. Длина должна быть не больше 254 символов.'
+      },
+      questions: {
+        text: value => (value.trim() === '' ? 'Введите текст вопроса' : null),
+        type: value => (value ? null : 'Выберите тип вопроса')
       }
     }
   })

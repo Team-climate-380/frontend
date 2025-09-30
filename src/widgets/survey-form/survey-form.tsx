@@ -17,6 +17,8 @@ import { TQuestion } from '@/entities/question/model/types'
 import { TDepartment } from '@/entities/departament/model/types'
 import { TEmployee } from '@/entities/employee/model/types'
 
+const api = new ApiClient({})
+
 const SurveyForm: FunctionComponent = () => {
   const today = dayjs().locale('ru').format('DD MMMM YYYY')
   const surveyTitle = `Новый опрос ${today} года`
@@ -24,7 +26,7 @@ const SurveyForm: FunctionComponent = () => {
 
   const initialFormValues = {
     name: surveyTitle,
-    department: null,
+    department: [] as string[],
     startedAt: null,
     finishedAt: null,
     comment: '',
@@ -37,19 +39,19 @@ const SurveyForm: FunctionComponent = () => {
     const payload = {
       name: values.name,
       comment: values.comment,
-      department: values.department,
+      department: values.department ? { department_name: values.department[0] } : null,
       is_favorite: values.isFavorite,
       started_at: dayjs(values.startedAt).format('YYYY-MM-DD'),
       finished_at: dayjs(values.finishedAt).format('YYYY-MM-DD'),
-      questions: values.questions.map(({ ...question }) => ({
-        ...question,
-        answers: question.answers ? question.answers.map(({ ...answer }) => answer) : []
-      }))
+      questions: values.questions.map(question => {
+        const newQuestion = { ...question }
+        delete newQuestion.id
+        return newQuestion
+      })
     }
     console.log('fromSurveyData:', payload)
     formData.reset()
   }
-  const api = new ApiClient({})
   useEffect(() => {
     async function getParticipants() {
       // TODO: сейчас department принимает объект, а не массив, также сервер не принимает список пользователей
