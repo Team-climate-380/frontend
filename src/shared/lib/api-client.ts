@@ -13,7 +13,7 @@ export class ApiClient {
   defaultHeaders: HeadersType
   baseUrl: string
   constructor(headers?: HeadersType) {
-    this.baseUrl = import.meta.env.VITE_API_DOMAIN || 'http://localhost:3000'
+    this.baseUrl = import.meta.env.VITE_API_DOMAIN || ''
     this.defaultHeaders = {
       'Content-Type': 'application/json',
       ...(headers || {})
