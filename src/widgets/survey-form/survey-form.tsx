@@ -21,7 +21,7 @@ const api = new ApiClient({})
 
 const SurveyForm: FunctionComponent = () => {
   const today = dayjs().locale('ru').format('DD MMMM YYYY')
-  const surveyTitle = `Новый опрос ${today} года`
+  const surveyTitle = `Новый опрос ${today}`
   const [, setParticipants] = useState<string[]>([])
 
   const initialFormValues = {
@@ -72,17 +72,17 @@ const SurveyForm: FunctionComponent = () => {
 
   return (
     <form onSubmit={formData.onSubmit(handleFormSubmit)}>
-      <Grid className={classes.surveyForm}>
-        <Grid.Col span={10}>
+      <Grid className={classes.surveyForm} gutter={19}>
+        <Grid.Col span={10.5}>
           <Input className={classes.lgTextInput} key={formData.key('name')} {...formData.getInputProps('name')} />
         </Grid.Col>
-        <Grid.Col span={2}>
+        <Grid.Col span={1.5}>
           <Group align="center" justify="end" gap="32px">
             <MoreButton />
             <CloseButton />
           </Group>
         </Grid.Col>
-        <Grid.Col span={10}>
+        <Grid.Col span={10.5}>
           <MultySelect
             label={'Кто участвует'}
             data={['123', '234', '2341']}
@@ -91,8 +91,8 @@ const SurveyForm: FunctionComponent = () => {
             {...formData.getInputProps('department')}
           />
         </Grid.Col>
-        <Grid.Col span={5}>
-          <Flex direction="row" gap="md">
+        <Grid.Col span={5.5}>
+          <Flex direction="row" gap={30}>
             <DatePickerInput
               clearable
               label="Начало"
@@ -121,12 +121,12 @@ const SurveyForm: FunctionComponent = () => {
             />
           </Flex>
         </Grid.Col>
-        <Grid.Col span={10}>
+        <Grid.Col span={10.5}>
           <Input label={'Комментарий'} key={formData.key('comment')} {...formData.getInputProps('comment')} />
         </Grid.Col>
       </Grid>
       <Flex direction="column" className={classes.questionsSection}>
-        <Flex direction="column" gap="md">
+        <Flex direction="column" gap={25}>
           {formData.values.questions.map((question, index) => {
             return (
               <QuestionCreate

@@ -1,6 +1,7 @@
 .surveyForm {
   background-color: #f6f8fa;
-  padding-block: 18px;
+  padding-top: 20px;
+  padding-bottom: 25px;
   padding-inline: 28px;
   border-radius: 6px 6px 0 0;
   border-bottom: 1px solid #e7e9eb;
@@ -8,7 +9,10 @@
 
 .lgTextInput {
   font-size: 28px;
-  font-weight: 500;
+  font-weight: 600;
+  padding-block: 20px;
+  padding-inline: 10px;
+  word-spacing: 4px;
 }
 
 .input {
@@ -42,5 +46,5 @@
 }
 
 .optionButtons {
-  margin-top: 30px;
+  margin-top: 20px;
 }

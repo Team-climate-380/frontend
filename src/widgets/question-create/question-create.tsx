@@ -34,7 +34,7 @@ const QuestionCreate: FC<IQuestionCreateProps> = ({ title, textInputProps, typeI
   ))
 
   return (
-    <Grid>
+    <Grid gutter={10}>
       <Grid.Col span={12}>
         <span className={classes.title}>{title}</span>
       </Grid.Col>
@@ -69,7 +69,7 @@ const QuestionCreate: FC<IQuestionCreateProps> = ({ title, textInputProps, typeI
           <MoreButton />
         </Flex>
       </Grid.Col>
-      <Grid.Col span={8}>
+      <Grid.Col span={8.5}>
         <Textarea autosize classNames={{ input: classes.textarea }} {...textInputProps} />
       </Grid.Col>
     </Grid>
