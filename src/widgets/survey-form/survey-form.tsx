@@ -1,5 +1,5 @@
 import { Input } from '@/shared/ui/input'
-import { FunctionComponent, useEffect, useState } from 'react'
+import { FunctionComponent } from 'react'
 import classes from './styles/styles.module.scss'
 import { Flex, Grid, Group } from '@mantine/core'
 import { MoreButton } from '@/shared/ui/more-button'
@@ -11,18 +11,20 @@ import 'dayjs/locale/ru'
 import '@mantine/dates/styles.css'
 import dayjs from 'dayjs'
 import { Button } from '@/shared/ui/button'
-import QuestionCreate from '../question-create/question-create'
-import { ApiClient } from '@/shared/lib/api-client'
+import { QuestionCreate } from '@/entities/question/ui/question-create'
 import { TQuestion } from '@/entities/question/model/types'
-import { TDepartment } from '@/entities/departament/model/types'
-import { TEmployee } from '@/entities/employee/model/types'
-
-const api = new ApiClient({})
+import { useQuery } from '@tanstack/react-query'
+import { fetchParticipants } from '@/entities/survey/forms/api'
+import { useSurveyMutation } from '@/entities/survey/forms/lib/use-survey-mutation'
 
 const SurveyForm: FunctionComponent = () => {
+  const { isLoading: areParticipantsLoading } = useQuery({
+    queryKey: ['participants'],
+    queryFn: fetchParticipants
+  })
+
   const today = dayjs().locale('ru').format('DD MMMM YYYY')
   const surveyTitle = `Новый опрос ${today}`
-  const [, setParticipants] = useState<string[]>([])
 
   const initialFormValues = {
     name: surveyTitle,
@@ -33,45 +35,13 @@ const SurveyForm: FunctionComponent = () => {
     isFavorite: false,
     questions: [] as TQuestion[]
   }
+
   const formData = useCreateSurvey(initialFormValues)
 
-  const handleFormSubmit = (values: typeof formData.values) => {
-    const payload = {
-      name: values.name,
-      comment: values.comment,
-      department: values.department ? { department_name: values.department[0] } : null,
-      is_favorite: values.isFavorite,
-      started_at: dayjs(values.startedAt).format('YYYY-MM-DD'),
-      finished_at: dayjs(values.finishedAt).format('YYYY-MM-DD'),
-      questions: values.questions.map(question => {
-        const newQuestion = { ...question }
-        delete newQuestion.id
-        return newQuestion
-      })
-    }
-    console.log('fromSurveyData:', payload)
-    formData.reset()
-  }
-  useEffect(() => {
-    async function getParticipants() {
-      // TODO: сейчас department принимает объект, а не массив, также сервер не принимает список пользователей
-
-      const [departmentsRes, employeesRes] = await Promise.all([
-        api.get<TDepartment[]>('/api/departments/'),
-        api.get<TEmployee[]>('/api/employees/')
-      ])
-      if ('data' in departmentsRes && 'data' in employeesRes) {
-        const departmentOptions = departmentsRes.data.map(dep => dep.department_name)
-        // const employeeOptions = employeesRes.data.map(emp => emp.full_name)
-        setParticipants([...departmentOptions])
-      }
-    }
-
-    getParticipants()
-  }, [])
+  const { submitSurvey, isSubmitting } = useSurveyMutation(formData)
 
   return (
-    <form onSubmit={formData.onSubmit(handleFormSubmit)}>
+    <form onSubmit={formData.onSubmit(values => submitSurvey(values))}>
       <Grid className={classes.surveyForm} gutter={19}>
         <Grid.Col span={10.5}>
           <Input className={classes.lgTextInput} key={formData.key('name')} {...formData.getInputProps('name')} />
@@ -85,8 +55,8 @@ const SurveyForm: FunctionComponent = () => {
         <Grid.Col span={10.5}>
           <MultySelect
             label={'Кто участвует'}
-            data={['123', '234', '2341']}
-            nothingFoundMessage="Ничего не найдено"
+            data={['Test1', 'Test2', 'Test3']}
+            nothingFoundMessage={areParticipantsLoading ? 'Загрузка...' : 'Ничего не найдено'}
             key={formData.key('department')}
             {...formData.getInputProps('department')}
           />
@@ -132,6 +102,9 @@ const SurveyForm: FunctionComponent = () => {
               <QuestionCreate
                 key={question.id}
                 title={`${index + 1} Вопрос`}
+                onOpenButtons={() => {
+                  console.log('Sidebar')
+                }}
                 textInputProps={formData.getInputProps(`questions.${index}.text`)}
                 typeInputProps={formData.getInputProps(`questions.${index}.type`)}
               />
@@ -152,7 +125,9 @@ const SurveyForm: FunctionComponent = () => {
           >
             Ещё вопрос
           </Button>
-          <Button type="submit">Сохранить</Button>
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Сохраняется...' : 'Сохранить'}
+          </Button>
         </Group>
       </Flex>
     </form>

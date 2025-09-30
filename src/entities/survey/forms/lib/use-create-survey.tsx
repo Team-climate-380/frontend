@@ -4,7 +4,7 @@ import { useForm } from '@mantine/form'
 // type TMember = 'memberTest'
 // type ParticipantsValue = (TDepartment | TMember)[]
 
-interface IInitialValues {
+export interface IInitialValues {
   name: string
   // participants: ParticipantsValue | []
   department?: string[]

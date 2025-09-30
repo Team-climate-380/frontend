@@ -20,9 +20,10 @@ export interface IQuestionCreateProps {
   title: string
   textInputProps: TextareaProps
   typeInputProps: TypeInputProps
+  onOpenButtons: () => void
 }
 
-const QuestionCreate: FC<IQuestionCreateProps> = ({ title, textInputProps, typeInputProps }) => {
+export const QuestionCreate: FC<IQuestionCreateProps> = ({ title, textInputProps, typeInputProps, onOpenButtons }) => {
   const combobox = useCombobox()
 
   const selectedOption = typeInputProps.value ? types.find(item => item.value === typeInputProps.value) : undefined
@@ -66,7 +67,7 @@ const QuestionCreate: FC<IQuestionCreateProps> = ({ title, textInputProps, typeI
               <Combobox.Options>{options}</Combobox.Options>
             </Combobox.Dropdown>
           </Combobox>
-          <MoreButton />
+          <MoreButton onClick={onOpenButtons} />
         </Flex>
       </Grid.Col>
       <Grid.Col span={8.5}>
@@ -75,5 +76,3 @@ const QuestionCreate: FC<IQuestionCreateProps> = ({ title, textInputProps, typeI
     </Grid>
   )
 }
-
-export default QuestionCreate
