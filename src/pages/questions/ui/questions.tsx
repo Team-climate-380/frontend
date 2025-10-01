@@ -11,6 +11,8 @@ import { SearchIcon } from '@/shared/ui/icons/search'
 import { Input } from '@/shared/ui/input'
 import { useState, useEffect } from 'react'
 import { useQueryParams } from '@/shared/hooks/useQueryParams'
+import { getQuestions } from '@/entities/question/api/get-questions'
+import { useQuery } from '@tanstack/react-query'
 
 //const filters and const questions - mock data, TODO: delete after back-end requests implementation
 const questionsList = {
@@ -51,25 +53,42 @@ const QuestionPage = () => {
   const [_questions, _setQuestions] = useState(questionsList) //save backend data into variable
   const { queryParams, getParam, setParams } = useQueryParams()
 
-  const filter = getParam('filter') || 'all'
+  const currentFilter = getParam('filter') || 'all'
   // @ts-ignore
   const search = getParam('search') || ''
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getQuestions(paramURL)
+      console.log(data)
+    }
+
+    fetchData()
+  }, [])
 
   // filters mockData
   const filters = [
     {
       icon: <FavoriteIcon />,
+      value: 'favorite',
       setValue: () => {
-        setParams({ ...queryParams, filter: 'favorite' }, false)
+        setParams({ filter: 'favorite' }, false)
       }
     },
     {
       title: 'Все',
+      value: 'all',
       setValue: () => {
-        setParams({ ...queryParams, filter: 'all' }, false)
+        setParams({ filter: 'all' }, false)
       }
     }
   ]
+
+  const paramURL = `?filter=${encodeURIComponent(currentFilter)}`
+  const { data, isLoading } = useQuery({
+    queryKey: ['questions', paramURL],
+    queryFn: async () => await getQuestions(paramURL)
+  })
 
   const setSearchFieldVisibility = () => {
     setInputVisible(prev => !prev)
@@ -89,12 +108,6 @@ const QuestionPage = () => {
   const setQuestionFormVisibility = () => {
     setQuestionFormIsVisible(prev => !prev)
   }
-
-  useEffect(() => {
-    if (!getParam(filter)) {
-      setParams({ ...queryParams, filter: 'all' }, false)
-    }
-  }, [])
 
   // const filteredQuestionList = questions.results.filter(question => {
   //   return question.text.toLowerCase().includes(search.toLowerCase().trim())
@@ -122,17 +135,19 @@ const QuestionPage = () => {
           </>
         }
       >
-        <Filter filters={filters} />
+        <Filter filters={filters} value={currentFilter} />
       </Header>
       <div className={styles['main-content']}>
         {questionFormIsVisible && (
           <div className={styles['question-form']}>
             <div>new question form</div>
           </div>
-        )}{' '}
-        {/* TODO implement form from #52 task*/}
-        <div className={styles['questions-list']}></div>
-        {/*<QuestionList questions={filteredQuestionList}/> TODO implement after #49 task*/}
+        )}
+        {/* TODO implement form from #52 task}
+        {
+          data?.data && <div className={styles['questions-list']}>{data.data}</div>
+        }
+        {<QuestionList questions={filteredQuestionList}/> TODO implement after #49 task*/}
       </div>
     </div>
   )
