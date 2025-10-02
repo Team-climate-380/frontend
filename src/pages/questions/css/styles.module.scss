@@ -6,6 +6,7 @@
   max-width: 100%;
   grid-row: 1 / -1;
   border-radius: 10px;
+  justify-content: space-between;
 
   .main-content {
     display: flex;
@@ -28,4 +29,9 @@
     height: 100%;
     flex-wrap: wrap;
   }
+}
+
+.loader_container {
+  display: flex;
+  justify-content: center;
 }

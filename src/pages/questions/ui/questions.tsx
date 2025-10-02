@@ -12,8 +12,9 @@ import { Input } from '@/shared/ui/input'
 import { useState, useEffect } from 'react'
 import { useQueryParams } from '@/shared/hooks/useQueryParams'
 import { getQuestions } from '@/entities/question/api/get-questions'
-import { useQuery } from '@tanstack/react-query'
-
+import { useInfiniteQuery } from '@tanstack/react-query'
+import { Loader } from '@mantine/core'
+import { useIntersection } from '@mantine/hooks'
 //const filters and const questions - mock data, TODO: delete after back-end requests implementation
 const questionsList = {
   count: 123,
@@ -51,44 +52,59 @@ const QuestionPage = () => {
   const [inputVisible, setInputVisible] = useState(false) //search input visibility. Replace after
   const [questionFormIsVisible, setQuestionFormIsVisible] = useState(false) //new question form visibility
   const [_questions, _setQuestions] = useState(questionsList) //save backend data into variable
-  const { queryParams, getParam, setParams } = useQueryParams()
-
-  const currentFilter = getParam('filter') || 'all'
-  // @ts-ignore
-  const search = getParam('search') || ''
-
+  const { queryParams, setParams } = useQueryParams()
+  const { ref, entry } = useIntersection({
+    threshold: 1
+  })
+  //инициализация URL при первом рендере
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await getQuestions(paramURL)
-      console.log(data)
-    }
-
-    fetchData()
+    setParams({ filter: 'all', page: '1', per_page: '2' }, true)
   }, [])
 
-  // filters mockData
+  const currentFilter = queryParams.filter ?? 'all'
+  const currentPage = Number(queryParams.page ?? '1')
+  const currentPerPage = Number(queryParams.per_page ?? '2')
+
+  // @ts-ignore
+  /*const currentSearch = search*/
+
   const filters = [
     {
       icon: <FavoriteIcon />,
       value: 'favorite',
       setValue: () => {
-        setParams({ filter: 'favorite' }, false)
+        setParams({ filter: 'favorite', page: '1', per_page: '20' }, true)
       }
     },
     {
       title: 'Все',
       value: 'all',
       setValue: () => {
-        setParams({ filter: 'all' }, false)
+        setParams({ filter: 'all', page: '1', per_page: '20' }, true)
       }
     }
   ]
 
-  const paramURL = `?filter=${encodeURIComponent(currentFilter)}`
-  const { data, isLoading } = useQuery({
-    queryKey: ['questions', paramURL],
-    queryFn: async () => await getQuestions(paramURL)
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+    queryKey: ['questions', currentFilter],
+    queryFn: async ({ pageParam = currentPage }) =>
+      await getQuestions({
+        filter: currentFilter,
+        page: pageParam,
+        per_page: currentPerPage
+        /*search: currentSearch*/
+      }),
+    initialPageParam: 1,
+    getNextPageParam: lastPage => (lastPage?.has_next ? lastPage.page + 1 : undefined)
   })
+
+  useEffect(() => {
+    if (entry?.isIntersecting && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage()
+      const nextPage = currentPage + 1
+      setParams({ ...queryParams, page: String(nextPage) }, false)
+    }
+  }, [entry, hasNextPage, isFetchingNextPage])
 
   const setSearchFieldVisibility = () => {
     setInputVisible(prev => !prev)
@@ -108,7 +124,6 @@ const QuestionPage = () => {
   const setQuestionFormVisibility = () => {
     setQuestionFormIsVisible(prev => !prev)
   }
-
   // const filteredQuestionList = questions.results.filter(question => {
   //   return question.text.toLowerCase().includes(search.toLowerCase().trim())
   // }) //uncomment after #49 task component implementation
@@ -143,11 +158,14 @@ const QuestionPage = () => {
             <div>new question form</div>
           </div>
         )}
-        {/* TODO implement form from #52 task}
-        {
-          data?.data && <div className={styles['questions-list']}>{data.data}</div>
-        }
-        {<QuestionList questions={filteredQuestionList}/> TODO implement after #49 task*/}
+        {/* TODO implement form from #52 task}*/}
+        <div className={styles['questions-list']}>
+          {data?.pages.flatMap(pageItem => pageItem?.data.map(q => <div key={q.id}>{q.text}</div>))}
+        </div>
+      </div>
+      {/*<QuestionList questions={filteredQuestionList}/> TODO implement after #49 task*/}
+      <div ref={ref} className={styles.loader_container}>
+        {isFetchingNextPage && <Loader color="blue" />}
       </div>
     </div>
   )

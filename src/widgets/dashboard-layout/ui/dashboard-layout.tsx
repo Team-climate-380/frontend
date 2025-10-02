@@ -5,12 +5,39 @@ import { AppShell } from '@mantine/core'
 import classes from './dashboard-layout.module.css'
 import sidebarImage from './images/sidebarImage.svg'
 import logo from './images/logo.svg'
+import { Menu } from '@/widgets/menu'
 
 interface DashboardLayoutProps {
   contentSidebar?: ReactNode
 }
 
-export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ contentSidebar }) => {
+//TODO: delete after add func API
+const menuItem = [
+  {
+    id: '1',
+    link: '',
+    name: 'Опросы'
+  },
+  {
+    id: '2',
+    link: '',
+    name: 'Люди'
+  },
+  {
+    id: '3',
+    link: '',
+    name: 'Команды',
+    children: [
+      {
+        id: '11',
+        queryParam: '',
+        name: 'Бухгалтерия'
+      }
+    ]
+  }
+]
+
+export const DashboardLayout: React.FC<DashboardLayoutProps> = () => {
   return (
     <div className={classes.container}>
       <img src={logo} alt="Логотип" className={classes.logo} />
@@ -21,7 +48,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ contentSidebar
         }}
         className={classes.navbar}
       >
-        {contentSidebar}
+        <Menu linksInfo={menuItem} />
       </AppShell>
       <img src={sidebarImage} aria-hidden="true" className={classes.sidebar} />
       <Suspense fallback={<Loader />}>
