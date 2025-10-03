@@ -14,6 +14,48 @@ import { LazyDepartments } from '@/pages/departments'
 import { stateInitialization } from '@/features/session/model/store'
 import { ProtectedRoute } from '@/features/auth/index'
 import { LazyPasswordRecovery } from '@/pages/password-recovery'
+import { Menu } from '@/widgets/menu/ui/menu'
+
+// TODO: заменить на данные с бэка
+const mockData = [
+  {
+    id: '1',
+    link: 'Опросы',
+    name: 'Опросы',
+    children: [
+      {
+        id: '12',
+        queryParam: 'string',
+        name: 'Маркетинг'
+      },
+      {
+        id: '13',
+        queryParam: 'string',
+        name: 'Бухгалтерия'
+      },
+      {
+        id: '14',
+        queryParam: 'string',
+        name: 'Технологии'
+      }
+    ]
+  },
+  {
+    id: '2',
+    link: 'Люди',
+    name: 'Люди'
+  },
+  {
+    id: '3',
+    link: 'Команды',
+    name: 'Команды'
+  },
+  {
+    id: '4',
+    link: 'Вопросы',
+    name: 'Вопросы'
+  }
+]
 
 stateInitialization()
 
@@ -50,7 +92,7 @@ export const router = createBrowserRouter([
       },
 
       {
-        element: <DashboardLayout />,
+        element: <DashboardLayout contentSidebar={<Menu linksInfo={mockData} />} />,
         children: [
           {
             index: true,
