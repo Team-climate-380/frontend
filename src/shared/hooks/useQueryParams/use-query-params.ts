@@ -39,5 +39,26 @@ export function useQueryParams() {
     [navigate, location.pathname]
   )
 
-  return { queryParams, getParam, setParams }
+  const setSearch = useCallback(
+    (searchValue: string) => {
+      const params = new URLSearchParams(location.search)
+
+      if (searchValue.trim() === '') {
+        params.delete('s')
+      } else {
+        params.set('s', searchValue)
+      }
+
+      navigate(
+        {
+          pathname: location.pathname,
+          search: `?${params.toString()}`
+        },
+        { replace: true }
+      )
+    },
+    [navigate, location]
+  )
+
+  return { queryParams, getParam, setParams, setSearch }
 }
