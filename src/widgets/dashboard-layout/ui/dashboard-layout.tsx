@@ -2,7 +2,7 @@ import { Suspense, ReactNode } from 'react'
 import { Outlet } from 'react-router'
 import { Loader } from '@shared/ui/loader'
 import { AppShell } from '@mantine/core'
-import Logo from '../images/Logo.svg'
+import Logo from '../images/logo.svg'
 import SidebarImage from '../images/sidebarImage.svg'
 import classes from './dashboard-layout.module.css'
 
