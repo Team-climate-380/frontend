@@ -6,7 +6,12 @@ export const routes = {
   questions: () => '/questions',
   surveys: () => '/surveys',
   new_survey: () => '/new-survey',
-  results_survey: () => '/results-survey',
+  results_survey: (id: number) => `/results-survey?surveyId=${id}`,
+  results_survey_path: () => '/results-survey',
+  full_results: (id: number) => `/full-results?surveyId=${id}`,
+  full_results_path: () => '/full-results',
+  short_results: (id: number) => `/short-results?surveyId=${id}`,
+  short_results_path: () => '/short-results',
   employees: (queryParams?: typeParams) => createUrl('/employees/', {}, queryParams),
   departments: () => '/departments',
   password_recovery: () => '/password-recovery'
