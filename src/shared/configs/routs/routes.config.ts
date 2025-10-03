@@ -1,4 +1,4 @@
-// import { createUrl, typeParams } from './utils/create-url'
+import { createUrl, typeParams } from './utils/create-url'
 
 export const routes = {
   home: () => '/',
@@ -12,7 +12,7 @@ export const routes = {
   full_results_path: () => '/full-results',
   short_results: (id: number) => `/short-results?surveyId=${id}`,
   short_results_path: () => '/short-results',
-  employees: () => '/employees',
+  employees: (queryParams?: typeParams) => createUrl('/employees/', {}, queryParams),
   departments: () => '/departments',
   password_recovery: () => '/password-recovery'
 

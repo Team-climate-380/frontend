@@ -1,0 +1,17 @@
+.wrapper_employees {
+  background-color: var(--mantine-color-black-0);
+  border-radius: 6px;
+  height: fit-content;
+}
+
+.employees_list {
+  display: flex;
+  margin: 48px 48px 66px 38px;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 100%;
+}
+
+.loader {
+  align-self: center;
+}

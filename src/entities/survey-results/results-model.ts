@@ -1,8 +1,15 @@
 import { ApiClient } from '@/shared/lib/api-client'
 import { QuestionResultProps } from '@/shared/ui/question-result/ui/question-result'
-import { create } from 'zustand'
+import { useQuery } from '@tanstack/react-query'
 
 const client = new ApiClient()
+
+const login = async () => {
+  const response = await client.post('/api/auth/login', {}, { email: 'admin@admin.mail', password: 'xPKHPWgx7EQNFeF' })
+  console.log(response)
+}
+
+login()
 
 export interface SurveyResults {
   id: number
@@ -20,26 +27,14 @@ export interface SurveyResults {
   }
 }
 
-type SurveyResultsStore = {
-  results: SurveyResults | null
-  loading: boolean
-  error: string | null
-  fetchResults: (id: number) => Promise<void>
+const getServeyResults = async (id: number) => {
+  const response = await client.get<SurveyResults>(`/api/surveys/${id}/`)
+  if (response.status === 'success' && 'data' in response) return response.data
+  if (response.status === 'error' && 'message' in response) console.error(response.message)
 }
 
-export const useSurveyResultsStore = create<SurveyResultsStore>(set => ({
-  results: null,
-  loading: false,
-  error: null,
-
-  fetchResults: async (id: number) => {
-    set({ loading: true, error: null })
-    const response = await client.get<SurveyResults>(`/api/surveys/${id}/`)
-
-    if (response.status === 'success' && 'data' in response) {
-      set({ results: response.data, loading: false })
-    } else if ('message' in response) {
-      set({ error: response.message, loading: false })
-    }
-  }
-}))
+export const useResultsQuery = (id: number) =>
+  useQuery({
+    queryKey: ['results', id],
+    queryFn: () => getServeyResults(id)
+  })

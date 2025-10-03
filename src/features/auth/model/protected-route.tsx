@@ -8,7 +8,7 @@ interface ProtectedRouteProps {
   onlyUnAuth?: boolean
 }
 
-export const ProtectedRoute = ({ children, onlyUnAuth = false }: ProtectedRouteProps) => {
+export const ProtectedRoute = ({ children, onlyUnAuth = true }: ProtectedRouteProps) => {
   const { isAuth } = useSessionState()
   if (isAuth && onlyUnAuth) {
     //пользователь авторизован и страница не для авторизованного пользователя
