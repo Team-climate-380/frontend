@@ -1,18 +1,18 @@
 import { useForm } from '@mantine/form'
 
-type TInitialValues = {
+export type TEmployeeForm = {
   name: string
-  department: string[]
+  department: string
   email: string
   telegram_id: string
 }
 
-export const useCreateEmployeeEditForm = (initialValues?: TInitialValues) => {
+export const useCreateEmployeeEditForm = (initialValues?: TEmployeeForm) => {
   const formEmployeeData = useForm({
     mode: 'uncontrolled',
     initialValues: initialValues ?? {
       name: '',
-      department: [],
+      department: 'HR',
       email: '',
       telegram_id: ''
     },
