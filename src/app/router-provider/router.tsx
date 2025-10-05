@@ -69,10 +69,7 @@ export const router = createBrowserRouter([
           </ProtectedRoute>
         )
       },
-      {
-        path: '*',
-        element: <LazyNotFound />
-      },
+
       {
         path: routes.questions(),
         element: (
@@ -145,5 +142,10 @@ export const router = createBrowserRouter([
         <LazyPasswordRecovery />
       </ProtectedRoute>
     )
+  },
+
+  {
+    path: '*',
+    element: <LazyNotFound />
   }
 ])
