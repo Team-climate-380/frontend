@@ -5,6 +5,8 @@ import { AppShell } from '@mantine/core'
 import Logo from '../images/logo.svg'
 import SidebarImage from '../images/sidebarImage.svg'
 import classes from './dashboard-layout.module.css'
+import logo from './images/logo.svg'
+import sidebarImage from './images/sidebarImage.svg'
 
 interface DashboardLayoutProps {
   contentSidebar: ReactNode

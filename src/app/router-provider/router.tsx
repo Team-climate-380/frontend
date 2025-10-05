@@ -54,6 +54,7 @@ const mockData = [
     name: 'Вопросы'
   }
 ]
+import { ResultLayout } from '@/widgets/result-layout'
 
 stateInitialization()
 
@@ -87,7 +88,27 @@ export const router = createBrowserRouter([
           </ProtectedRoute>
         )
       },
-
+      {
+        element: <ResultLayout />,
+        children: [
+          {
+            path: routes.full_results_path(),
+            element: (
+              <ProtectedRoute>
+                <LazySurveyResults />
+              </ProtectedRoute>
+            )
+          },
+          {
+            path: routes.short_results_path(),
+            element: (
+              <ProtectedRoute>
+                <LazySurveyResults fullResults={false} />
+              </ProtectedRoute>
+            )
+          }
+        ]
+      },
       {
         path: routes.new_survey(),
         element: (
@@ -97,14 +118,14 @@ export const router = createBrowserRouter([
         )
       },
 
-      {
-        path: routes.results_survey(),
-        element: (
-          <ProtectedRoute>
-            <LazySurveyResults />
-          </ProtectedRoute>
-        )
-      },
+          {
+            path: routes.results_survey_path(),
+            element: (
+              <ProtectedRoute>
+                <LazySurveyResults />
+              </ProtectedRoute>
+            )
+          },
 
       {
         path: routes.employees(),
