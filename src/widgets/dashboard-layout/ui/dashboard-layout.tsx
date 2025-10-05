@@ -2,11 +2,9 @@ import { Suspense, ReactNode } from 'react'
 import { Outlet } from 'react-router'
 import { Loader } from '@shared/ui/loader'
 import { AppShell } from '@mantine/core'
-import Logo from '../images/logo.svg'
-import SidebarImage from '../images/sidebarImage.svg'
+import { Logo } from '@shared/ui/logo/index'
+import SidebarImage from '../images/SidebarImage.svg'
 import classes from './dashboard-layout.module.css'
-import logo from './images/logo.svg'
-import sidebarImage from './images/sidebarImage.svg'
 
 interface DashboardLayoutProps {
   contentSidebar: ReactNode
@@ -42,7 +40,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ contentSidebar
         className={classes.container}
       >
         <AppShell.Navbar>
-          <img src={Logo} alt="Логотип" className={classes.logo} />
+          <Logo alt={'Логотип'} variant="light" className={classes.logo} />
           <AppShell.Section className={classes.contentSidebar} grow>
             {contentSidebar}
           </AppShell.Section>
