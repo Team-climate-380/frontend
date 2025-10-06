@@ -1,4 +1,5 @@
 import { Flex } from '@mantine/core'
+import { clsx } from 'clsx'
 import { ICreateEditFormProps } from '@entities/create-edit-form-types.ts'
 import { Input } from '@shared/ui/input/index.ts'
 import { useCreateEmployeeEditForm, TEmployeeForm } from '@entities/employees/forms/use-create-employee-edit-form.ts'
@@ -70,7 +71,11 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({ isOpen, isCreateForm
           aria-label="Телеграм id"
           placeholder="@telegram"
           error={employeeForm.isValid('telegram_id') ?? <div className={classes.errorContainer} />}
-          className={classes.textInput}
+          className={clsx({
+            [classes.textInput]: true,
+            [classes.inputForNewEmployee]: isCreateForm,
+            [classes.inputForEditEmployee]: isCreateForm === false
+          })}
           key={employeeForm.key('telegram_id')}
           {...employeeForm.getInputProps('telegram_id')}
         />

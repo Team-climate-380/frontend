@@ -3,15 +3,27 @@
 }
 
 .formForEditEmployee {
-  margin-inline: 40px;
+  margin: 7px 48px 7px 38px;
 }
 
 .container {
-  gap: 15px;
-  line-height: 0.8;
+  justify-content: space-around;
+  gap: 16px;
 }
 
 .errorContainer {
   visibility: hidden;
   display: block;
+}
+
+.inputForNewEmployee {
+  max-width: 111px;
+}
+
+.inputForEditEmployee {
+  max-width: 151px;
+}
+
+.employeeFormSubmit {
+  margin-inline-start: 50px;
 }
