@@ -160,7 +160,8 @@ const QuestionPage = () => {
         )}
         {/* TODO implement form from #52 task}*/}
         <div className={styles['questions-list']}>
-          {data?.pages.flatMap(pageItem => pageItem?.data.map(q => <div key={q.id}>{q.text}</div>))}
+          {data?.pages.flatMap(pageItem => pageItem?.data.map(q => <div key={q.id}>{q.text}</div>))}{' '}
+          {/*отображение списка вопросов, пока без общего компонента*/}
         </div>
       </div>
       {/*<QuestionList questions={filteredQuestionList}/> TODO implement after #49 task*/}
