@@ -28,9 +28,11 @@ export function useQueryParams() {
         searchParams.set(key, value)
       })
 
+      const pathnameWithSlash = location.pathname.endsWith('/') ? location.pathname : `${location.pathname}/`
+
       navigate(
         {
-          pathname: location.pathname,
+          pathname: pathnameWithSlash,
           search: `?${searchParams.toString()}`
         },
         { replace: replaceHistory }
