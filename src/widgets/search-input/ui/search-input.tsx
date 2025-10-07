@@ -12,7 +12,7 @@ export const SearchInput = () => {
 
   const handleClickIconSearch = () => {
     if (isInputVisible) {
-      const formatValue = inputValue.trim().toLowerCase()
+      const formatValue = encodeURIComponent(inputValue)
       setSearch(formatValue)
     } else {
       setIsInputVisible(true)
@@ -32,7 +32,7 @@ export const SearchInput = () => {
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       event.preventDefault()
-      const formatValue = inputValue.trim().toLowerCase()
+      const formatValue = encodeURIComponent(inputValue)
       setSearch(formatValue)
       setIsInputVisible(!!formatValue)
     }
