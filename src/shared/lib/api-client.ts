@@ -59,7 +59,7 @@ export class ApiClient {
     return this.request<T>({ url, headers, method: 'GET' })
   }
 
-  async post<T>(url: string, body?: unknown, headers?: HeadersType) {
+  async post<T>(url: string, headers?: HeadersType, body?: unknown) {
     return this.request<T>({ url, headers, method: 'POST', body })
   }
 

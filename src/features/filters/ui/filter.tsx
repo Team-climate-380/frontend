@@ -1,4 +1,5 @@
 import { Tabs } from '@mantine/core'
+import { FavoriteIcon } from './favorite-icon'
 import styles from '../styles/styles.module.scss'
 
 type Filter = ({ title: string } | { icon: React.ReactNode }) & {
@@ -26,7 +27,7 @@ export const Filter: React.FC<FilterProps> = ({ filters, value }) => {
         {filters.map((item, index) => {
           return (
             <Tabs.Tab className={styles.tab} value={item.value} key={index} fz="md">
-              {'title' in item ? item.title : item.icon}
+              {'title' in item ? item.title : <FavoriteIcon />}
             </Tabs.Tab>
           )
         })}

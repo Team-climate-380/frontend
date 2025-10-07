@@ -3,8 +3,6 @@ import { Outlet } from 'react-router'
 import { Loader } from '@shared/ui/loader'
 import { AppShell } from '@mantine/core'
 import classes from './dashboard-layout.module.css'
-import logo from './images/logo.svg'
-import sidebarImage from './images/sidebarImage.svg'
 
 interface DashboardLayoutProps {
   contentSidebar?: ReactNode
@@ -13,7 +11,7 @@ interface DashboardLayoutProps {
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ contentSidebar }) => {
   return (
     <div className={classes.container}>
-      <img src={logo} alt="Логотип" className={classes.logo} />
+      <img src="./images/logo.svg" alt="Логотип" className={classes.logo} />
       <AppShell
         navbar={{
           width: 193,
@@ -23,7 +21,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ contentSidebar
       >
         {contentSidebar}
       </AppShell>
-      <img src={sidebarImage} aria-hidden="true" className={classes.sidebar} />
+      <img src="./images/sidebarImage.svg" aria-hidden="true" className={classes.sidebar} />
       <Suspense fallback={<Loader />}>
         <Outlet />
       </Suspense>

@@ -1,6 +1,6 @@
 import { useForm } from '@mantine/form'
 
-export interface ValuesFormGroups {
+interface ValuesFormGroups {
   name: string
 }
 
