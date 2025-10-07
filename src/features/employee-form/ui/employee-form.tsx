@@ -2,20 +2,21 @@ import { Flex } from '@mantine/core'
 import { clsx } from 'clsx'
 import { ICreateEditFormProps } from '@entities/create-edit-form-types.ts'
 import { Input } from '@shared/ui/input/index.ts'
-import { useCreateEmployeeEditForm, TEmployeeForm } from '@entities/employees/forms/use-create-employee-edit-form.ts'
+import {
+  useCreateEmployeeEditForm,
+  TEmployeeForm,
+  departmentsNames
+} from '@entities/employees/forms/use-create-employee-edit-form.ts'
 import { SubmitButton } from '@shared/ui/submit-button'
 import { Dropdown } from '@shared/ui/dropdown'
 import classes from './employee-form.module.scss'
 
-// TODO: заменить на данные с бэка
-const getDepartments = ['HR', 'Бухгалтерия']
-
 export type EmployeeFormProps = ICreateEditFormProps & {
-  formData?: TEmployeeForm
+  employeeFormData?: TEmployeeForm
 }
 
-export const EmployeeForm: React.FC<EmployeeFormProps> = ({ isOpen, isCreateForm, closeForm, formData }) => {
-  const employeeForm = useCreateEmployeeEditForm(formData)
+export const EmployeeForm: React.FC<EmployeeFormProps> = ({ isOpen, isCreateForm, closeForm, employeeFormData }) => {
+  const employeeForm = useCreateEmployeeEditForm(employeeFormData)
 
   const handleSubmit = (data: TEmployeeForm) => {
     console.log(data)
@@ -35,8 +36,6 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({ isOpen, isCreateForm
           }}
           aria-label="Имя сотрудника"
           placeholder="Имя"
-          error={employeeForm.isValid('name') ?? <div className={classes.errorContainer} />}
-          className={classes.textInput}
           key={employeeForm.key('name')}
           {...employeeForm.getInputProps('name')}
         />
@@ -46,8 +45,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({ isOpen, isCreateForm
             input: { backgroundColor: 'var(--mantine-color-black-1)', border: 'var(--mantine-color-black-1)' }
           }}
           aria-label="Отдел"
-          data={getDepartments}
-          defaultValue={'HR'}
+          data={departmentsNames}
           key={employeeForm.key('department')}
           {...employeeForm.getInputProps('department')}
         />
@@ -58,8 +56,6 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({ isOpen, isCreateForm
           }}
           aria-label="Почта"
           placeholder="mail@mail.ru"
-          error={employeeForm.isValid('email') ?? <div className={classes.errorContainer} />}
-          className={classes.textInput}
           key={employeeForm.key('email')}
           {...employeeForm.getInputProps('email')}
         />
@@ -68,16 +64,14 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({ isOpen, isCreateForm
           styles={{
             root: { '--mantine-scale': '0.83' }
           }}
-          aria-label="Телеграм id"
+          aria-label="Имя пользователя телеграм"
           placeholder="@telegram"
-          error={employeeForm.isValid('telegram_id') ?? <div className={classes.errorContainer} />}
           className={clsx({
-            [classes.textInput]: true,
             [classes.inputForNewEmployee]: isCreateForm,
             [classes.inputForEditEmployee]: isCreateForm === false
           })}
-          key={employeeForm.key('telegram_id')}
-          {...employeeForm.getInputProps('telegram_id')}
+          key={employeeForm.key('tgUsername')}
+          {...employeeForm.getInputProps('tgUsername')}
         />
         <SubmitButton className={classes.employeeFormSubmit} />
       </Flex>

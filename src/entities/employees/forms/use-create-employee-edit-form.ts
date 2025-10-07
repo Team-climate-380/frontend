@@ -1,46 +1,55 @@
 import { useForm } from '@mantine/form'
+import { getDepartments } from '@entities/groups'
 
 export type TEmployeeForm = {
   name: string
-  department: string
+  department: string | undefined
   email: string
-  telegram_id: string
+  tgUsername: string
 }
+
+export const departmentsData = await getDepartments()
+
+export const departmentsNames = departmentsData?.map(item => item.department_name)
 
 export const useCreateEmployeeEditForm = (initialValues?: TEmployeeForm) => {
   const formEmployeeData = useForm({
     mode: 'uncontrolled',
     initialValues: initialValues ?? {
       name: '',
-      department: 'HR',
+      department: departmentsNames?.find(item => item[0]),
       email: '',
-      telegram_id: ''
+      tgUsername: ''
     },
     validate: {
       name: value => {
         if (!value || value.trim() === '') {
-          return 'Имя не может быть пустым'
+          return 'Поле должно быть заполнено'
         }
         if (value.length > 256) {
-          return 'Слишком длинное имя. Длина должна быть не больше 256 символов.'
+          return 'Максимум 256 символов.'
         }
         return null
       },
       email: value => {
+        // Обязательно ли поле? Пока нет ответа
         if (!value) {
-          return 'Почта не может быть пустой'
+          return 'Поле должно быть заполнено'
         }
         if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
-          return 'Неверный формат почты'
+          return 'Почта в формате mail@mail.ru'
         }
         return null
       },
-      telegram_id: value => {
-        if (value && !/[0-9]+/.test(value)) {
-          return 'Неверный формат Telegram ID'
+      tgUsername: value => {
+        if (value[0] !== '@') {
+          return 'Имя пользователя в формате @telegram'
         }
-        if (value && value.length > 19) {
-          return 'Слишком длинный Telegram ID. Длина должна быть не больше 19 символов.'
+        if (value && value.length < 6) {
+          return 'Минимум 6 символов.'
+        }
+        if (value && value.length > 33) {
+          return 'Максимум 33 символа.'
         }
         return null
       }
