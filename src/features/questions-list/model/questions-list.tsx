@@ -1,42 +1,69 @@
 import { QuestionsListUI } from '../ui/questions-list-ui'
-import { QuestionTypeEnum } from '@/entities/question/forms/use-create-edit-question-form'
-import { TQuestion } from '@/entities/question/types/question-type'
+import { QuestionType, TQuestion } from '@/entities/question/types/question-type'
+// import { ApiClient } from '@/shared/lib/api-client'
 import { FC } from 'react'
 
-interface IQuestionsListResponce {
-  count: number
-  next: string
-  previous: string
-  results: TQuestion[]
+export interface IQuestionResponce {
+  data: TQuestion[]
+  page: number
+  per_page: number
+  total?: number
+  num_pages: number
+  has_next: boolean
+  has_previous: boolean
 }
 
 export const QuestionsList: FC = () => {
   // TODO: заменить на данные с API
-  const mockData: IQuestionsListResponce = {
-    count: 3,
-    next: 'url',
-    previous: 'url',
-    results: [
-      {
-        id: 25,
-        is_favorite: true,
-        text: 'Как вы оцениваете открытость команды для обсуждения новых идей?',
-        question_type: QuestionTypeEnum.ConsentGiven
-      },
+  // example
+  // const api = new ApiClient({})
+  // const data = api.get(`${import.meta.env.VITE_API_DOMAIN}questions`)
+
+  const mockData: IQuestionResponce = {
+    data: [
       {
         id: 24,
+        text: 'Как вы оцениваете уровень доверия между членами команды?',
+        question_type: QuestionType.RATING_SCALE,
         is_favorite: false,
-        text: 'Как вы оценили бы уровень морального состояния в команде?',
-        question_type: QuestionTypeEnum.RatingScale
+        surveys: []
       },
       {
-        id: 23,
-        is_favorite: true,
-        text: 'Насколько вы удовлетворены коммуникацией в команде?',
-        question_type: QuestionTypeEnum.Score
+        id: 25,
+        text: 'Вы довольны своей работой?',
+        question_type: QuestionType.RATING_SCALE,
+        is_favorite: false,
+        surveys: []
+      },
+      {
+        id: 26,
+        text: 'Согласны ли вы с тем, что ваша работа ценится в команде?',
+        question_type: QuestionType.CONSENT_GIVEN,
+        is_favorite: false,
+        surveys: []
+      },
+      {
+        id: 27,
+        text: 'Считаете ли вы свою работу эффективной',
+        question_type: QuestionType.RATING_SCALE,
+        is_favorite: false,
+        surveys: []
+      },
+      {
+        id: 28,
+        text: 'Как вы оценили бы уровень морального состояния в команде?',
+        question_type: QuestionType.RATING_SCALE,
+        is_favorite: false,
+        surveys: []
       }
-    ]
+    ],
+    page: 1,
+    per_page: 20,
+    total: 5,
+    num_pages: 1,
+    has_next: false,
+    has_previous: false
   }
 
-  return <QuestionsListUI questions={mockData.results} />
+  return <QuestionsListUI questions={mockData.data} />
 }
