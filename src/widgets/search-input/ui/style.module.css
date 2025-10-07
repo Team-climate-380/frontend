@@ -1,0 +1,14 @@
+.search_input {
+  min-width: 380px;
+}
+
+.search_input input {
+  background-color: var(--mantine-color-black-0);
+  border: 1px dotted transparent;
+  font-size: 18px;
+}
+
+.search_icon {
+  align-self: center;
+  cursor: pointer;
+}
