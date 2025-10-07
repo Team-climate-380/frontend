@@ -1,7 +1,7 @@
 .wrapper_employees {
   background-color: var(--mantine-color-black-0);
   border-radius: 6px;
-  height: fit-content;
+  min-height: 120vh;
 }
 
 .employees_list {

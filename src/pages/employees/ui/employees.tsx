@@ -6,10 +6,18 @@ import { EmployeesItem } from '@/entities/employees/ui/employee-item'
 import { getEmployees } from '@/entities/employees/api/get-employees'
 import { useQueryParams } from '@/shared/hooks/useQueryParams'
 import { useQuery } from '@tanstack/react-query'
-import { Loader, ScrollArea } from '@mantine/core'
+import { Loader } from '@mantine/core'
+import { useEffect, useState } from 'react'
+import { SearchInput } from '@/widgets/search-input'
 
 const Employees: React.FC = () => {
+  const [isVisibleAddEmployees, setIsVisibleAddEmployees] = useState(false)
   const { getParam, setParams } = useQueryParams()
+
+  useEffect(() => {
+    setParams({ sort: 'edited_at' }, true)
+  }, [])
+
   const currentSort = getParam('sort') || 'edited_at'
   const filters = [
     {
@@ -32,21 +40,33 @@ const Employees: React.FC = () => {
     queryKey: ['employees', paramURL],
     queryFn: async () => await getEmployees(paramURL)
   })
+
+  const handleAddEmployees = () => {
+    setIsVisibleAddEmployees(true)
+  }
+
   return (
     <div className={style.wrapper_employees}>
-      <Header title="Люди" actions={<Button>Добавить человека</Button>}>
+      <Header
+        title="Люди"
+        actions={
+          <>
+            <SearchInput />
+            <Button onClick={handleAddEmployees}>Добавить человека</Button>
+          </>
+        }
+      >
         <Filter filters={filters} value={currentSort} />
       </Header>
-      <ScrollArea h={'120vh'} type="scroll">
-        <div className={style.employees_list}>
-          {data && data.map((employee, index) => <EmployeesItem key={index} employee={employee} />)}
-          {isLoading && (
-            <div className={style.loader}>
-              <Loader />
-            </div>
-          )}
-        </div>
-      </ScrollArea>
+      {isVisibleAddEmployees && <div>new employees</div>}
+      <div className={style.employees_list}>
+        {data && data.map((employee, index) => <EmployeesItem key={index} employee={employee} />)}
+        {isLoading && (
+          <div className={style.loader}>
+            <Loader />
+          </div>
+        )}
+      </div>
     </div>
   )
 }
