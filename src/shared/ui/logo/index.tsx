@@ -5,7 +5,7 @@ export interface ILogoProps {
 }
 
 export const Logo = ({ size, alt, variant = 'dark' }: ILogoProps) => {
-  const logoDark = 'logo/logo-black.svg'
-  const logoLight = 'logo/logo-white.svg'
+  const logoDark = '/logo/logo-black.svg'
+  const logoLight = '/logo/logo-white.svg'
   return <img src={variant === 'dark' ? logoDark : logoLight} width={size} alt={alt} />
 }

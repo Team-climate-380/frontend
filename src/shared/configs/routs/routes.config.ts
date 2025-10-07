@@ -3,7 +3,7 @@ import { createUrl, typeParams } from './utils/create-url'
 export const routes = {
   home: () => '/',
   login: () => '/login',
-  questions: () => '/questions',
+  questions: (queryParams?: typeParams) => createUrl('/questions/', {}, queryParams),
   surveys: () => '/surveys',
   new_survey: () => '/new-survey',
   results_survey: (id: number) => `/results-survey?surveyId=${id}`,
