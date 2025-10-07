@@ -11,11 +11,9 @@ export const getDepartments = async () => {
 }
 
 export const createDepartment = async (name: string) => {
-  const response = await apiClient.post<Pick<DepartmentInfo, 'id' | 'department_name'>>(
-    '/api/departments/',
-    {},
-    { department_name: name }
-  )
+  const response = await apiClient.post<Pick<DepartmentInfo, 'id' | 'department_name'>>('/api/departments/', {
+    department_name: name
+  })
   if (response.status === 'error' && 'error' in response) {
     throw new Error(response.message)
   }
