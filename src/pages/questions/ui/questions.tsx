@@ -14,6 +14,8 @@ import { getQuestions } from '@/entities/question/api/get-questions'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { Loader } from '@mantine/core'
 import { useIntersection } from '@mantine/hooks'
+import { QuestionForm } from '@/features/question-form'
+
 //const filters and const questions - mock data, TODO: delete after back-end requests implementation
 const questionsList = {
   count: 123,
@@ -132,7 +134,13 @@ const QuestionPage = () => {
       <div className={styles['main-content']}>
         {questionFormIsVisible && (
           <div className={styles['question-form']}>
-            <div>new question form</div>
+            <QuestionForm
+              isOpen={questionFormIsVisible}
+              isNewQuestion={true}
+              closeForm={() => {
+                setQuestionFormVisibility()
+              }}
+            />
           </div>
         )}
         {/* TODO implement form from #52 task}*/}
