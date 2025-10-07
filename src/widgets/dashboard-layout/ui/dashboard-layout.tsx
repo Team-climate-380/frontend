@@ -1,7 +1,9 @@
 import { Suspense, ReactNode } from 'react'
+import { Link } from 'react-router-dom'
 import { Outlet } from 'react-router'
 import { Loader } from '@shared/ui/loader'
 import { AppShell } from '@mantine/core'
+import { routes } from '@shared/configs/routs'
 import { Logo } from '@shared/ui/logo/index'
 import SidebarImage from '../images/SidebarImage.svg'
 import classes from './dashboard-layout.module.css'
@@ -40,7 +42,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ contentSidebar
         className={classes.container}
       >
         <AppShell.Navbar>
-          <Logo alt={'Логотип'} variant="light" className={classes.logo} />
+          <div className={classes.logo}>
+            <Link to={routes.home()}>
+              <Logo alt={'Логотип'} variant="light" />
+            </Link>
+          </div>
           <AppShell.Section className={classes.contentSidebar} grow>
             {contentSidebar}
           </AppShell.Section>
