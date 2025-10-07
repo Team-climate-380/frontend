@@ -5,8 +5,8 @@ import {
   IQuestionForm,
   QuestionTypeEnum
 } from '@entities/question/forms/use-create-edit-question-form.ts'
-import Check from './CheckIcon.svg'
-import ChevronDown from './ChevronDown.svg'
+import Check from '../images/CheckIcon.svg'
+import ChevronDown from '../images/ChevronDown.svg'
 import classes from './question-form.module.scss'
 
 export type TQuestionData = IQuestionForm & {
@@ -27,7 +27,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ isOpen, isNewQuestio
   const [openedDropdown, setOpenedDropdown] = useState(false)
 
   const sendData = (data: TQuestionData) => {
-    console.log(data)
+    console.log('data', data)
     closeForm()
   }
 
