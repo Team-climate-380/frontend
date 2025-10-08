@@ -6,11 +6,11 @@
 
 .employees_list__item_cell {
   text-overflow: ellipsis;
-  overflow: hidden; 
+  overflow: hidden;
 }
 
 .active {
-  background-color: #F6F8FA;
+  background-color: #f6f8fa;
   border-radius: 6px;
   padding: 6px 10px;
   overflow-x: auto;
