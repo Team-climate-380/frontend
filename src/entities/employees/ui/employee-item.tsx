@@ -1,50 +1,70 @@
-import { useState } from 'react'
 import { Employee } from '../type'
 import style from './style.module.css'
 import { PopupMenu, PopupMenuItem } from '@/shared/ui/popup-menu'
+import { useContextMenu } from '@/shared/hooks/use-context-menu'
+import { useState } from 'react'
+
 //TODO: изменить {employee.id} на среднее время ответа на вопрос
 interface EmployeesItemProps {
   employee: Partial<Employee>
 }
 
-const popupMenuItems: PopupMenuItem[] = [
-  {
-    type: 'action',
-    label: 'Редактировать',
-    action: () => {
-      console.log('edit')
-    }
-  },
-  {
-    type: 'divider'
-  },
-  {
-    type: 'action',
-    label: 'Удалить',
-    important: true,
-    action: () => {
-      console.log('edit')
-    }
-  }
-]
-
 export const EmployeesItem: React.FC<EmployeesItemProps> = ({ employee }) => {
-  const [isVisiblePopupMenu, setIsVisiblePopupMenu] = useState(false)
-  const handleClickEmployee = (e: React.MouseEvent<HTMLDivElement>) => {
+  const { contextMenu, handleRightClick, handleContextMenuClose } = useContextMenu(undefined, 500, 30)
+  const [isEditedEmployee, setIsEditedEmployee] = useState<boolean>(false)
+  const handleClickMouse = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault()
     if (e.button === 2) {
-      e.preventDefault()
-      setIsVisiblePopupMenu(true)
+      handleRightClick(e, employee.id)
     }
   }
-  return (
-    <div className={style.employees_list__item} onContextMenu={handleClickEmployee}>
-      <div>{employee.full_name}</div>
-      <div>{employee.department_name}</div>
-      <div>{employee.email}</div>
-      <div>{employee.tg_username}</div>
-      <div>{employee.id}</div>
 
-      {isVisiblePopupMenu && <PopupMenu type="context" items={popupMenuItems} onClose={() => {}} />}
-    </div>
+  const handleEditEmployee = () => {
+    setIsEditedEmployee(true)
+  }
+
+  const handleMenuClose = () => {
+    handleContextMenuClose()
+  }
+
+  const popupMenuItems: PopupMenuItem[] = [
+    {
+      type: 'action',
+      label: 'Редактировать',
+      action: () => {
+        handleEditEmployee()
+      }
+    },
+    {
+      type: 'divider'
+    },
+    {
+      type: 'action',
+      label: 'Удалить',
+      important: true,
+      action: () => {}
+    }
+  ]
+  const cellClassName = `${style.employees_list__item_cell} ${isEditedEmployee ? style.active : ''}`
+
+  return (
+    <>
+      <div className={style.employees_list__item} onContextMenu={handleClickMouse}>
+        <div className={cellClassName}>{employee.full_name}</div>
+        <div className={cellClassName}>{employee.department_name}</div>
+        <div className={cellClassName}>{employee.email}</div>
+        <div className={cellClassName}>{employee.tg_username}</div>
+        <div className={style.employees_list__item_cell}>{employee.id}</div>
+      </div>
+      {contextMenu.isVisible && (
+        <PopupMenu
+          type="context"
+          items={popupMenuItems}
+          onClose={handleMenuClose}
+          positionX={contextMenu.left}
+          positionY={contextMenu.top}
+        />
+      )}
+    </>
   )
 }

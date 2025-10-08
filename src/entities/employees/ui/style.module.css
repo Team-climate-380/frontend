@@ -1,5 +1,18 @@
 .employees_list__item {
   display: grid;
-  grid-template-columns: repeat(5, minmax(61px, 206px));
+  grid-template-columns: repeat(4, minmax(61px, 206px)) 61px;
   gap: 10px;
+}
+
+.employees_list__item_cell {
+  text-overflow: ellipsis;
+  overflow: hidden; 
+}
+
+.active {
+  background-color: #F6F8FA;
+  border-radius: 6px;
+  padding: 6px 10px;
+  overflow-x: auto;
+  text-overflow: initial;
 }
