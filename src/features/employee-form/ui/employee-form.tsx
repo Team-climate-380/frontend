@@ -34,8 +34,8 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({ isOpen, isCreateForm
           styles={{
             root: { '--mantine-scale': '0.83' }
           }}
-          aria-label="Имя сотрудника"
-          placeholder="Имя"
+          aria-label="Имя и фамилия сотрудника"
+          placeholder="Имя Фамилия"
           key={employeeForm.key('name')}
           {...employeeForm.getInputProps('name')}
         />

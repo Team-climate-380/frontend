@@ -32,10 +32,6 @@ export const useCreateEmployeeEditForm = (initialValues?: TEmployeeForm) => {
         return null
       },
       email: value => {
-        // Обязательно ли поле? Пока нет ответа
-        if (!value) {
-          return 'Поле должно быть заполнено'
-        }
         if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
           return 'Почта в формате mail@mail.ru'
         }
@@ -43,7 +39,10 @@ export const useCreateEmployeeEditForm = (initialValues?: TEmployeeForm) => {
       },
       tgUsername: value => {
         if (value[0] !== '@') {
-          return 'Имя пользователя в формате @telegram'
+          return 'Введите имя в формате @telegram'
+        }
+        if (value && !/^@[A-Za-z0-9][A-Za-z0-9_]+$/.test(value)) {
+          return 'Неверный формат для имени в telegram'
         }
         if (value && value.length < 6) {
           return 'Минимум 6 символов.'
