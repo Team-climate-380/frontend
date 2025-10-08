@@ -4,7 +4,8 @@ export type TMenuLink = {
   name: string
   children?: {
     id: string
-    queryParam: string
+    queryKey: string
+    queryValue: string
     name: string
   }[]
 }

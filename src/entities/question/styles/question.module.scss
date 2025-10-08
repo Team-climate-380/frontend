@@ -1,0 +1,23 @@
+.question {
+  display: flex;
+  padding-block-end: 12px;
+  cursor: pointer;
+}
+
+.id {
+  color: #75899c;
+  padding-inline-start: 14px;
+  padding-block-start: 5px;
+  padding-inline-end: 17px;
+}
+
+.isFavorite {
+  padding-inline-end: 5px;
+  color: #ffd014;
+}
+
+.question_type {
+  font-style: italic;
+  color: #1E1E1E;
+  opacity: 0.6;
+}
