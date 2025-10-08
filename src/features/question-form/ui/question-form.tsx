@@ -1,87 +1,64 @@
-import { useState } from 'react'
-import { Select, Textarea, ActionIcon, Container } from '@mantine/core'
+import { Textarea, Container } from '@mantine/core'
 import {
   useCreateEditQuestionForm,
   IQuestionForm,
   QuestionTypeEnum
 } from '@entities/question/forms/use-create-edit-question-form.ts'
-import Check from '../images/CheckIcon.svg'
-import ChevronDown from '../images/ChevronDown.svg'
+import { ICreateEditFormProps } from '@entities/create-edit-form-types.ts'
+import { SubmitButton } from '@shared/ui/submit-button'
+import { Dropdown } from '@shared/ui/dropdown'
 import classes from './question-form.module.scss'
-
-export type TQuestionData = IQuestionForm & {
-  isFavorite?: boolean
-}
-
-export interface QuestionFormProps {
-  isOpen: boolean
-  isNewQuestion: boolean
-  closeForm: () => void
-  questionData?: TQuestionData
-}
 
 const questionTypeData = Object.values(QuestionTypeEnum)
 
-export const QuestionForm: React.FC<QuestionFormProps> = ({ isOpen, isNewQuestion, closeForm, questionData }) => {
-  const questionForm = useCreateEditQuestionForm(questionData)
-  const [openedDropdown, setOpenedDropdown] = useState(false)
+export type QuestionFormProps = ICreateEditFormProps & {
+  formData?: IQuestionForm
+}
 
-  const sendData = (data: TQuestionData) => {
-    console.log('data', data)
+export const QuestionForm: React.FC<QuestionFormProps> = ({ isOpen, isCreateForm, closeForm, formData }) => {
+  const questionForm = useCreateEditQuestionForm(formData)
+
+  const handleSubmit = (data: IQuestionForm) => {
+    console.log(data)
     closeForm()
   }
 
   return isOpen ? (
     <form
-      onSubmit={questionForm.onSubmit(sendData)}
-      className={isNewQuestion ? classes.formForNewQuestion : classes.formForEditQuestion}
+      onSubmit={questionForm.onSubmit(handleSubmit)}
+      className={isCreateForm ? classes.formForNewQuestion : classes.formForEditQuestion}
     >
       <Container strategy="grid" className={classes.container}>
-        <Select
-          rightSection={
-            <img
-              src={ChevronDown}
-              aria-hidden={true}
-              style={{
-                blockSize: 16,
-                inlineSize: 14,
-                transition: 'transform 150ms ease',
-                transform: openedDropdown ? 'rotate(180deg)' : 'rotate(0deg)',
-                pointerEvents: 'none'
-              }}
-            />
-          }
+        <Dropdown
           styles={{
             root: { '--mantine-scale': '0.83' },
             input: {
-              backgroundColor: '#F6F8FA',
-              border: '#F6F8FA'
+              backgroundColor: 'var(--mantine-color-black-1)',
+              border: 'var(--mantine-color-black-1)',
+              fontSize: '15px'
             }
           }}
-          className={classes.select}
-          withCheckIcon={false}
+          className={classes.questionFormDropdown}
+          aria-label="Тип вопроса"
           data={questionTypeData}
           key={questionForm.key('typeOfQuestion')}
-          onDropdownOpen={() => setOpenedDropdown(true)}
-          onDropdownClose={() => setOpenedDropdown(false)}
-          allowDeselect={false}
           {...questionForm.getInputProps('typeOfQuestion')}
         />
         <Textarea
           styles={{
             input: {
-              backgroundColor: '#F6F8FA',
-              border: '#F6F8FA',
-              '--input-size': '75px'
+              backgroundColor: 'var(--mantine-color-black-1)',
+              border: 'var(--mantine-color-black-1)',
+              '--input-size': '75px',
+              fontSize: '15px'
             }
           }}
           className={classes.textarea}
+          aria-label="Текст вопроса"
           key={questionForm.key('question')}
           {...questionForm.getInputProps('question')}
         />
-        <ActionIcon className={classes.iconCheck} variant="default" aria-label="Сохранить вопрос" type="submit">
-          <img src={Check} />
-        </ActionIcon>
+        <SubmitButton className={classes.questionFormSubmit} />
       </Container>
     </form>
   ) : null

@@ -1,9 +1,3 @@
-.form {
-  font-style: normal;
-  line-height: 0.8;
-  border-radius: 6px;
-}
-
 .formForNewQuestion {
   margin: 26px 195px 38px 38px;
 }
@@ -15,24 +9,22 @@
 .container {
   grid-template-columns: 226px 386px 1fr;
   gap: 14px 15px;
+  border-radius: 6px;
+  font-style: normal;
+  line-height: 0.8;
 }
 
-.select {
+.questionFormDropdown {
   grid-column: 1/2;
   grid-row: 1/2;
-  font-size: 15px;
 }
 
 .textarea {
   grid-column: 1/3;
   grid-row: 2/3;
-  font-size: 16px;
 }
 
-.iconCheck {
+.questionFormSubmit {
   grid-column: 3/3;
   grid-row: 2/3;
-  inline-size: 43px;
-  block-size: 34px;
-  padding: 7px 11.5px;
 }
