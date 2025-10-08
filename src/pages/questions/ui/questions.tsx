@@ -136,7 +136,7 @@ const QuestionPage = () => {
           <div className={styles['question-form']}>
             <QuestionForm
               isOpen={questionFormIsVisible}
-              isNewQuestion={true}
+              isCreateForm={true}
               closeForm={() => {
                 setQuestionFormVisibility()
               }}
