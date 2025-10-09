@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 
 import styles from '../css/styles.module.scss'
@@ -72,7 +70,6 @@ const questionsList = {
 
 const QuestionPage = () => {
   const [questionFormIsVisible, setQuestionFormIsVisible] = useState(false) //new question form visibility
-  const [_questions, _setQuestions] = useState(questionsList) //save backend data into variable
   const { queryParams, setParams } = useQueryParams()
   const { ref, entry } = useIntersection({
     threshold: 1
