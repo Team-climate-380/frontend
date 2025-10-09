@@ -1,0 +1,25 @@
+.formForNewEmployee {
+  margin: 28px 50px 0 33px;
+}
+
+.formForEditEmployee {
+  margin: 7px 48px 0 38px;
+}
+
+.container {
+  justify-content: space-around;
+  gap: 16px;
+  min-height: 55px;
+}
+
+.inputForNewEmployee {
+  max-width: 111px;
+}
+
+.inputForEditEmployee {
+  max-width: 151px;
+}
+
+.employeeFormSubmit {
+  margin-inline-start: 50px;
+}

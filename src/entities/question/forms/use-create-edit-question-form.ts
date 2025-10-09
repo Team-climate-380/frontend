@@ -1,7 +1,13 @@
 import { useForm } from '@mantine/form'
 
+export enum QuestionTypeEnum {
+  RatingScale = 'Плохо-Прекрасно',
+  Score = '1-9',
+  ConsentGiven = 'Да-Нет'
+}
+
 export interface IQuestionForm {
-  typeOfQuestion: string
+  typeOfQuestion: QuestionTypeEnum
   question: string
 }
 
@@ -9,7 +15,7 @@ export const useCreateEditQuestionForm = (initialValue?: IQuestionForm) => {
   const questionForm = useForm({
     mode: 'uncontrolled',
     initialValues: initialValue ?? {
-      typeOfQuestion: 'Тип вопроса',
+      typeOfQuestion: QuestionTypeEnum.ConsentGiven,
       question: ''
     },
 
@@ -17,11 +23,12 @@ export const useCreateEditQuestionForm = (initialValue?: IQuestionForm) => {
       typeOfQuestion: value => (value ? null : 'Выберите тип вопроса'),
       question: value => {
         if (!value || value.trim() === '') {
-          return 'Введите вопрос'
+          return 'Введите текст вопроса'
         }
         return null
       }
-    }
+    },
+    validateInputOnChange: true
   })
 
   return questionForm

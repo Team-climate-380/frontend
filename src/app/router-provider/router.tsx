@@ -2,73 +2,130 @@ import { createBrowserRouter } from 'react-router'
 import { routes } from '@shared/configs/routs'
 import { LazyLoginPage } from '@pages/login'
 import { LazyNotFound } from '@/pages/not-found'
-import { CommonLayout } from '@widgets/common-layout'
 import { DashboardLayout } from '@widgets/dashboard-layout'
-import { LazyHomePage } from '@/pages/home-page'
 import { LazyQuestions } from '@/pages/questions'
 import { LazySurveys } from '@/pages/surveys'
 import { LazyCreatingSurvey } from '@/pages/creating-survey'
 import { LazySurveyResults } from '@/pages/survey-results'
 import { LazyEmployees } from '@/pages/employees'
 import { LazyDepartments } from '@/pages/departments'
+import { stateInitialization } from '@/features/session/model/store'
+import { ProtectedRoute } from '@/features/auth/index'
+import { LazyPasswordRecovery } from '@/pages/password-recovery'
+import { Menu } from '@/widgets/menu/ui/menu'
+import { ResultLayout } from '@/widgets/result-layout'
+
+stateInitialization()
 
 export const router = createBrowserRouter([
   {
-    path: routes.home(),
-    element: <CommonLayout />,
+    element: <DashboardLayout contentSidebar={<Menu />} />,
     children: [
       {
-        index: true,
-        element: <LazyHomePage />
+        path: routes.home(),
+        element: (
+          <ProtectedRoute>
+            <LazySurveys />
+          </ProtectedRoute>
+        )
       },
 
       {
-        path: routes.login(),
-        element: <LazyLoginPage />
+        path: routes.questions(),
+        element: (
+          <ProtectedRoute>
+            <LazyQuestions />
+          </ProtectedRoute>
+        )
       },
 
       {
-        element: <DashboardLayout />,
+        path: routes.surveys(),
+        element: (
+          <ProtectedRoute>
+            <LazySurveys />
+          </ProtectedRoute>
+        )
+      },
+      {
+        element: <ResultLayout />,
         children: [
           {
-            index: true,
-            element: <div>Dashboard</div>
+            path: routes.full_results_path(),
+            element: (
+              <ProtectedRoute>
+                <LazySurveyResults />
+              </ProtectedRoute>
+            )
           },
           {
-            path: '*',
-            element: <LazyNotFound />
-          },
-          {
-            path: routes.questions(),
-            element: <LazyQuestions />
-          },
-
-          {
-            path: routes.surveys(),
-            element: <LazySurveys />
-          },
-
-          {
-            path: routes.new_survey(),
-            element: <LazyCreatingSurvey />
-          },
-
-          {
-            path: routes.results_survey(),
-            element: <LazySurveyResults />
-          },
-
-          {
-            path: routes.employees(),
-            element: <LazyEmployees />
-          },
-
-          {
-            path: routes.departments(),
-            element: <LazyDepartments />
+            path: routes.short_results_path(),
+            element: (
+              <ProtectedRoute>
+                <LazySurveyResults fullResults={false} />
+              </ProtectedRoute>
+            )
           }
         ]
+      },
+      {
+        path: routes.new_survey(),
+        element: (
+          <ProtectedRoute>
+            <LazyCreatingSurvey />
+          </ProtectedRoute>
+        )
+      },
+
+      {
+        path: routes.results_survey_path(),
+        element: (
+          <ProtectedRoute>
+            <LazySurveyResults />
+          </ProtectedRoute>
+        )
+      },
+
+      {
+        path: routes.employees(),
+        element: (
+          <ProtectedRoute>
+            <LazyEmployees />
+          </ProtectedRoute>
+        )
+      },
+
+      {
+        path: routes.departments(),
+        element: (
+          <ProtectedRoute>
+            <LazyDepartments />
+          </ProtectedRoute>
+        )
       }
     ]
+  },
+
+  {
+    path: routes.login(),
+    element: (
+      <ProtectedRoute onlyUnAuth={true}>
+        <LazyLoginPage />
+      </ProtectedRoute>
+    )
+  },
+
+  {
+    path: routes.password_recovery(),
+    element: (
+      <ProtectedRoute onlyUnAuth={true}>
+        <LazyPasswordRecovery />
+      </ProtectedRoute>
+    )
+  },
+
+  {
+    path: '*',
+    element: <LazyNotFound />
   }
 ])

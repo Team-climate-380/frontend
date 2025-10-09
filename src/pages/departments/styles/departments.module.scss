@@ -1,0 +1,35 @@
+.page-wrapper {
+  border-radius: 6px;
+  background-color: #fff;
+  min-height: calc(100vh - 18px);
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  max-height: 140px;
+  width: 100%;
+  padding: 18px 24px 38px;
+  background-color: #f6f8fa;
+  border-radius: 6px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.header_title {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 600;
+}
+
+.header_button-section {
+  gap: 28px;
+  align-items: top;
+}
+
+.main {
+  padding: 48px 0 48px 38px;
+  overflow-y: auto;
+  flex: 1;
+}
