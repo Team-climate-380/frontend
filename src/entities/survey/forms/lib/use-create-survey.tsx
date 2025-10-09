@@ -1,30 +1,44 @@
+import { TQuestion } from '@/entities/question/model/types'
 import { useForm } from '@mantine/form'
 
-// TODO: Поменять типы группа/участник на реальные
-type TGroup = 'groupTest'
-type TMember = 'memberTest'
-type ParticipantsValue = (TGroup | TMember)[]
+// type TMember = 'memberTest'
+// type ParticipantsValue = (TDepartment | TMember)[]
 
-interface IInitialValues {
-  participants: ParticipantsValue | []
-  beginDate: Date | null
-  endDate: Date | null
-  commentary?: string
+export interface IInitialValues {
+  name: string
+  // participants: ParticipantsValue | []
+  department?: string[]
+  startedAt?: Date | null
+  finishedAt?: Date | null
+  comment?: string
+  questions: TQuestion[]
+  isFavorite?: boolean
 }
 
 export const useCreateSurvey = (initialValues: IInitialValues) => {
   const formSurveyData = useForm({
-    mode: 'uncontrolled',
     initialValues,
     validateInputOnChange: true,
     validate: {
-      participants: value => {
-        if (value?.length < 1) return 'Необходимо выбрать участников или группу'
-        if (value.length === 1 && value[0] === 'memberTest') {
-          return 'Выберите больше одного участника опроса либо группу'
-        }
+      name: value => {
+        if (value.length < 1) return 'Необходимо указать название опроса'
       },
-      beginDate: (value, values) => {
+      // participants: value => {
+      //   if (value?.length < 1) return 'Необходимо выбрать участников или группу'
+      //   if (value.length === 1 && value[0] === 'memberTest') {
+      //     return 'Выберите больше одного участника опроса либо группу'
+      //   }
+      // },
+      department: value => {
+        if (!value) {
+          return 'Необходимо выбрать департамент'
+        }
+        if (value?.length > 1) {
+          return 'Нужно выбрать только один отдел'
+        }
+        return null
+      },
+      startedAt: (value, values) => {
         if (!value) return 'Выберите дату начала опроса'
         const selectedDate = new Date(value)
         const today = new Date()
@@ -33,23 +47,23 @@ export const useCreateSurvey = (initialValues: IInitialValues) => {
         if (selectedDate < today) {
           return 'Нельзя выбрать дату начала опроса в прошлом.'
         }
-        if (values.endDate && new Date(values.endDate) < selectedDate) {
+        if (values.finishedAt && new Date(values.finishedAt) < selectedDate) {
           return 'Дата начала не может быть позже завершения опроса.'
         }
         return null
       },
-      endDate: (value, values) => {
+      finishedAt: (value, values) => {
         if (!value) return 'Выберите дату завершения опроса'
-        if (values.beginDate) {
+        if (values.startedAt) {
           const selectedDate = new Date(value)
-          const begin = new Date(values.beginDate)
+          const begin = new Date(values.startedAt)
           selectedDate.setHours(0, 0, 0, 0)
           begin.setHours(0, 0, 0, 0)
           if (selectedDate < begin) {
             return 'Дата завершения должна быть позже даты начала.'
           }
         }
-        if (!values.beginDate) {
+        if (!values.startedAt) {
           const today = new Date()
           today.setHours(0, 0, 0, 0)
           const selectedDate = new Date(value)
@@ -59,9 +73,13 @@ export const useCreateSurvey = (initialValues: IInitialValues) => {
         }
         return null
       },
-      commentary: value => {
+      comment: value => {
         if (!value) return null
         if (value.length > 254) return 'Слишком длинный комментарий. Длина должна быть не больше 254 символов.'
+      },
+      questions: {
+        text: value => (value.trim() === '' ? 'Введите текст вопроса' : null),
+        type: value => (value ? null : 'Выберите тип вопроса')
       }
     }
   })
