@@ -1,22 +1,30 @@
-import { Question } from '@/entities/question/model/question'
-import { TQuestion } from '@/entities/question/types/question-type'
+import { Question } from '@/entities/question'
+import { IQuestion } from '@/entities/question/type'
 import { FC } from 'react'
 
-interface IQuestionsListUIProps {
-  questions: TQuestion[]
+interface IQProp {
+  questions: IQuestion[]
 }
 
-export const QuestionsListUI: FC<IQuestionsListUIProps> = ({ questions }) => {
-  const questionlist = questions.map(question => {
-    return (
-      <Question
-        key={question.id}
-        id={question.id}
-        is_favorite={question.is_favorite}
-        text={question.text}
-        question_type={question.question_type}
-      ></Question>
-    )
-  })
-  return questionlist.length ? questionlist : 'Нет активных вопросов'
+export const QuestionsListUI: FC<IQProp> = ({ questions }) => {
+  return (
+    <>
+      {questions
+        ? Object.entries(questions).map(question => {
+            return (
+              <>
+                <Question
+                  key={question[1].id}
+                  id={question[1].id}
+                  text={question[1].text}
+                  is_favorite={question[1].is_favorite}
+                  surveys={question[1].surveys}
+                  question_type={question[1].question_type}
+                />
+              </>
+            )
+          })
+        : null}
+    </>
+  )
 }
