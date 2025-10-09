@@ -1,12 +1,13 @@
-export interface Question {
+export interface IQuestion {
   id: number
   text: string
   question_type: QuestionType
   is_favorite: boolean
+  surveys?: [] // TODO: понять как и где отображать
 }
 
-export const enum QuestionType {
-  RATING_SCALE = 'ratingScale',
-  SCORE = 'score',
-  CONSENT_GIVEN = 'consentGiven'
+export type QuestionType = 'ratingScale' | 'score' | 'consentGiven'
+
+export type TQuestionUIProps = IQuestion & {
+  action: (id: number) => void
 }

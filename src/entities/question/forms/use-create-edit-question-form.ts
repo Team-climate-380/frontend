@@ -23,11 +23,12 @@ export const useCreateEditQuestionForm = (initialValue?: IQuestionForm) => {
       typeOfQuestion: value => (value ? null : 'Выберите тип вопроса'),
       question: value => {
         if (!value || value.trim() === '') {
-          return 'Введите вопрос'
+          return 'Введите текст вопроса'
         }
         return null
       }
-    }
+    },
+    validateInputOnChange: true
   })
 
   return questionForm

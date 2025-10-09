@@ -10,43 +10,64 @@ import { FavoriteIcon } from '@/features/filters/ui/favorite-icon'
 import { SearchInput } from '@/widgets/search-input'
 import { useState, useEffect } from 'react'
 import { useQueryParams } from '@/shared/hooks/useQueryParams'
-import { getQuestions } from '@/entities/question/api/get-questions'
+import { getQuestions, IQuestionsResponce } from '@/entities/question/api/get-questions'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { Loader } from '@mantine/core'
 import { useIntersection } from '@mantine/hooks'
 import { QuestionForm } from '@/features/question-form'
+import { QuestionsList } from '@/features/questions-list'
 
 //const filters and const questions - mock data, TODO: delete after back-end requests implementation
-const questionsList = {
-  count: 123,
-  next: 'http://api.example.org/accounts/?page=4',
-  previous: 'http://api.example.org/accounts/?page=2',
-  results: [
+const reponceServer: IQuestionsResponce = {
+  data: [
     {
-      id: 0,
-      text: 'question_1',
+      id: 24,
+      text: 'Как вы оцениваете уровень доверия между членами команды?',
       question_type: 'ratingScale',
-      is_favorite: true
+      is_favorite: false,
+      surveys: []
     },
     {
-      id: 1,
-      text: 'question_2',
+      id: 25,
+      text: 'Вы довольны своей работой?',
       question_type: 'ratingScale',
-      is_favorite: true
+      is_favorite: false,
+      surveys: []
     },
     {
-      id: 2,
-      text: 'question_3',
-      question_type: 'ratingScale',
-      is_favorite: true
+      id: 26,
+      text: 'Согласны ли вы с тем, что ваша работа ценится в команде?',
+      question_type: `consentGiven`,
+      is_favorite: false,
+      surveys: []
     },
     {
-      id: 3,
-      text: 'question_4',
+      id: 27,
+      text: 'Считаете ли вы свою работу эффективной',
       question_type: 'ratingScale',
-      is_favorite: true
+      is_favorite: false,
+      surveys: []
+    },
+    {
+      id: 28,
+      text: 'Как вы оценили бы уровень морального состояния в команде?',
+      question_type: 'ratingScale',
+      is_favorite: false
     }
-  ]
+  ],
+  page: 1,
+  per_page: 20,
+  total: 5,
+  num_pages: 1,
+  has_next: false,
+  has_previous: false
+}
+const questionsList = {
+  //  convert responceServer to application media
+  count: reponceServer.total,
+  next: reponceServer.has_next,
+  previous: reponceServer.has_previous,
+  results: reponceServer.data
 }
 
 const QuestionPage = () => {
@@ -85,7 +106,8 @@ const QuestionPage = () => {
     }
   ]
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+  const { fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+    // data removed temp
     queryKey: ['questions', currentFilter],
     queryFn: async ({ pageParam = currentPage }) =>
       await getQuestions({
@@ -136,7 +158,7 @@ const QuestionPage = () => {
           <div className={styles['question-form']}>
             <QuestionForm
               isOpen={questionFormIsVisible}
-              isNewQuestion={true}
+              isCreateForm={true}
               closeForm={() => {
                 setQuestionFormVisibility()
               }}
@@ -145,11 +167,11 @@ const QuestionPage = () => {
         )}
         {/* TODO implement form from #52 task}*/}
         <div className={styles['questions-list']}>
-          {data?.pages.flatMap(pageItem => pageItem?.data.map(q => <div key={q.id}>{q.text}</div>))}{' '}
+          {/* {data?.pages.flatMap(pageItem => pageItem?.data.map(q => <div key={q.id}>{q.text}</div>))}{' '} */}
           {/*отображение списка вопросов, пока без общего компонента*/}
         </div>
       </div>
-      {/*<QuestionList questions={filteredQuestionList}/> TODO implement after #49 task*/}
+      <QuestionsList questions={questionsList.results} />
       <div ref={ref} className={styles.loader_container}>
         {isFetchingNextPage && <Loader color="blue" />}
       </div>
