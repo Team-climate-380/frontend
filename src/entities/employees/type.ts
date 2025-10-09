@@ -4,6 +4,6 @@ export interface Employee {
   department_name: string
   email: string
   tg_username: string
-  survey_count: number
+  survey_count?: number
   edited_at: string
 }

@@ -12,6 +12,10 @@
   max-height: 100%;
 }
 
+.employees_list__with_form {
+  margin-top: 13px;
+}
+
 .loader {
   align-self: center;
 }

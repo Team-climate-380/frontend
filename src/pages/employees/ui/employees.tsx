@@ -3,12 +3,13 @@ import style from './style.module.css'
 import { Button } from '@/shared/ui/button'
 import { Filter } from '@/features/filters'
 import { EmployeesItem } from '@/entities/employees/ui/employee-item'
-import { getEmployees } from '@/entities/employees/api/get-employees'
+import { getEmployees } from '@/entities/employees/api/api-employees'
 import { useQueryParams } from '@/shared/hooks/useQueryParams'
 import { useQuery } from '@tanstack/react-query'
 import { Loader } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { SearchInput } from '@/widgets/search-input'
+import { EmployeeForm } from '@/features/employee-form'
 
 const Employees: React.FC = () => {
   const [isVisibleAddEmployees, setIsVisibleAddEmployees] = useState(false)
@@ -36,10 +37,14 @@ const Employees: React.FC = () => {
     }
   ]
   const paramURL = `?sort=${encodeURIComponent(currentSort)}`
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ['employees', paramURL],
     queryFn: async () => await getEmployees(paramURL)
   })
+
+  const handleEmployeeUpdated = () => {
+    refetch()
+  }
 
   const handleAddEmployees = () => {
     setIsVisibleAddEmployees(true)
@@ -58,9 +63,19 @@ const Employees: React.FC = () => {
       >
         <Filter filters={filters} value={currentSort} />
       </Header>
-      {isVisibleAddEmployees && <div>new employees</div>}
-      <div className={style.employees_list}>
-        {data && data.map((employee, index) => <EmployeesItem key={index} employee={employee} />)}
+      <EmployeeForm
+        isOpen={isVisibleAddEmployees}
+        isCreateForm={true}
+        closeForm={() => {
+          setIsVisibleAddEmployees(false)
+        }}
+        onSubmit={handleEmployeeUpdated}
+      />
+      <div className={`${style.employees_list} ${isVisibleAddEmployees ? style.employees_list__with_form : ''} `}>
+        {data &&
+          data.map((employee, index) => (
+            <EmployeesItem key={index} employee={employee} onUpdate={handleEmployeeUpdated} />
+          ))}
         {isLoading && (
           <div className={style.loader}>
             <Loader />

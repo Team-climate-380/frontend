@@ -2,10 +2,11 @@ import { useForm } from '@mantine/form'
 import { getDepartments } from '@entities/groups'
 
 export type TEmployeeForm = {
-  name: string
-  department: string | undefined
+  full_name: string
+  department_name: string | undefined
   email: string
-  tgUsername: string
+  tg_username: string
+  id?: number
 }
 
 export const departmentsData = await getDepartments()
@@ -16,13 +17,13 @@ export const useCreateEmployeeEditForm = (initialValues?: TEmployeeForm) => {
   const formEmployeeData = useForm({
     mode: 'uncontrolled',
     initialValues: initialValues ?? {
-      name: '',
-      department: departmentsNames?.find(item => item[0]),
+      full_name: '',
+      department_name: departmentsNames?.find(item => item[0]),
       email: '',
-      tgUsername: ''
+      tg_username: ''
     },
     validate: {
-      name: value => {
+      full_name: value => {
         if (!value || value.trim() === '') {
           return 'Поле должно быть заполнено'
         }
@@ -37,7 +38,7 @@ export const useCreateEmployeeEditForm = (initialValues?: TEmployeeForm) => {
         }
         return null
       },
-      tgUsername: value => {
+      tg_username: value => {
         if (value[0] !== '@') {
           return 'Введите имя в формате @telegram'
         }

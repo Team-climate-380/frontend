@@ -3,19 +3,21 @@ import style from './style.module.css'
 import { PopupMenu, PopupMenuItem } from '@/shared/ui/popup-menu'
 import { useContextMenu } from '@/shared/hooks/use-context-menu'
 import { useState } from 'react'
+import { EmployeeForm } from '@/features/employee-form'
 
 //TODO: изменить {employee.id} на среднее время ответа на вопрос
 interface EmployeesItemProps {
-  employee: Partial<Employee>
+  employee: Employee
+  onUpdate?: () => void
 }
 
-export const EmployeesItem: React.FC<EmployeesItemProps> = ({ employee }) => {
+export const EmployeesItem: React.FC<EmployeesItemProps> = ({ employee, onUpdate }) => {
   const { contextMenu, handleRightClick, handleContextMenuClose } = useContextMenu(undefined, 500, 30)
   const [isEditedEmployee, setIsEditedEmployee] = useState<boolean>(false)
   const handleClickMouse = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault()
     if (e.button === 2) {
-      handleRightClick(e, employee.id)
+      handleRightClick(e, Number(employee.id))
     }
   }
 
@@ -42,20 +44,37 @@ export const EmployeesItem: React.FC<EmployeesItemProps> = ({ employee }) => {
       type: 'action',
       label: 'Удалить',
       important: true,
-      action: () => {}
+      action: () => {
+        console.log('удалить сотрудника', employee.full_name)
+      }
     }
   ]
-  const cellClassName = `${style.employees_list__item_cell} ${isEditedEmployee ? style.active : ''}`
+
+  const cellClassName = style.employees_list__item_cell
 
   return (
     <>
-      <div className={style.employees_list__item} onContextMenu={handleClickMouse}>
-        <div className={cellClassName}>{employee.full_name}</div>
-        <div className={cellClassName}>{employee.department_name}</div>
-        <div className={cellClassName}>{employee.email}</div>
-        <div className={cellClassName}>{employee.tg_username}</div>
-        <div className={style.employees_list__item_cell}>{employee.id}</div>
-      </div>
+      {isEditedEmployee ? (
+        <EmployeeForm
+          isCreateForm={false}
+          isOpen={isEditedEmployee}
+          closeForm={() => {
+            setIsEditedEmployee(false)
+          }}
+          employeeFormData={employee}
+          onSubmit={() => onUpdate?.()}
+        />
+      ) : (
+        <>
+          <div className={style.employees_list__item} onContextMenu={handleClickMouse}>
+            <div className={cellClassName}>{employee.full_name}</div>
+            <div className={cellClassName}>{employee.department_name}</div>
+            <div className={cellClassName}>{employee.email}</div>
+            <div className={cellClassName}>{employee.tg_username}</div>
+            <div className={style.employees_list__item_cell}>{employee.id}</div>
+          </div>
+        </>
+      )}
       {contextMenu.isVisible && (
         <PopupMenu
           type="context"

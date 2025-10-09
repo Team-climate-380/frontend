@@ -1,6 +1,6 @@
 .employees_list__item {
   display: grid;
-  grid-template-columns: repeat(4, minmax(61px, 206px)) 61px;
+  grid-template-columns: repeat(4, minmax(61px, 300px)) 61px;
   gap: 10px;
 }
 
