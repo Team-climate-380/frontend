@@ -1,5 +1,5 @@
 import { ApiClient } from '@/shared/lib/api-client'
-import { QuestionResultProps } from '@/shared/ui/question-result/ui/question-result'
+import { employeesProps, QuestionResultProps } from '@/shared/ui/question-result/ui/question-result'
 import { useQuery } from '@tanstack/react-query'
 
 const client = new ApiClient()
@@ -7,6 +7,7 @@ const client = new ApiClient()
 export interface SurveyResults {
   id: number
   name: string
+  status: string
   comment: string
   started_at: string
   finished_at: string
@@ -18,7 +19,15 @@ export interface SurveyResults {
     id: number
     name: string
   }
+  employees: employeesProps[]
 }
+
+const login = async () => {
+  const response = await client.post('/api/auth/login', { email: 'admin@admin.mail', password: 'xPKHPWgx7EQNFeF' })
+  console.log(response)
+}
+
+login()
 
 const getServeyResults = async (id: number) => {
   const response = await client.get<SurveyResults>(`/api/surveys/${id}/`)
