@@ -9,6 +9,8 @@ import { SubmitButton } from '@shared/ui/submit-button'
 import { Dropdown } from '@shared/ui/dropdown'
 import classes from './question-form.module.scss'
 import { createNewQuestion } from '@/entities/question/api/create-new-question'
+import { useState } from 'react'
+import { Loader } from '@/shared/ui/loader'
 
 const questionTypeData = Object.values(QuestionTypeEnum)
 
@@ -17,10 +19,12 @@ export type QuestionFormProps = ICreateEditFormProps & {
 }
 
 export const QuestionForm: React.FC<QuestionFormProps> = ({ isOpen, isCreateForm, closeForm, formData }) => {
+  const [isLoading, setLoading] = useState(false)
   const questionForm = useCreateEditQuestionForm(formData)
 
   const handleSubmit = async (data: IQuestionForm) => {
     if (isCreateForm) {
+      setLoading(true)
       try {
         const result = await createNewQuestion(data)
 
@@ -32,6 +36,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ isOpen, isCreateForm
       } catch (error) {
         console.error(error)
       } finally {
+        setLoading(false)
         closeForm()
       }
     } else {
@@ -78,6 +83,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ isOpen, isCreateForm
         />
         <SubmitButton className={classes.questionFormSubmit} />
       </Container>
+      {isLoading && <Loader />}
     </form>
   ) : null
 }
