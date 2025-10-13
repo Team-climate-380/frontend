@@ -22,13 +22,6 @@ export interface SurveyResults {
   employees: employeesProps[]
 }
 
-const login = async () => {
-  const response = await client.post('/api/auth/login', { email: 'admin@admin.mail', password: 'xPKHPWgx7EQNFeF' })
-  console.log(response)
-}
-
-login()
-
 const getServeyResults = async (id: number) => {
   const response = await client.get<SurveyResults>(`/api/surveys/${id}/`)
   if (response.status === 'success' && 'data' in response) return response.data
