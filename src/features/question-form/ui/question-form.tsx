@@ -8,6 +8,7 @@ import { ICreateEditFormProps } from '@entities/create-edit-form-types.ts'
 import { SubmitButton } from '@shared/ui/submit-button'
 import { Dropdown } from '@shared/ui/dropdown'
 import classes from './question-form.module.scss'
+import { createNewQuestion } from '@/entities/question/api/create-new-question'
 
 const questionTypeData = Object.values(QuestionTypeEnum)
 
@@ -18,7 +19,24 @@ export type QuestionFormProps = ICreateEditFormProps & {
 export const QuestionForm: React.FC<QuestionFormProps> = ({ isOpen, isCreateForm, closeForm, formData }) => {
   const questionForm = useCreateEditQuestionForm(formData)
 
-  const handleSubmit = (data: IQuestionForm) => {
+  const handleSubmit = async (data: IQuestionForm) => {
+    if (isCreateForm) {
+      try {
+        const result = await createNewQuestion(data)
+
+        if (!result) {
+          console.error('Ошибка при создании вопроса')
+          return
+        }
+        console.log('Вопрос успешно создан', data)
+      } catch (error) {
+        console.error(error)
+      } finally {
+        closeForm()
+      }
+    } else {
+      console.log('edit form', data) //PATCH
+    }
     console.log(data)
     closeForm()
   }
@@ -41,8 +59,8 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ isOpen, isCreateForm
           className={classes.questionFormDropdown}
           aria-label="Тип вопроса"
           data={questionTypeData}
-          key={questionForm.key('typeOfQuestion')}
-          {...questionForm.getInputProps('typeOfQuestion')}
+          key={questionForm.key('question_type')}
+          {...questionForm.getInputProps('question_type')}
         />
         <Textarea
           styles={{
@@ -55,8 +73,8 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ isOpen, isCreateForm
           }}
           className={classes.textarea}
           aria-label="Текст вопроса"
-          key={questionForm.key('question')}
-          {...questionForm.getInputProps('question')}
+          key={questionForm.key('text')}
+          {...questionForm.getInputProps('text')}
         />
         <SubmitButton className={classes.questionFormSubmit} />
       </Container>
