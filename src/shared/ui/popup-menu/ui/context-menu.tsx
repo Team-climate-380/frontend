@@ -14,7 +14,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ items, onClose, positi
             <div key={label ? label : index}>
               {item.type === 'action' && (
                 <Button
-                  onClick={item.action}
+                  onClick={() => item.action()}
                   className={clsx(classes.button, { [classes.button_important]: item.important })}
                 >
                   {label}
