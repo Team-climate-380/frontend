@@ -10,9 +10,16 @@ import { Loader } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { SearchInput } from '@/widgets/search-input'
 import { EmployeeForm } from '@/features/employee-form'
+import { PopupMenu, PopupMenuItem } from '@/shared/ui/popup-menu'
+import { Employee } from '@/entities/employees/type'
+import { getPopupMenuItems } from '../configs/employees-context-menu'
 
 const Employees: React.FC = () => {
   const [isVisibleAddEmployees, setIsVisibleAddEmployees] = useState(false)
+  const [editingEmployeeId, setEditingEmployeeId] = useState<number | null>(null)
+  const [openedMenuId, setOpenedMenuId] = useState<number | null>(null)
+  const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null)
+  const [menuItems, setMenuItems] = useState<PopupMenuItem[]>([])
   const { getParam, setParams } = useQueryParams()
 
   useEffect(() => {
@@ -36,18 +43,27 @@ const Employees: React.FC = () => {
       }
     }
   ]
+
+  const handleMenuClose = () => {
+    setOpenedMenuId(null)
+    setMenuPosition(null)
+  }
+
   const paramURL = `?sort=${encodeURIComponent(currentSort)}`
   const { data, isLoading, refetch } = useQuery({
     queryKey: ['employees', paramURL],
     queryFn: async () => await getEmployees(paramURL)
   })
 
-  const handleEmployeeUpdated = () => {
-    refetch()
-  }
+  const handleEmployeeUpdated = () => refetch()
 
-  const handleAddEmployees = () => {
-    setIsVisibleAddEmployees(true)
+  const handleAddEmployees = () => setIsVisibleAddEmployees(true)
+
+  const handleContextMenu = (e: React.MouseEvent, employee: Employee) => {
+    e.preventDefault()
+    setOpenedMenuId(employee.id)
+    setMenuPosition({ x: e.clientX, y: e.clientY })
+    setMenuItems(getPopupMenuItems(employee, () => setEditingEmployeeId(employee.id), handleMenuClose))
   }
 
   return (
@@ -63,6 +79,8 @@ const Employees: React.FC = () => {
       >
         <Filter filters={filters} value={currentSort} />
       </Header>
+
+      {/* форма добавления */}
       <EmployeeForm
         isOpen={isVisibleAddEmployees}
         isCreateForm={true}
@@ -71,11 +89,37 @@ const Employees: React.FC = () => {
         }}
         onSubmit={handleEmployeeUpdated}
       />
+
       <div className={`${style.employees_list} ${isVisibleAddEmployees ? style.employees_list__with_form : ''} `}>
         {data &&
-          data.map((employee, index) => (
-            <EmployeesItem key={index} employee={employee} onUpdate={handleEmployeeUpdated} />
-          ))}
+          data.map(employee =>
+            editingEmployeeId === employee.id ? (
+              <EmployeeForm
+                key={employee.id}
+                isCreateForm={false}
+                isOpen={true}
+                employeeFormData={employee}
+                closeForm={() => setEditingEmployeeId(null)}
+                onSubmit={() => {
+                  handleEmployeeUpdated()
+                  setEditingEmployeeId(null)
+                }}
+              />
+            ) : (
+              <EmployeesItem key={employee.id} employee={employee} onContextMenu={handleContextMenu} />
+            )
+          )}
+
+        {openedMenuId && menuPosition && (
+          <PopupMenu
+            type="context"
+            items={menuItems}
+            positionX={menuPosition.x}
+            positionY={menuPosition.y}
+            onClose={handleMenuClose}
+          />
+        )}
+
         {isLoading && (
           <div className={style.loader}>
             <Loader />
