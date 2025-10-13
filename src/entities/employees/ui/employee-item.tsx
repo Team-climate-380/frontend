@@ -1,7 +1,7 @@
 import { Employee } from '../type'
 import style from './style.module.css'
 
-//TODO: изменить {employee.id} на среднее время ответа на вопрос
+//TODO:  изменить {employee.id} на среднее время ответа на вопрос
 interface EmployeesItemProps {
   employee: Employee
   onContextMenu: (e: React.MouseEvent, employee: Employee) => void
