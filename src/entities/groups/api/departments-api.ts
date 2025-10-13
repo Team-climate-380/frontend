@@ -5,7 +5,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 const apiClient = new ApiClient()
 
 export const getDepartments = async () => {
-  const response = await apiClient.get<DepartmentInfo[]>('/api/departments/')
+  const response = await apiClient.get<DepartmentInfo[]>(`/api/departments/`)
   if (response.status === 'success' && 'data' in response) return response.data
   if (response.status === 'error' && 'message' in response) console.error(response.message)
 }
@@ -63,12 +63,7 @@ export const useDepartmentMutations = () => {
     mutationFn: ({ id, new_name }: { id: number; new_name: string }) => {
       return editDepartment(id, new_name)
     },
-    onSuccess: res => {
-      queryClient.setQueryData(['departments'], (data: DepartmentInfo[]) => {
-        if (!res) return data
-        return data.map(department => (department.id === res?.id ? { ...department, ...res } : department))
-      })
-    },
+    onSuccess: handleSuccess,
     onError: handleError
   })
   const deleteDepartmentMutation = useMutation({
