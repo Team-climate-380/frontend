@@ -6,7 +6,7 @@ import {
 } from '@entities/question/forms/use-create-edit-question-form.ts'
 import { ICreateEditFormProps } from '@entities/create-edit-form-types.ts'
 import { SubmitButton } from '@shared/ui/submit-button'
-import { Dropdown } from '@shared/ui/dropdown'
+import { SelectWithDropdownIcon as Select } from '@shared/ui/select'
 import classes from './question-form.module.scss'
 
 const questionTypeData = Object.values(QuestionTypeEnum)
@@ -29,7 +29,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ isOpen, isCreateForm
       className={isCreateForm ? classes.formForNewQuestion : classes.formForEditQuestion}
     >
       <Container strategy="grid" className={classes.container}>
-        <Dropdown
+        <Select
           styles={{
             root: { '--mantine-scale': '0.83' },
             input: {

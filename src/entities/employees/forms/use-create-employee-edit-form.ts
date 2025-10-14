@@ -3,7 +3,7 @@ import { getDepartments } from '@entities/groups'
 
 export type TEmployeeForm = {
   name: string
-  department: string | undefined
+  department: string[]
   email: string
   tgUsername: string
 }
@@ -17,7 +17,7 @@ export const useCreateEmployeeEditForm = (initialValues?: TEmployeeForm) => {
     mode: 'uncontrolled',
     initialValues: initialValues ?? {
       name: '',
-      department: departmentsNames?.find(item => item[0]),
+      department: [departmentsNames?.find(item => item[0])],
       email: '',
       tgUsername: ''
     },

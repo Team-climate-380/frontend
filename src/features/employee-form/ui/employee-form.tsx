@@ -8,7 +8,7 @@ import {
   departmentsNames
 } from '@entities/employees/forms/use-create-employee-edit-form.ts'
 import { SubmitButton } from '@shared/ui/submit-button'
-import { Dropdown } from '@shared/ui/dropdown'
+import { MultySelect } from '@shared/ui/multy-select'
 import classes from './employee-form.module.scss'
 
 export type EmployeeFormProps = ICreateEditFormProps & {
@@ -39,13 +39,18 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({ isOpen, isCreateForm
           key={employeeForm.key('name')}
           {...employeeForm.getInputProps('name')}
         />
-        <Dropdown
+        <MultySelect
           styles={{
             root: { '--mantine-scale': '0.945' },
-            input: { backgroundColor: 'var(--mantine-color-black-1)', border: 'var(--mantine-color-black-1)' }
+            input: {
+              backgroundColor: 'var(--mantine-color-black-1)',
+              border: 'var(--mantine-color-black-1)',
+              minWidth: '196px'
+            }
           }}
           aria-label="Отдел"
           data={departmentsNames}
+          maxDropdownHeight={200}
           key={employeeForm.key('department')}
           {...employeeForm.getInputProps('department')}
         />
