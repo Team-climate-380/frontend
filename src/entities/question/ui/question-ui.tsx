@@ -1,21 +1,20 @@
 import style from '../styles/question.module.scss'
 import { Text } from '@mantine/core'
-import { FC } from 'react'
+import { FC, useState } from 'react'
 import { FavoriteIconFlled } from '../ui/favorite-icon-filled'
-import { QuestionType, TQuestionUIProps } from '../type'
+import { IQuestion, QuestionType } from '../type'
 import { ContextMenu } from '@/shared/ui/popup-menu/ui/context-menu'
 import { addToFavorite, deleteQuestion, editQuestion } from '../utils/quetion-actions'
-import { QuestionForm } from '@/features/question-form'
 
-export const QuestionUI: FC<TQuestionUIProps> = ({
-  id,
-  is_favorite,
-  text,
-  question_type,
-  action,
-  dropdownActive,
-  editMenuVisible
-}) => {
+export const QuestionUI: FC<IQuestion> = ({ id, is_favorite, text, question_type }) => {
+  const [dropdownVisible, setDropdownVisible] = useState(false)
+  const [position, setPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault()
+    setPosition({ x: e.clientX, y: e.clientY })
+    setDropdownVisible(prev => !prev)
+  }
+  const close = () => setDropdownVisible(false)
   const QuestionTypeDisplay = (question_type: QuestionType) => {
     switch (question_type) {
       case 'ratingScale':
@@ -32,25 +31,25 @@ export const QuestionUI: FC<TQuestionUIProps> = ({
     }
   }
   return (
-    <div className={style.question} onClick={action}>
+    <div className={style.question} onClick={close} onContextMenu={handleContextMenu}>
       <span className={style.id}>{id}</span>
       <div className={style.isFavorite}>{is_favorite && <FavoriteIconFlled width={11} height={11} />}</div>
       <Text size="md" className={style.text}>
         {text} <span className={style.question_type}> ({QuestionTypeDisplay(question_type)})</span>
       </Text>
-      {dropdownActive && (
+      {dropdownVisible && (
         <ContextMenu
           items={[
-            { type: 'action', label: 'Редактировать', action: editQuestion },
-            { type: 'action', label: 'Избранное', action: (e: MouseEvent | undefined) => addToFavorite(e) },
+            { type: 'action', label: 'Редактировать', action: () => editQuestion(id) },
+            { type: 'action', label: 'Избранное', action: () => addToFavorite(id) },
             { type: 'divider' },
-            { type: 'action', label: 'Удалить', action: deleteQuestion, important: true }
+            { type: 'action', label: 'Удалить', action: () => deleteQuestion(id), important: true }
           ]}
           onClose={close}
-          classname={style.dropdown}
+          positionX={position?.x}
+          positionY={position?.y}
         />
       )}
-      {editMenuVisible && <QuestionForm isOpen={editMenuVisible} isCreateForm={true} closeForm={() => {}} />}
     </div>
   )
 }
