@@ -5,9 +5,9 @@ import { useQueryParams } from '@/shared/hooks/useQueryParams'
 import { SearchIcon } from '@/shared/ui/icons/search'
 
 export const SearchInput = () => {
-  const [isInputVisible, setIsInputVisible] = useState(false)
-  const { getParam, setSearch } = useQueryParams()
-  const initialSearch = getParam('s') || ''
+  const { setSearch, getDecodedSearch } = useQueryParams()
+  const initialSearch = getDecodedSearch()
+  const [isInputVisible, setIsInputVisible] = useState(initialSearch ? true : false)
   const [inputValue, setInputValue] = useState(initialSearch)
 
   const handleClickIconSearch = () => {
