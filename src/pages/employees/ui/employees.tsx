@@ -7,7 +7,7 @@ import { getEmployees } from '@/entities/employees/api/api-employees'
 import { useQueryParams } from '@/shared/hooks/useQueryParams'
 import { useQuery } from '@tanstack/react-query'
 import { Loader } from '@mantine/core'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { SearchInput } from '@/widgets/search-input'
 import { EmployeeForm } from '@/features/employee-form'
 import { PopupMenu, PopupMenuItem } from '@/shared/ui/popup-menu'
@@ -21,7 +21,7 @@ const Employees: React.FC = () => {
   const [openedMenuId, setOpenedMenuId] = useState<number | null>(null)
   const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null)
   const [menuItems, setMenuItems] = useState<PopupMenuItem[]>([])
-  const { getParam, setParams } = useQueryParams()
+  const { getParam, setParams, getDecodedSearch } = useQueryParams()
 
   useEffect(() => {
     setParams({ sort: 'edited_at' }, true)
@@ -56,6 +56,20 @@ const Employees: React.FC = () => {
     queryFn: async () => await getEmployees(paramURL)
   })
 
+  const searchQuery = getDecodedSearch()
+  const searchEmployees = useMemo(() => {
+    if (!data) return []
+    if (!searchQuery.trim()) return data
+    const query = searchQuery.trim().toLowerCase()
+    return data.filter(employee => {
+      const searchFields = [employee.full_name, employee.department_name, employee.email, employee.tg_username].filter(
+        Boolean
+      )
+
+      return searchFields.some(field => field.toLowerCase().includes(query))
+    })
+  }, [data, searchQuery])
+
   const handleEmployeeUpdated = () => refetch()
 
   const handleAddEmployees = () => setIsVisibleAddEmployees(true)
@@ -87,7 +101,6 @@ const Employees: React.FC = () => {
         <Filter filters={filters} value={currentSort} />
       </Header>
 
-      {/* форма добавления */}
       <EmployeeForm
         isOpen={isVisibleAddEmployees}
         isCreateForm={true}
@@ -98,8 +111,8 @@ const Employees: React.FC = () => {
       />
 
       <div className={`${style.employees_list} ${isVisibleAddEmployees ? style.employees_list__with_form : ''} `}>
-        {data &&
-          data
+        {searchEmployees &&
+          searchEmployees
             .slice()
             .reverse()
             .map(employee => {
