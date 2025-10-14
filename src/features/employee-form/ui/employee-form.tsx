@@ -48,7 +48,8 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
       closeForm()
       return
     }
-    const changedData = getChangedFields(employeeForm, data)
+    const changedData = { ...getChangedFields(employeeForm, data), email: data.email }
+    console.log(changedData)
     try {
       if (isCreateForm) {
         await addEmployee(data)

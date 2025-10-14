@@ -16,7 +16,8 @@ import { getPopupMenuItems } from '../configs/employees-context-menu'
 
 const Employees: React.FC = () => {
   const [isVisibleAddEmployees, setIsVisibleAddEmployees] = useState(false)
-  const [editingEmployeeId, setEditingEmployeeId] = useState<number | null>(null)
+  const [editingEmployeeId, setEditingEmployeeId] = useState<number | null>()
+  const [deletedEmployeesIds, setDeletedEmployeesIds] = useState<number[]>([])
   const [openedMenuId, setOpenedMenuId] = useState<number | null>(null)
   const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null)
   const [menuItems, setMenuItems] = useState<PopupMenuItem[]>([])
@@ -36,7 +37,7 @@ const Employees: React.FC = () => {
       }
     },
     {
-      title: 'По дате обновления',
+      title: 'По дате добавления',
       value: 'edited_at',
       setValue: () => {
         setParams({ sort: 'edited_at' }, true)
@@ -59,11 +60,17 @@ const Employees: React.FC = () => {
 
   const handleAddEmployees = () => setIsVisibleAddEmployees(true)
 
+  const handleCancelDelete = (id: number) => {
+    setDeletedEmployeesIds(prev => prev.filter(employeeId => id !== employeeId))
+  }
+
   const handleContextMenu = (e: React.MouseEvent, employee: Employee) => {
     e.preventDefault()
     setOpenedMenuId(employee.id)
     setMenuPosition({ x: e.clientX, y: e.clientY })
-    setMenuItems(getPopupMenuItems(employee, () => setEditingEmployeeId(employee.id), handleMenuClose))
+    setMenuItems(
+      getPopupMenuItems(employee, () => setEditingEmployeeId(employee.id), setDeletedEmployeesIds, handleMenuClose)
+    )
   }
 
   return (
@@ -92,23 +99,39 @@ const Employees: React.FC = () => {
 
       <div className={`${style.employees_list} ${isVisibleAddEmployees ? style.employees_list__with_form : ''} `}>
         {data &&
-          data.map(employee =>
-            editingEmployeeId === employee.id ? (
-              <EmployeeForm
-                key={employee.id}
-                isCreateForm={false}
-                isOpen={true}
-                employeeFormData={employee}
-                closeForm={() => setEditingEmployeeId(null)}
-                onSubmit={() => {
-                  handleEmployeeUpdated()
-                  setEditingEmployeeId(null)
-                }}
-              />
-            ) : (
-              <EmployeesItem key={employee.id} employee={employee} onContextMenu={handleContextMenu} />
-            )
-          )}
+          data
+            .slice()
+            .reverse()
+            .map(employee => {
+              const isEditingEmployee = editingEmployeeId === employee.id
+              const isDeletingEmployee = deletedEmployeesIds.includes(employee.id)
+
+              if (isEditingEmployee) {
+                return (
+                  <EmployeeForm
+                    key={employee.id}
+                    isCreateForm={false}
+                    isOpen={true}
+                    employeeFormData={employee}
+                    closeForm={() => setEditingEmployeeId(null)}
+                    onSubmit={() => {
+                      handleEmployeeUpdated()
+                      setEditingEmployeeId(null)
+                    }}
+                  />
+                )
+              } else {
+                return (
+                  <EmployeesItem
+                    key={employee.id}
+                    employee={employee}
+                    onContextMenu={handleContextMenu}
+                    isDeleted={isDeletingEmployee}
+                    onCancelDelete={handleCancelDelete}
+                  />
+                )
+              }
+            })}
 
         {openedMenuId && menuPosition && (
           <PopupMenu

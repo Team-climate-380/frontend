@@ -1,6 +1,6 @@
 .employees_list__item {
   display: grid;
-  grid-template-columns: repeat(4, minmax(61px, 300px)) 61px;
+  grid-template-columns: repeat(4, minmax(61px, 300px)) 61px 25px;
   gap: 10px;
 }
 
@@ -15,4 +15,13 @@
   padding: 6px 10px;
   overflow-x: auto;
   text-overflow: initial;
+}
+
+.deleted {
+  text-decoration: line-through;
+  color: #8e6b6b;
+}
+
+.delete_icon {
+  cursor: pointer;
 }

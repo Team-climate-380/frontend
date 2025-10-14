@@ -4,6 +4,7 @@ import { PopupMenuItem } from '@/shared/ui/popup-menu'
 export const getPopupMenuItems = (
   employee: Employee,
   setEditingEmployee: (e: Employee | null) => void,
+  setDeletedEmployeeIds: React.Dispatch<React.SetStateAction<number[]>>,
   handleMenuClose: () => void
 ): PopupMenuItem[] => [
   {
@@ -20,6 +21,7 @@ export const getPopupMenuItems = (
     label: 'Удалить',
     important: true,
     action: () => {
+      setDeletedEmployeeIds(prev => [...prev, employee.id])
       console.log('Удалить сотрудника:', employee.full_name)
       handleMenuClose()
     }
