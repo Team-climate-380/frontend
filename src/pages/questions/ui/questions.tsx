@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 
 import styles from '../css/styles.module.scss'
@@ -72,7 +70,6 @@ const questionsList = {
 
 const QuestionPage = () => {
   const [questionFormIsVisible, setQuestionFormIsVisible] = useState(false) //new question form visibility
-  const [_questions, _setQuestions] = useState(questionsList) //save backend data into variable
   const { queryParams, setParams } = useQueryParams()
   const { ref, entry } = useIntersection({
     threshold: 1
@@ -168,10 +165,9 @@ const QuestionPage = () => {
         {/* TODO implement form from #52 task}*/}
         <div className={styles['questions-list']}>
           {/* {data?.pages.flatMap(pageItem => pageItem?.data.map(q => <div key={q.id}>{q.text}</div>))}{' '} */}
-          {/*отображение списка вопросов, пока без общего компонента*/}
+          <QuestionsList questions={questionsList.results} />
         </div>
       </div>
-      <QuestionsList questions={questionsList.results} />
       <div ref={ref} className={styles.loader_container}>
         {isFetchingNextPage && <Loader color="blue" />}
       </div>
