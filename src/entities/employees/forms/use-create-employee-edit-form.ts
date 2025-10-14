@@ -3,7 +3,7 @@ import { getDepartments } from '@entities/groups'
 
 export type TEmployeeForm = {
   name: string
-  department: string[]
+  department: (string | undefined)[]
   email: string
   tgUsername: string
 }
