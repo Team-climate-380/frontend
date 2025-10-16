@@ -3,13 +3,30 @@ import style from './style.module.css'
 import { Button } from '@/shared/ui/button'
 import { Filter } from '@/features/filters'
 import { EmployeesItem } from '@/entities/employees/ui/employee-item'
-import { getEmployees } from '@/entities/employees/api/get-employees'
+import { getEmployees } from '@/entities/employees/api/api-employees'
 import { useQueryParams } from '@/shared/hooks/useQueryParams'
 import { useQuery } from '@tanstack/react-query'
-import { Loader, ScrollArea } from '@mantine/core'
+import { Loader } from '@mantine/core'
+import { useEffect, useMemo, useState } from 'react'
+import { SearchInput } from '@/widgets/search-input'
+import { EmployeeForm } from '@/features/employee-form'
+import { PopupMenu, PopupMenuItem } from '@/shared/ui/popup-menu'
+import { Employee } from '@/entities/employees/type'
+import { getPopupMenuItems } from '../configs/employees-context-menu'
 
 const Employees: React.FC = () => {
-  const { getParam, setParams } = useQueryParams()
+  const [isVisibleAddEmployees, setIsVisibleAddEmployees] = useState(false)
+  const [editingEmployeeId, setEditingEmployeeId] = useState<number | null>()
+  const [deletedEmployeesIds, setDeletedEmployeesIds] = useState<number[]>([])
+  const [openedMenuId, setOpenedMenuId] = useState<number | null>(null)
+  const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null)
+  const [menuItems, setMenuItems] = useState<PopupMenuItem[]>([])
+  const { getParam, setParams, getDecodedSearch } = useQueryParams()
+
+  useEffect(() => {
+    setParams({ sort: 'edited_at' }, true)
+  }, [])
+
   const currentSort = getParam('sort') || 'edited_at'
   const filters = [
     {
@@ -20,33 +37,131 @@ const Employees: React.FC = () => {
       }
     },
     {
-      title: 'По дате обновления',
+      title: 'По дате добавления',
       value: 'edited_at',
       setValue: () => {
         setParams({ sort: 'edited_at' }, true)
       }
     }
   ]
+
+  const handleMenuClose = () => {
+    setOpenedMenuId(null)
+    setMenuPosition(null)
+  }
+
   const paramURL = `?sort=${encodeURIComponent(currentSort)}`
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ['employees', paramURL],
     queryFn: async () => await getEmployees(paramURL)
   })
+
+  const searchQuery = getDecodedSearch()
+  const searchEmployees = useMemo(() => {
+    if (!data) return []
+    if (!searchQuery.trim()) return data
+    const query = searchQuery.trim().toLowerCase()
+    return data.filter(employee => {
+      const searchFields = [employee.full_name, employee.department_name, employee.email, employee.tg_username].filter(
+        Boolean
+      )
+
+      return searchFields.some(field => field.toLowerCase().includes(query))
+    })
+  }, [data, searchQuery])
+
+  const handleEmployeeUpdated = () => refetch()
+
+  const handleAddEmployees = () => setIsVisibleAddEmployees(true)
+
+  const handleCancelDelete = (id: number) => {
+    setDeletedEmployeesIds(prev => prev.filter(employeeId => id !== employeeId))
+  }
+
+  const handleContextMenu = (e: React.MouseEvent, employee: Employee) => {
+    e.preventDefault()
+    setOpenedMenuId(employee.id)
+    setMenuPosition({ x: e.clientX, y: e.clientY })
+    setMenuItems(
+      getPopupMenuItems(employee, () => setEditingEmployeeId(employee.id), setDeletedEmployeesIds, handleMenuClose)
+    )
+  }
+
   return (
     <div className={style.wrapper_employees}>
-      <Header title="Люди" actions={<Button>Добавить человека</Button>}>
+      <Header
+        title="Люди"
+        actions={
+          <>
+            <SearchInput />
+            <Button onClick={handleAddEmployees}>Добавить человека</Button>
+          </>
+        }
+      >
         <Filter filters={filters} value={currentSort} />
       </Header>
-      <ScrollArea h={'120vh'} type="scroll">
-        <div className={style.employees_list}>
-          {data && data.map((employee, index) => <EmployeesItem key={index} employee={employee} />)}
-          {isLoading && (
-            <div className={style.loader}>
-              <Loader />
-            </div>
-          )}
-        </div>
-      </ScrollArea>
+
+      <EmployeeForm
+        isOpen={isVisibleAddEmployees}
+        isCreateForm={true}
+        closeForm={() => {
+          setIsVisibleAddEmployees(false)
+        }}
+        onSubmit={handleEmployeeUpdated}
+      />
+
+      <div className={`${style.employees_list} ${isVisibleAddEmployees ? style.employees_list__with_form : ''} `}>
+        {searchEmployees &&
+          searchEmployees
+            .slice()
+            .reverse()
+            .map(employee => {
+              const isEditingEmployee = editingEmployeeId === employee.id
+              const isDeletingEmployee = deletedEmployeesIds.includes(employee.id)
+
+              if (isEditingEmployee) {
+                return (
+                  <EmployeeForm
+                    key={employee.id}
+                    isCreateForm={false}
+                    isOpen={true}
+                    employeeFormData={employee}
+                    closeForm={() => setEditingEmployeeId(null)}
+                    onSubmit={() => {
+                      handleEmployeeUpdated()
+                      setEditingEmployeeId(null)
+                    }}
+                  />
+                )
+              } else {
+                return (
+                  <EmployeesItem
+                    key={employee.id}
+                    employee={employee}
+                    onContextMenu={handleContextMenu}
+                    isDeleted={isDeletingEmployee}
+                    onCancelDelete={handleCancelDelete}
+                  />
+                )
+              }
+            })}
+
+        {openedMenuId && menuPosition && (
+          <PopupMenu
+            type="context"
+            items={menuItems}
+            positionX={menuPosition.x}
+            positionY={menuPosition.y}
+            onClose={handleMenuClose}
+          />
+        )}
+
+        {isLoading && (
+          <div className={style.loader}>
+            <Loader />
+          </div>
+        )}
+      </div>
     </div>
   )
 }
