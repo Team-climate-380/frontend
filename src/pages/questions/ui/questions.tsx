@@ -16,6 +16,7 @@ import { Loader } from '@mantine/core'
 import { useIntersection } from '@mantine/hooks'
 import { QuestionForm } from '@/features/question-form'
 import { QuestionsList } from '@/features/questions-list'
+import { RightPanel } from '@/shared/ui/drawer'
 
 //const filters and const questions - mock data, TODO: delete after back-end requests implementation
 const reponceServer: IQuestionsResponce = {
@@ -137,9 +138,24 @@ const QuestionPage = () => {
   // const filteredQuestionList = questions.results.filter(question => {
   //   return question.text.toLowerCase().includes(search.toLowerCase().trim())
   // }) //uncomment after #49 task component implementation
+  const [isRightPanelOpen, setIsRightPanelOpen] = useState(true) // RightPanel state => zustand
 
   return (
     <div className={styles.main}>
+      {isRightPanelOpen && (
+        <RightPanel
+          onClose={() => {
+            setIsRightPanelOpen(false)
+          }}
+          opened
+          header={
+            <Header title="Вопросы">
+              <Filter filters={filters} value={currentFilter} />
+            </Header>
+          }
+          content={<QuestionsList questions={questionsList.results} allowContextMenu={false} />}
+        ></RightPanel>
+      )}
       <Header
         title="Вопросы"
         actions={

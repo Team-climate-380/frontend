@@ -32,7 +32,7 @@ export const getQuestions = async ({
     per_page: String(per_page),
     ...(search ? { search: search } : {})
   })
-  const response = await apiClient.get(`questions/?${queryString}`)
+  const response = await apiClient.get(`/api/questions?${queryString}`)
   if (response.status === 'success' && 'data' in response) {
     return response.data as IQuestionsResponce
   } else if ('message' in response) {

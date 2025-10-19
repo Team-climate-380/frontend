@@ -2,13 +2,14 @@ import { FC } from 'react'
 import { QuestionUI } from '../ui/question-ui'
 import { IQuestion } from '../type'
 
-export const Question: FC<IQuestion> = questions => {
+export const Question: FC<IQuestion & { allowContextMenu?: boolean }> = question => {
   return (
     <QuestionUI
-      id={questions.id}
-      is_favorite={questions.is_favorite}
-      text={questions.text}
-      question_type={questions.question_type}
+      id={question.id}
+      is_favorite={question.is_favorite}
+      text={question.text}
+      question_type={question.question_type}
+      allowContextMenu={question.allowContextMenu}
     />
   )
 }

@@ -4,12 +4,20 @@ import { FC, useState } from 'react'
 import { FavoriteIconFlled } from '../ui/favorite-icon-filled'
 import { IQuestion, QuestionType } from '../type'
 import { ContextMenu } from '@/shared/ui/popup-menu/ui/context-menu'
-import { addToFavorite, deleteQuestion, editQuestion } from '../utils/quetion-actions'
+import { editQuestion, toggleFavorite } from '../utils/question-actions'
+import { deleteQuestion } from '../api/delete-question'
 
-export const QuestionUI: FC<IQuestion> = ({ id, is_favorite, text, question_type }) => {
+export const QuestionUI: FC<IQuestion & { allowContextMenu?: boolean }> = ({
+  id,
+  is_favorite,
+  text,
+  question_type,
+  allowContextMenu
+}) => {
   const [dropdownVisible, setDropdownVisible] = useState(false)
   const [position, setPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
   const handleContextMenu = (e: React.MouseEvent) => {
+    if (!allowContextMenu) return
     e.preventDefault()
     setPosition({ x: e.clientX, y: e.clientY })
     setDropdownVisible(prev => !prev)
@@ -37,11 +45,15 @@ export const QuestionUI: FC<IQuestion> = ({ id, is_favorite, text, question_type
       <Text size="md" className={style.text}>
         {text} <span className={style.question_type}> ({QuestionTypeDisplay(question_type)})</span>
       </Text>
-      {dropdownVisible && (
+      {dropdownVisible && allowContextMenu && (
         <ContextMenu
           items={[
             { type: 'action', label: 'Редактировать', action: () => editQuestion(id) },
-            { type: 'action', label: 'Избранное', action: () => addToFavorite(id) },
+            {
+              type: 'action',
+              label: `${is_favorite ? 'Убрать из избранного' : 'Избранное'}`,
+              action: () => toggleFavorite(id, is_favorite)
+            },
             { type: 'divider' },
             { type: 'action', label: 'Удалить', action: () => deleteQuestion(id), important: true }
           ]}
