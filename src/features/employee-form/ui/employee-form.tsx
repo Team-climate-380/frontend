@@ -10,24 +10,64 @@ import {
 import { SubmitButton } from '@shared/ui/submit-button'
 import { Dropdown } from '@shared/ui/dropdown'
 import classes from './employee-form.module.scss'
+import { addEmployee, changeEmployee } from '@/entities/employees/api/api-employees'
+import { UseFormReturnType } from '@mantine/form'
 
 export type EmployeeFormProps = ICreateEditFormProps & {
   employeeFormData?: TEmployeeForm
+  onSubmit?: () => void
 }
 
-export const EmployeeForm: React.FC<EmployeeFormProps> = ({ isOpen, isCreateForm, closeForm, employeeFormData }) => {
+export const EmployeeForm: React.FC<EmployeeFormProps> = ({
+  isOpen,
+  isCreateForm,
+  closeForm,
+  employeeFormData,
+  onSubmit
+}) => {
   const employeeForm = useCreateEmployeeEditForm(employeeFormData)
 
-  const handleSubmit = (data: TEmployeeForm) => {
-    console.log(data)
-    closeForm()
+  const getChangedFields = (
+    form: UseFormReturnType<TEmployeeForm>,
+    data: Omit<TEmployeeForm, 'id'>
+  ): Partial<TEmployeeForm> => {
+    const fields: (keyof Omit<TEmployeeForm, 'id'>)[] = ['full_name', 'department_name', 'email', 'tg_username']
+    const changedData: Partial<TEmployeeForm> = {}
+
+    fields.forEach(field => {
+      if (form.isDirty(field)) {
+        changedData[field] = data[field]
+      }
+    })
+    return changedData
+  }
+
+  const handleSubmit = async (data: TEmployeeForm) => {
+    if (!employeeForm.isDirty()) {
+      console.log('Данные не изменились')
+      closeForm()
+      return
+    }
+    const changedData = { ...getChangedFields(employeeForm, data), email: data.email }
+    console.log(changedData)
+    try {
+      if (isCreateForm) {
+        await addEmployee(data)
+      } else if (data.id) {
+        await changeEmployee(changedData, Number(data.id))
+      }
+
+      closeForm()
+      employeeForm.reset()
+      onSubmit?.()
+    } catch (error) {
+      const action = isCreateForm ? 'добавлении' : 'изменении данных'
+      console.error(`Ошибка при ${action} сотрудника:`, error)
+    }
   }
 
   return isOpen ? (
-    <form
-      onSubmit={employeeForm.onSubmit(handleSubmit)}
-      className={isCreateForm ? classes.formForNewEmployee : classes.formForEditEmployee}
-    >
+    <form onSubmit={employeeForm.onSubmit(handleSubmit)} className={isCreateForm ? classes.formForNewEmployee : ''}>
       <Flex className={classes.container}>
         <Input
           variant={'secondary'}
@@ -36,8 +76,8 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({ isOpen, isCreateForm
           }}
           aria-label="Имя и фамилия сотрудника"
           placeholder="Имя Фамилия"
-          key={employeeForm.key('name')}
-          {...employeeForm.getInputProps('name')}
+          key={employeeForm.key('full_name')}
+          {...employeeForm.getInputProps('full_name')}
         />
         <Dropdown
           styles={{
@@ -46,8 +86,8 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({ isOpen, isCreateForm
           }}
           aria-label="Отдел"
           data={departmentsNames}
-          key={employeeForm.key('department')}
-          {...employeeForm.getInputProps('department')}
+          key={employeeForm.key('department_name')}
+          {...employeeForm.getInputProps('department_name')}
         />
         <Input
           variant={'secondary'}
@@ -70,10 +110,10 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({ isOpen, isCreateForm
             [classes.inputForNewEmployee]: isCreateForm,
             [classes.inputForEditEmployee]: isCreateForm === false
           })}
-          key={employeeForm.key('tgUsername')}
-          {...employeeForm.getInputProps('tgUsername')}
+          key={employeeForm.key('tg_username')}
+          {...employeeForm.getInputProps('tg_username')}
         />
-        <SubmitButton className={classes.employeeFormSubmit} />
+        <SubmitButton />
       </Flex>
     </form>
   ) : null

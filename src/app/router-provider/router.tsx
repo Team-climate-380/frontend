@@ -48,27 +48,6 @@ export const router = createBrowserRouter([
         )
       },
       {
-        element: <ResultLayout />,
-        children: [
-          {
-            path: routes.full_results_path(),
-            element: (
-              <ProtectedRoute>
-                <LazySurveyResults />
-              </ProtectedRoute>
-            )
-          },
-          {
-            path: routes.short_results_path(),
-            element: (
-              <ProtectedRoute>
-                <LazySurveyResults fullResults={false} />
-              </ProtectedRoute>
-            )
-          }
-        ]
-      },
-      {
         path: routes.new_survey(),
         element: (
           <ProtectedRoute>
@@ -122,6 +101,27 @@ export const router = createBrowserRouter([
         <LazyPasswordRecovery />
       </ProtectedRoute>
     )
+  },
+  {
+    element: <ResultLayout />,
+    children: [
+      {
+        path: routes.full_results_path(),
+        element: (
+          <ProtectedRoute>
+            <LazySurveyResults withDropDownMenu={false} />
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: routes.short_results_path(),
+        element: (
+          <ProtectedRoute>
+            <LazySurveyResults fullResults={false} withDropDownMenu={false} />
+          </ProtectedRoute>
+        )
+      }
+    ]
   },
 
   {

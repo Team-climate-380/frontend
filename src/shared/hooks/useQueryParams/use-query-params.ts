@@ -62,5 +62,10 @@ export function useQueryParams() {
     [navigate, location]
   )
 
-  return { queryParams, getParam, setParams, setSearch }
+  const getDecodedSearch = useCallback((): string => {
+    if (queryParams['s']) return decodeURIComponent(queryParams['s'])
+    return ''
+  }, [queryParams])
+
+  return { queryParams, getParam, setParams, setSearch, getDecodedSearch }
 }

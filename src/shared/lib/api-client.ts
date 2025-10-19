@@ -67,7 +67,7 @@ export class ApiClient {
     return this.request<T>({ url, headers, method: 'PUT', body })
   }
 
-  async patch<T>(url: string, headers?: HeadersType, body?: unknown) {
+  async patch<T>(url: string, body?: unknown, headers?: HeadersType) {
     return this.request<T>({ url, headers, method: 'PATCH', body })
   }
 

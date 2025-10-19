@@ -18,6 +18,7 @@ export const departmentsContextMenu = ({ handleEdit, handleDelete, id }: TDepart
   {
     type: 'action',
     label: 'Удалить',
-    action: () => handleDelete(id)
+    action: () => handleDelete(id),
+    important: true
   }
 ]
