@@ -1,16 +1,23 @@
 ---
-name: Test deploy
+name: Deploy
 on:  
   push:
-    branches: [develop, devops/test-deploy-dev]
+    branches: [main, devops/test-deploy-main, develop, devops/test-deploy-dev]
 
-#  env:
-#    API_URL: 'https://teamclimate.rassokha.pro:8000/api'
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    environment: dev
+    environment: >
+      ${{ github.ref_name == 'main' ||
+          github.ref_name == 'devops/test-deploy-main'
+      && 'production' || 'dev' }}
+    env:
+      CI_VITE_API_DOMAIN: {{ vars.CI_VITE_API_DOMAIN }}
+      DEPLOY_ENV: >-
+        ${{ github.ref_name == 'main' ||
+            github.ref_name == 'devops/test-deploy-main'
+        && 'prod' || 'dev' }}
     steps:
       - name: 1. Check out branch
         uses: actions/checkout@v3
@@ -39,4 +46,4 @@ jobs:
           key: ${{ secrets.SSH_DEPLOY_KEY }}
           overwrite: true
           source: 'dist'
-          target: '~/frontend/dev/'
+          target: '~/frontend/${DEPLOY_ENV}/'
