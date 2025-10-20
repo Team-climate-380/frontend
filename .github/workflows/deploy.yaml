@@ -13,10 +13,7 @@ jobs:
           github.ref_name == 'devops/test-deploy-main'
       && 'production' || 'dev' }}
     env:
-      CI_VITE_API_DOMAIN: {{ vars.CI_VITE_API_DOMAIN }}
-      DEPLOY_ENV: >-
-        ${{ github.ref_name == 'main' || github.ref_name == 'devops/test-deploy-main'
-        && 'prod' || 'dev' }}
+      CI_VITE_API_DOMAIN: ${{ vars.CI_VITE_API_DOMAIN }}
     steps:
       - name: 1. Check out branch
         uses: actions/checkout@v3
@@ -37,7 +34,8 @@ jobs:
         run: |
           npm run build
 
-      - name: Copy dist folder to server
+      - name: Copy dist to dev folder on server
+        if:  ${{ github.ref_name != 'main' && github.ref_name != 'devops/test-deploy-main' }}
         uses: appleboy/scp-action@v1
         with:
           host: ${{ vars.SSH_DEPLOY_HOST }}
@@ -45,4 +43,15 @@ jobs:
           key: ${{ secrets.SSH_DEPLOY_KEY }}
           overwrite: true
           source: 'dist'
-          target: '~/frontend/${DEPLOY_ENV}/'
+          target: '~/frontend/dev/'
+
+      - name: Copy dist to prod folder on server
+        if: ${{ github.ref_name == 'main' || github.ref_name == 'devops/test-deploy-main' }}
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ vars.SSH_DEPLOY_HOST }}
+          username: ${{ secrets.SSH_DEPLOY_USER }}
+          key: ${{ secrets.SSH_DEPLOY_KEY }}
+          overwrite: true
+          source: 'dist'
+          target: '~/frontend/prod/'
