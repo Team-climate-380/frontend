@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-
 import styles from '../css/styles.module.scss'
 import { Header } from '@/widgets/header/header'
 import { Button } from '@/shared/ui/button'
@@ -82,9 +80,7 @@ const QuestionPage = () => {
   const currentFilter = queryParams.filter ?? 'all'
   const currentPage = Number(queryParams.page ?? '1')
   const currentPerPage = Number(queryParams.per_page ?? '2')
-
-  // @ts-ignore
-  /*const currentSearch = search*/
+  const currentSearch = queryParams.search ?? ''
 
   const filters = [
     {
@@ -103,19 +99,20 @@ const QuestionPage = () => {
     }
   ]
 
-  const { fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-    // data removed temp
-    queryKey: ['questions', currentFilter],
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+    queryKey: ['questions', currentFilter, currentPerPage, currentSearch],
     queryFn: async ({ pageParam = currentPage }) =>
       await getQuestions({
         filter: currentFilter,
         page: pageParam,
-        per_page: currentPerPage
-        /*search: currentSearch*/
+        per_page: currentPerPage,
+        search: currentSearch
       }),
     initialPageParam: 1,
     getNextPageParam: lastPage => (lastPage?.has_next ? lastPage.page + 1 : undefined)
   })
+
+  const questionsFromServer = data?.pages?.flatMap(page => (page ? (page.data ?? []) : [])) ?? questionsList.results
 
   useEffect(() => {
     if (entry?.isIntersecting && hasNextPage && !isFetchingNextPage) {
@@ -125,15 +122,13 @@ const QuestionPage = () => {
     }
   }, [entry, hasNextPage, isFetchingNextPage])
 
-  // const changeFilterValue = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   const inputValue = event.target.value.trim()
+  useEffect(() => {
+    setParams({ ...queryParams, page: '1' }, true)
+  }, [currentSearch])
 
   const setQuestionFormVisibility = () => {
     setQuestionFormIsVisible(prev => !prev)
   }
-  // const filteredQuestionList = questions.results.filter(question => {
-  //   return question.text.toLowerCase().includes(search.toLowerCase().trim())
-  // }) //uncomment after #49 task component implementation
 
   return (
     <div className={styles.main}>
@@ -164,8 +159,7 @@ const QuestionPage = () => {
         )}
         {/* TODO implement form from #52 task}*/}
         <div className={styles['questions-list']}>
-          {/* {data?.pages.flatMap(pageItem => pageItem?.data.map(q => <div key={q.id}>{q.text}</div>))}{' '} */}
-          <QuestionsList questions={questionsList.results} />
+          <QuestionsList questions={questionsFromServer} />
         </div>
       </div>
       <div ref={ref} className={styles.loader_container}>
