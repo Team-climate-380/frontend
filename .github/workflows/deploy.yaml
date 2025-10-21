@@ -8,9 +8,9 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    environment: >
-      ${{ github.ref_name == 'main' ||
-          github.ref_name == 'devops/test-deploy-main'
+    environment: >-
+      ${{ (github.ref_name == 'main' ||
+          github.ref_name == 'devops/test-deploy-main')
       && 'production' || 'dev' }}
     env:
       CI_VITE_API_DOMAIN: ${{ vars.CI_VITE_API_DOMAIN }}
