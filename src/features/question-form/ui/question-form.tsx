@@ -11,8 +11,10 @@ import classes from './question-form.module.scss'
 import { createNewQuestion } from '@/entities/question/api/create-new-question'
 import { useState } from 'react'
 import { Loader } from '@/shared/ui/loader'
+import { updateQuestion } from '@/entities/question/api/update-question'
+import { QuestionTypeDisplay } from '@/entities/question/utils/question-actions'
 
-const questionTypeData = Object.values(QuestionTypeEnum)
+const questionTypeData = Object.values(QuestionTypeEnum).map(key => QuestionTypeDisplay(key))
 
 export type QuestionFormProps = ICreateEditFormProps & {
   formData?: IQuestionForm
@@ -40,9 +42,20 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ isOpen, isCreateForm
         closeForm()
       }
     } else {
-      console.log('edit form', data) //PATCH
+      setLoading(true)
+      try {
+        const result = await updateQuestion(formData!.id, { ...data, question_type: formData?.question_type })
+        if (!result) {
+          console.error('Ошибка при редактировании вопроса')
+          return
+        }
+        return result
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setLoading(false)
+      }
     }
-    console.log(data)
     closeForm()
   }
 

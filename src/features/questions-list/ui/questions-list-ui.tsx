@@ -3,7 +3,7 @@ import { IQuestion } from '@/entities/question/type'
 import { FC } from 'react'
 
 interface IQuestionsListUIProps {
-  questions: IQuestion[] | undefined | null
+  questions: IQuestion[]
   allowContextMenu?: boolean
 }
 
