@@ -8,6 +8,7 @@ import { useFormData } from '../model/use-login-form'
 import { useSessionState } from '@/features/session'
 import { useNavigate } from 'react-router'
 import { routes } from '@/shared/configs/routs'
+import { apiClient } from '@/shared/lib/api-client'
 
 export interface InitialFormData {
   email: string
@@ -24,13 +25,23 @@ export const LoginForm: FC<LoginFormProps> = ({ onRestorePassword, initialValues
   const formData = useFormData(initialValues)
   const sessionState = useSessionState()
   const navigate = useNavigate()
-  const handleSubmit = (e: React.FormEvent) => {
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
     if (formData.isValid()) {
+      await apiClient.post<{ ok: boolean }>('/api/auth/login', {
+        email: formData.values.email,
+        password: formData.values.password
+        // TODO: не реализовано на бекенде
+        // rememberMe: formData.values.rememberMy
+      })
+
       sessionState.login(formData.values.email)
       navigate(routes.home())
     }
   }
+
   return (
     <form onSubmit={handleSubmit}>
       <Flex direction="column" gap="36px" w="258px">

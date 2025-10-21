@@ -19,6 +19,33 @@ export class ApiClient {
       ...(headers || {})
     }
   }
+
+  private async refreshTokens(): Promise<boolean> {
+    try {
+      const resp = await fetch(`${this.baseUrl}/api/auth/refresh`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: this.defaultHeaders
+      })
+      return resp.ok
+    } catch {
+      return false
+    }
+  }
+
+  private async doFetch(input: RequestType): Promise<Response> {
+    const { url, headers, method, body } = input
+    return fetch(`${this.baseUrl}${url}`, {
+      method,
+      credentials: 'include',
+      headers: {
+        ...this.defaultHeaders,
+        ...(headers || {})
+      },
+      body: body !== undefined ? JSON.stringify(body) : undefined
+    })
+  }
+
   private async request<T>({
     url,
     headers,
@@ -26,26 +53,20 @@ export class ApiClient {
     body
   }: RequestType): Promise<{ status: string; error: unknown; message: string } | { status: string; data: T }> {
     try {
-      const response = await fetch(`${this.baseUrl}${url}`, {
-        method: method,
-        body: body ? JSON.stringify(body) : undefined,
-        headers: {
-          ...this.defaultHeaders,
-          ...(headers || {})
+      let response = await this.doFetch({ url, headers, method, body })
+
+      if (response.status === 401 && !url.startsWith('/api/auth/refresh')) {
+        const refreshed = await this.refreshTokens()
+        if (refreshed) {
+          response = await this.doFetch({ url, headers, method, body })
         }
-      })
+      }
       const data = await response.json()
       if (!response.ok) {
-        return {
-          status: 'error',
-          error: data,
-          message: data?.message || 'Unexpected error'
-        }
+        return { status: 'error', error: data, message: data?.message || 'Unexpected error' }
       }
-      return {
-        status: 'success',
-        data
-      }
+
+      return { status: 'success', data }
     } catch (error: unknown) {
       return {
         status: 'error',
@@ -75,3 +96,5 @@ export class ApiClient {
     return this.request<T>({ url, headers, method: 'DELETE' })
   }
 }
+
+export const apiClient = new ApiClient()
