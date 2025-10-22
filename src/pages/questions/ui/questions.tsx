@@ -15,59 +15,6 @@ import { QuestionsList } from '@/features/questions-list'
 import { IQuestion } from '@/entities/question/type'
 // import { RightPanel } from '@/shared/ui/drawer'
 
-//const filters and const questions - mock data, TODO: delete after back-end requests implementation
-// const reponceServer: IQuestionsResponce = {
-//   data: [
-//     {
-//       id: 44,
-//       text: 'Как вы оцениваете уровень доверия между членами команды?',
-//       question_type: 'ratingScale',
-//       is_favorite: false,
-//       surveys: []
-//     },
-//     {
-//       id: 45,
-//       text: 'Вы довольны своей работой?',
-//       question_type: 'ratingScale',
-//       is_favorite: false,
-//       surveys: []
-//     },
-//     {
-//       id: 46,
-//       text: 'Согласны ли вы с тем, что ваша работа ценится в команде?',
-//       question_type: `consentGiven`,
-//       is_favorite: false,
-//       surveys: []
-//     },
-//     {
-//       id: 47,
-//       text: 'Считаете ли вы свою работу эффективной',
-//       question_type: 'ratingScale',
-//       is_favorite: false,
-//       surveys: []
-//     },
-//     {
-//       id: 28,
-//       text: 'Как вы оценили бы уровень морального состояния в команде?',
-//       question_type: 'ratingScale',
-//       is_favorite: false
-//     }
-//   ],
-//   page: 1,
-//   per_page: 20,
-//   total: 5,
-//   num_pages: 1,
-//   has_next: false,
-//   has_previous: false
-// }
-// // const questionsList = {
-// //   //  convert responceServer to application media
-// //   count: reponceServer.total,
-// //   next: reponceServer.has_next,
-// //   previous: reponceServer.has_previous,
-// //   results: reponceServer.data
-// // }
-
 const QuestionPage = () => {
   const [questionFormIsVisible, setQuestionFormIsVisible] = useState(false) //new question form visibility
   const { queryParams, setParams } = useQueryParams()
@@ -76,12 +23,12 @@ const QuestionPage = () => {
   })
   //инициализация URL при первом рендере
   useEffect(() => {
-    setParams({ filter: 'all', page: '1', per_page: '2' }, true)
+    setParams({ filter: 'all', page: '1', per_page: '20' }, true)
   }, [])
 
   const currentFilter = queryParams.filter ?? 'all'
   const currentPage = Number(queryParams.page ?? '1')
-  const currentPerPage = Number(queryParams.per_page ?? '2')
+  const currentPerPage = Number(queryParams.per_page ?? '20')
   const currentSearch = queryParams.search ?? ''
 
   const filters = [
@@ -175,7 +122,6 @@ const QuestionPage = () => {
         )}
         {/* TODO implement form from #52 task}*/}
         <div className={styles['questions-list']}>
-          {/* {data?.pages.flatMap(pageItem => pageItem?.data.map(q => <div key={q.id}>{q.text}</div>))}{' '} */}
           <QuestionsList
             questions={data?.pages.flatMap(pageItem => pageItem?.data).filter((q): q is IQuestion => Boolean(q)) ?? []}
           />

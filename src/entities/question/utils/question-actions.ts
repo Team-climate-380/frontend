@@ -22,3 +22,19 @@ export const QuestionTypeDisplay = (question_type: QuestionTypeEnum) => {
       return 'Без оценки'
   }
 }
+
+export const QuestionTypeData = (question_type: string): QuestionTypeEnum => {
+  switch (question_type) {
+    case 'Плохо-Прекрасно':
+      return QuestionTypeEnum.ratingScale
+      break
+    case 'Да-Нет':
+      return QuestionTypeEnum.consentGiven
+      break
+    case '1-9':
+      return QuestionTypeEnum.score
+      break
+    default:
+      return QuestionTypeEnum.consentGiven
+  }
+}

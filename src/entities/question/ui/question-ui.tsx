@@ -45,9 +45,9 @@ export const QuestionUI: FC<IQuestion & { allowContextMenu?: boolean }> = ({
             items={[
               {
                 type: 'action',
-                label: 'Редактировать',
+                label: `${isEditing ? 'Отменить редактирование' : 'Редактировать'}`,
                 action: () => {
-                  setIsEditing(true)
+                  setIsEditing(prev => !prev)
                 }
               },
               {
@@ -65,7 +65,12 @@ export const QuestionUI: FC<IQuestion & { allowContextMenu?: boolean }> = ({
         )}
       </div>
       {isEditing && (
-        <QuestionForm isOpen isCreateForm={false} closeForm={() => {}} formData={{ text, id, question_type }} />
+        <QuestionForm
+          isOpen
+          isCreateForm={false}
+          closeForm={() => setIsEditing(false)}
+          formData={{ text, id, question_type }}
+        />
       )}
     </>
   )
