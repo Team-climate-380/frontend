@@ -24,6 +24,7 @@ export const QuestionUI: FC<IQuestion & { allowContextMenu?: boolean }> = ({
   const [dropdownVisible, setDropdownVisible] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [position, setPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
+  const [isFavorite, setIsFavorite] = useState(is_favorite)
   const handleContextMenu = (e: React.MouseEvent) => {
     if (!allowContextMenu) return
     e.preventDefault()
@@ -31,12 +32,11 @@ export const QuestionUI: FC<IQuestion & { allowContextMenu?: boolean }> = ({
     setDropdownVisible(prev => !prev)
   }
   const close = () => setDropdownVisible(false)
-
   return (
     <>
       <div className={style.question} onClick={close} onContextMenu={handleContextMenu}>
         <span className={style.id}>{id}</span>
-        <div className={style.isFavorite}>{is_favorite && <FavoriteIconFlled width={11} height={11} />}</div>
+        <div className={style.isFavorite}>{isFavorite && <FavoriteIconFlled width={11} height={11} />}</div>
         <Text size="md" className={style.text}>
           {text} <span className={style.question_type}> ({QuestionTypeLabels[question_type as QuestionTypeEnum]})</span>
         </Text>
@@ -52,8 +52,11 @@ export const QuestionUI: FC<IQuestion & { allowContextMenu?: boolean }> = ({
               },
               {
                 type: 'action',
-                label: `${is_favorite ? 'Убрать из избранного' : 'Избранное'}`,
-                action: () => toggleFavorite(id, is_favorite)
+                label: `${isFavorite ? 'Убрать из избранного' : 'Избранное'}`,
+                action: async () => {
+                  const resp = await toggleFavorite(id, isFavorite)
+                  setIsFavorite(prev => (resp ? resp.is_favorite : prev))
+                }
               },
               { type: 'divider' },
               { type: 'action', label: 'Удалить', action: () => deleteQuestion(id), important: true }

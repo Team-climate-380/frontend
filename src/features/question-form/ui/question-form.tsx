@@ -46,16 +46,19 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ isOpen, isCreateForm
     } else {
       setLoading(true)
       try {
-        const result = await updateQuestion(formData!.id, { ...data, question_type: formData?.question_type })
+        const result = await updateQuestion(formData!.id, {
+          ...data,
+          question_type: QuestionTypeData(questionForm.getValues().question_type)
+        })
         if (!result) {
           console.error('Ошибка при редактировании вопроса')
           return
         }
-        return result
       } catch (error) {
         console.error(error)
       } finally {
         setLoading(false)
+        closeForm()
       }
     }
   }
