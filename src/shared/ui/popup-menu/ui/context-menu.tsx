@@ -47,7 +47,6 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ items, onClose, positi
     if (newY < scrollY + margin) {
       newY = scrollY + margin
     }
-
     setAdjustedPosition({ x: newX, y: newY })
   }, [positionX, positionY])
   return (
