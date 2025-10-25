@@ -6,7 +6,7 @@ import { EmployeesItem } from '@/entities/employees/ui/employee-item'
 import { getEmployees } from '@/entities/employees/api/api-employees'
 import { useQueryParams } from '@/shared/hooks/useQueryParams'
 import { useQuery } from '@tanstack/react-query'
-import { Loader } from '@mantine/core'
+import { Loader } from '@shared/ui/loader'
 import { useEffect, useMemo, useState } from 'react'
 import { SearchInput } from '@/widgets/search-input'
 import { EmployeeForm } from '@/features/employee-form'
@@ -156,11 +156,7 @@ const Employees: React.FC = () => {
           />
         )}
 
-        {isLoading && (
-          <div className={style.loader}>
-            <Loader />
-          </div>
-        )}
+        {isLoading && <Loader />}
       </div>
     </div>
   )

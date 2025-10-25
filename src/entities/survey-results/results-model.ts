@@ -4,6 +4,13 @@ import { useQuery } from '@tanstack/react-query'
 
 const client = new ApiClient()
 
+export enum StatusEnum {
+  Draft = 'draft',
+  Active = 'active',
+  Completed = 'completed',
+  Archived = 'archived'
+}
+
 export interface SurveyResults {
   id: number
   name: string
@@ -18,6 +25,7 @@ export interface SurveyResults {
     id: number
     name: string
   }
+  status: StatusEnum
 }
 
 const getServeyResults = async (id: number) => {

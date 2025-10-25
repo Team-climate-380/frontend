@@ -3,7 +3,7 @@ import { QuestionsResult } from '@/widgets/questions-result/ui/questions-result'
 import classes from '../styles/styles.module.scss'
 import { useResultsQuery } from '@/entities/survey-results/results-model'
 import { useQueryParams } from '@/shared/hooks/useQueryParams'
-import { Loader } from '@mantine/core'
+import { Loader } from '@shared/ui/loader'
 
 interface SurveyResultsProps {
   fullResults?: boolean
@@ -17,7 +17,7 @@ const SurveyResults: React.FC<SurveyResultsProps> = ({ fullResults = true }) => 
   return (
     <div className={classes.wrapper}>
       {isPending && <Loader />}
-      {!data && isError && 'Ошибка при загрузки результатов...'}
+      {!data && isError && 'Ошибка при загрузке результатов...'}
       {data && (
         <>
           <div className={classes.header}>
