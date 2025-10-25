@@ -8,25 +8,59 @@ export interface QuestionResultProps {
   user_answers: {
     id: number
     result: string
-    employer: {
-      id: number
-      email: string
-      full_name: string
-    }
+    employer: Employer
   }[]
   answer_options: { id: number; text: string; is_correct: boolean }[]
+}
+
+export interface employeesProps {
+  employee: number
+  survey_sec: number
+}
+
+interface Employer {
+  id: number
+  email: string
+  full_name: string
 }
 
 interface Props {
   question: QuestionResultProps
   fullResults: boolean
+  employees: employeesProps[]
 }
 
-export const QuestionResult: React.FC<Props> = ({ question, fullResults }) => {
+export const QuestionResult: React.FC<Props> = ({ question, fullResults, employees }) => {
+  function formatTime(seconds: number): string {
+    const hours = Math.floor(seconds / 3600)
+    const minutes = Math.floor((seconds % 3600) / 60)
+    const remainingSeconds = seconds % 60
+    const parts = []
+    if (hours > 0) {
+      parts.push(`${hours} ч`)
+    }
+    if (minutes > 0) {
+      parts.push(`${minutes} мин`)
+    }
+    if (remainingSeconds > 0 && hours === 0) {
+      parts.push(`${remainingSeconds} сек`)
+    }
+
+    return parts.join(' ')
+  }
+
   const counts: Record<string, number> = {}
 
   question.answer_options.forEach(answer => {
     counts[answer.text] = 0
+  })
+
+  const time: Record<number, number> = {}
+
+  employees.forEach(employee => {
+    if (employee.survey_sec > 0) {
+      time[employee.employee] = employee.survey_sec
+    }
   })
 
   question.user_answers.forEach(answer => {
@@ -37,7 +71,7 @@ export const QuestionResult: React.FC<Props> = ({ question, fullResults }) => {
 
   const sortedCounts = Object.entries(counts).sort((a, b) => b[1] - a[1])
 
-  const groupedAnswers: Record<string, string[]> = {}
+  const groupedAnswers: Record<string, Array<Employer>> = {}
 
   question.answer_options.forEach(option => {
     groupedAnswers[option.text] = []
@@ -47,7 +81,7 @@ export const QuestionResult: React.FC<Props> = ({ question, fullResults }) => {
     const result = answer.result
 
     if (typeof result === 'string' && groupedAnswers[result]) {
-      groupedAnswers[result].push(answer.employer.full_name)
+      groupedAnswers[result].push(answer.employer)
     }
   })
 
@@ -70,7 +104,8 @@ export const QuestionResult: React.FC<Props> = ({ question, fullResults }) => {
                 <div className={classes.user__list}>
                   {employees.map(employer => (
                     <div>
-                      {employer} - {answerText}
+                      {employer.full_name} - {answerText}
+                      {time[employer.id] ? <>({formatTime(time[employer.id])})</> : <></>}
                     </div>
                   ))}
                 </div>

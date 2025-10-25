@@ -1,5 +1,5 @@
 import { ApiClient } from '@/shared/lib/api-client'
-import { QuestionResultProps } from '@/shared/ui/question-result/ui/question-result'
+import { employeesProps, QuestionResultProps } from '@/shared/ui/question-result/ui/question-result'
 import { useQuery } from '@tanstack/react-query'
 
 const client = new ApiClient()
@@ -14,6 +14,7 @@ export enum StatusEnum {
 export interface SurveyResults {
   id: number
   name: string
+  status: string
   comment: string
   started_at: string
   finished_at: string
