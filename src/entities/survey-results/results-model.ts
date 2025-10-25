@@ -25,7 +25,8 @@ export interface SurveyResults {
     id: number
     name: string
   }
-  status: StatusEnum
+  status: string
+  employees: employeesProps[]
 }
 
 const getServeyResults = async (id: number) => {
