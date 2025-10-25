@@ -19,7 +19,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ contentSidebar
         withBorder={false}
         navbar={{
           width: 201,
-          breakpoint: 'sm'
+          breakpoint: '400'
         }}
         styles={{
           navbar: {

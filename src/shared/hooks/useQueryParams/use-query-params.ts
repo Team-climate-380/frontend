@@ -46,9 +46,9 @@ export function useQueryParams() {
       const params = new URLSearchParams(location.search)
 
       if (searchValue.trim() === '') {
-        params.delete('s')
+        params.delete('search')
       } else {
-        params.set('s', searchValue)
+        params.set('search', searchValue)
       }
 
       navigate(
@@ -63,7 +63,7 @@ export function useQueryParams() {
   )
 
   const getDecodedSearch = useCallback((): string => {
-    if (queryParams['s']) return decodeURIComponent(queryParams['s'])
+    if (queryParams['search']) return decodeURIComponent(queryParams['search'])
     return ''
   }, [queryParams])
 
