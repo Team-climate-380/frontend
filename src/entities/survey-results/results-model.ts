@@ -26,7 +26,6 @@ export interface SurveyResults {
     id: number
     name: string
   }
-  status: string
   employees: employeesProps[]
 }
 
