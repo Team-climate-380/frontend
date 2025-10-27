@@ -1,9 +1,9 @@
+import { ContextMenuProps } from '../types/types'
 import classes from '../styles/styles.module.scss'
 import { Flex } from '@mantine/core'
 import clsx from 'clsx'
 import { Button } from '../../button/ui/button'
 import { useLayoutEffect, useRef, useState } from 'react'
-import { ContextMenuProps } from '../types/types'
 
 export const ContextMenu: React.FC<ContextMenuProps> = ({ items, onClose, positionX, positionY, classname }) => {
   const menuRef = useRef<HTMLDivElement>(null)
