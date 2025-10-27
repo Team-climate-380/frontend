@@ -1,3 +1,5 @@
+import { useSessionState } from '@/features/session'
+
 type HeadersType = Record<string, string>
 
 type MethodType = 'PUT' | 'PATCH' | 'DELETE' | 'POST' | 'GET'
@@ -59,9 +61,11 @@ export class ApiClient {
         const refreshed = await this.refreshTokens()
         if (refreshed) {
           response = await this.doFetch({ url, headers, method, body })
+        } else {
+          useSessionState.getState().logout()
         }
       }
-      const data = await response.json()
+      const data = await response.json().catch(() => ({}))
       if (!response.ok) {
         return { status: 'error', error: data, message: data?.message || 'Unexpected error' }
       }

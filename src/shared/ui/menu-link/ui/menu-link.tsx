@@ -20,9 +20,9 @@ export const MenuLink: React.FC<TMenuLink> = ({ id, link, name, children }: TMen
       href={link}
       label={name}
       key={id}
-      childrenOffset="3"
+      childrenOffset="0"
       defaultOpened={isActive}
-      className={clsx(styles.link, styles.pageLink, styles[`link_active-${isActive}`])}
+      className={clsx(styles.link, styles[`link_active-${isActive}`])}
       rightSection={null}
       onClick={() => navigate(link)}
     >
@@ -34,7 +34,7 @@ export const MenuLink: React.FC<TMenuLink> = ({ id, link, name, children }: TMen
               <NavLink
                 label={child.name}
                 key={child.id}
-                className={clsx(styles.childLink, styles.link, styles[`link_active-${isActiveChild}`])}
+                className={clsx(styles.link, styles.link_child, styles[`link_active-${isActiveChild}`])}
                 onClick={() => {
                   onChildClick(child.queryKey, child.queryValue)
                 }}
