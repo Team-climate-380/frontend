@@ -30,16 +30,29 @@ const SurveyResults: React.FC<SurveyResultsProps> = ({ fullResults = true, withD
     { type: 'action', label: 'Дублировать', action: () => {} },
     { type: 'link', label: 'Полные результаты', url: `/full-results?surveyId=${surveyId}` },
     { type: 'link', label: 'Агрегированные результаты', url: `/short-results?surveyId=${surveyId}` },
-    { type: 'action', label: 'В архив', action: () => {} },
+    {
+      type: 'action',
+      label: 'В архив',
+      action: () => {
+        editSurvey.mutate({ id: surveyId, surveyChange: { status: 'archived' } })
+      }
+    },
     { type: 'divider' },
     { type: 'action', label: 'Удалить', action: () => {}, important: true }
   ]
 
   const itemsComplited: PopupMenuItem[] = [
     { type: 'action', label: 'Дублировать', action: () => {} },
+
     { type: 'link', label: 'Полные результаты', url: `/full-results?surveyId=${surveyId}` },
     { type: 'link', label: 'Агрегированные результаты', url: `/short-results?surveyId=${surveyId}` },
-    { type: 'action', label: 'В архив', action: () => {} },
+    {
+      type: 'action',
+      label: 'В архив',
+      action: () => {
+        editSurvey.mutate({ id: surveyId, surveyChange: { status: 'archived' } })
+      }
+    },
     { type: 'divider' },
     { type: 'action', label: 'Удалить', action: () => {}, important: true }
   ]
