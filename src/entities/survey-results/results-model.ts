@@ -53,7 +53,7 @@ export const useSurveyResultMutations = () => {
   const queryClient = useQueryClient()
 
   const handleSuccess = async (
-    data: SurveyResults | undefined,
+    _data: SurveyResults | undefined,
     variables: { id: number; surveyChange: Partial<SurveyPatch> }
   ) => {
     const { id } = variables
