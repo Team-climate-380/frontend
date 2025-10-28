@@ -54,7 +54,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ contentSidebar
         </AppShell.Navbar>
 
         <AppShell.Main>
-          <Suspense fallback={<Loader />}>
+          <Suspense fallback={<Loader color={'var(--mantine-color-black-0)'} size={'xl'} />}>
             <Outlet />
           </Suspense>
         </AppShell.Main>

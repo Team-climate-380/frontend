@@ -1,7 +1,7 @@
 import style from '../styles/question.module.scss'
 import { Text } from '@mantine/core'
+import { FavoriteIconFilled } from '@shared/ui/icons/favorite-icon-filled'
 import { FC, useState } from 'react'
-import { FavoriteIconFlled } from '../ui/favorite-icon-filled'
 import { IQuestion } from '../type'
 import { ContextMenu } from '@/shared/ui/popup-menu/ui/context-menu'
 import { toggleFavorite } from '../utils/question-actions'
@@ -36,7 +36,7 @@ export const QuestionUI: FC<IQuestion & { allowContextMenu?: boolean }> = ({
     <>
       <div className={style.question} onClick={close} onContextMenu={handleContextMenu}>
         <span className={style.id}>{id}</span>
-        <div className={style.isFavorite}>{isFavorite && <FavoriteIconFlled width={11} height={11} />}</div>
+        <div className={style.isFavorite}>{isFavorite && <FavoriteIconFilled width={11} height={11} />}</div>
         <Text size="md" className={style.text}>
           {text} <span className={style.question_type}> ({QuestionTypeLabels[question_type as QuestionTypeEnum]})</span>
         </Text>

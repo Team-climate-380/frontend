@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react'
 import { useQueryParams } from '@/shared/hooks/useQueryParams'
 import { getQuestions } from '@/entities/question/api/get-questions'
 import { useInfiniteQuery } from '@tanstack/react-query'
-import { Loader } from '@mantine/core'
+import { Loader } from '@shared/ui/loader'
 import { useIntersection } from '@mantine/hooks'
 import { QuestionForm } from '@/features/question-form'
 import { QuestionsList } from '@/features/questions-list'
@@ -128,7 +128,7 @@ const QuestionPage = () => {
         </div>
       </div>
       <div ref={ref} className={styles.loader_container}>
-        {isFetchingNextPage && <Loader color="blue" />}
+        {isFetchingNextPage && <Loader />}
       </div>
     </div>
   )
