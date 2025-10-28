@@ -1,8 +1,6 @@
 import style from '../styles/question.module.scss'
 import { Text } from '@mantine/core'
-import { FC } from 'react'
 import { FavoriteIconFilled } from '@shared/ui/icons/favorite-icon-filled'
-import { QuestionType, TQuestionUIProps } from '../type'
 import { FC, useState } from 'react'
 import { IQuestion } from '../type'
 import { ContextMenu } from '@/shared/ui/popup-menu/ui/context-menu'
