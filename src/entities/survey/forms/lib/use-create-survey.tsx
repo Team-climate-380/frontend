@@ -7,7 +7,7 @@ import { useForm } from '@mantine/form'
 export interface IInitialValues {
   name: string
   // participants: ParticipantsValue | []
-  department?: string[]
+  department?: string
   startedAt?: Date | null
   finishedAt?: Date | null
   comment?: string
@@ -32,9 +32,6 @@ export const useCreateSurvey = (initialValues: IInitialValues) => {
       department: value => {
         if (!value) {
           return 'Необходимо выбрать департамент'
-        }
-        if (value?.length > 1) {
-          return 'Нужно выбрать только один отдел'
         }
         return null
       },
@@ -74,8 +71,9 @@ export const useCreateSurvey = (initialValues: IInitialValues) => {
         return null
       },
       comment: value => {
-        if (!value) return null
+        if (!value) return 'Обязательное поле'
         if (value.length > 254) return 'Слишком длинный комментарий. Длина должна быть не больше 254 символов.'
+        return null
       },
       questions: {
         text: value => (value.trim() === '' ? 'Введите текст вопроса' : null),
@@ -86,33 +84,3 @@ export const useCreateSurvey = (initialValues: IInitialValues) => {
 
   return formSurveyData
 }
-
-// NOTES
-// This is a test stand
-// <DatePickerInput /> required mantine 8.3.0!
-//
-//
-// <form onSubmit={formSurveyData.onSubmit(console.log)}>
-//   <MultiSelect
-//     label="Кто участвует"
-//     key={formSurveyData.key('participants')}
-//     clearable
-//     nothingFoundMessage="Ничего не найдено"
-//     {...formSurveyData.getInputProps('participants')}
-//   />
-//   <DatePickerInput
-//     label="Начало"
-//     clearable
-//     // value={value}
-//     // onChange={setValue}
-//     {...formSurveyData.getInputProps('beginDate')}
-//   />
-//   <DatePickerInput
-//     label="Завершение"
-//     clearable
-//     //   value={value}
-//     // onChange={setValue}
-//     {...formSurveyData.getInputProps('endDate')}
-//   />
-//   <TextInput radius="xs" label="Комментарий" {...formSurveyData.getInputProps('commentary')} />
-// </form>
