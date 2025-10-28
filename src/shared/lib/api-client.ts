@@ -61,6 +61,11 @@ export class ApiClient {
           response = await this.doFetch({ url, headers, method, body })
         }
       }
+
+      // Обработка пустых ответов (204 No Content)
+      if (response.status === 204 || response.headers.get('content-length') === '0') {
+        return { status: 'success', data: {} as T }
+      }
       const data = await response.json()
       if (!response.ok) {
         return { status: 'error', error: data, message: data?.message || 'Unexpected error' }

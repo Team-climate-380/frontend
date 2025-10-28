@@ -1,11 +1,12 @@
+import { deleteEmployee } from '@/entities/employees/api/api-employees'
 import { Employee } from '@/entities/employees/type'
 import { PopupMenuItem } from '@/shared/ui/popup-menu'
 
 export const getPopupMenuItems = (
   employee: Employee,
   setEditingEmployee: (e: Employee | null) => void,
-  setDeletedEmployeeIds: React.Dispatch<React.SetStateAction<number[]>>,
-  handleMenuClose: () => void
+  handleMenuClose: () => void,
+  handleEmployeesUpdate: () => void
 ): PopupMenuItem[] => [
   {
     type: 'action',
@@ -20,10 +21,10 @@ export const getPopupMenuItems = (
     type: 'action',
     label: 'Удалить',
     important: true,
-    action: () => {
-      setDeletedEmployeeIds(prev => [...prev, employee.id])
-      console.log('Удалить сотрудника:', employee.full_name)
+    action: async () => {
+      await deleteEmployee(employee.id)
       handleMenuClose()
+      handleEmployeesUpdate()
     }
   }
 ]
