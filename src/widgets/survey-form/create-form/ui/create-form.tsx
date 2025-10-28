@@ -1,10 +1,10 @@
 import { Input } from '@/shared/ui/input'
 import { FunctionComponent } from 'react'
-import classes from './styles/styles.module.scss'
+import classes from '../../styles/styles.module.scss'
 import { Flex, Grid, Group, Select } from '@mantine/core'
 import { MoreButton } from '@/shared/ui/more-button'
 import { CloseButton } from '@/shared/ui/close-button'
-import { useCreateSurvey } from '@/entities/survey/forms'
+import { useSurvey } from '@/entities/survey/forms/lib/use-survey'
 import { DatePickerInput } from '@mantine/dates'
 import 'dayjs/locale/ru'
 import '@mantine/dates/styles.css'
@@ -16,17 +16,15 @@ import { useQuery } from '@tanstack/react-query'
 import { fetchParticipants } from '@/entities/survey/forms/api'
 import { useSurveyMutation } from '@/entities/survey/forms/lib/use-survey-mutation'
 
-const SurveyForm: FunctionComponent = () => {
+const CreateSurveyForm: FunctionComponent = () => {
   const { data: departmentOptions, isLoading: areParticipantsLoading } = useQuery({
     queryKey: ['participants'],
     queryFn: fetchParticipants
   })
 
   const today = dayjs().locale('ru').format('DD MMMM YYYY')
-  const surveyTitle = `Новый опрос ${today}`
-
   const initialFormValues = {
-    name: surveyTitle,
+    name: `Новый опрос ${today}`,
     department: '',
     startedAt: null,
     finishedAt: null,
@@ -35,7 +33,7 @@ const SurveyForm: FunctionComponent = () => {
     questions: [] as TQuestion[]
   }
 
-  const formData = useCreateSurvey(initialFormValues)
+  const formData = useSurvey(initialFormValues)
 
   const { submitSurvey, isSubmitting, isError, isSuccess } = useSurveyMutation(formData)
 
@@ -134,10 +132,10 @@ const SurveyForm: FunctionComponent = () => {
           </Button>
         </Group>
         {isSuccess && <p className={classes.success}>Опрос успешно создан</p>}
-        {isError && <p className={classes.success}>Ошибка при создании</p>}
+        {isError && <p className={classes.error}>Ошибка при создании</p>}
       </Flex>
     </form>
   )
 }
 
-export default SurveyForm
+export default CreateSurveyForm

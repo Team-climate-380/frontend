@@ -1,11 +1,13 @@
 import { useMutation } from '@tanstack/react-query'
 import dayjs from 'dayjs'
-import { createSurvey } from '../api'
+import { createSurvey, updateSurvey } from '../api'
 import { UseFormReturnType } from '@mantine/form'
 import { TQuestion } from '@/entities/question/model/types'
-import { IInitialValues } from './use-create-survey'
+import { IInitialValues } from './use-survey'
 
-export const useSurveyMutation = (form: UseFormReturnType<IInitialValues>) => {
+type Mode = { mode: 'create' } | { mode: 'edit'; id: number }
+
+export const useSurveyMutation = (form: UseFormReturnType<IInitialValues>, mode?: Mode) => {
   const {
     mutate: submitSurvey,
     isPending: isSubmitting,
@@ -26,14 +28,18 @@ export const useSurveyMutation = (form: UseFormReturnType<IInitialValues>) => {
           return newQuestion
         })
       }
+      if (mode?.mode === 'edit') {
+        return updateSurvey(payload, mode.id)
+      }
       return createSurvey(payload)
     },
     onSuccess: () => {
-      console.log('Опрос успешно создан!')
-      form.reset()
+      if (mode?.mode === 'create') {
+        form.reset()
+      }
     },
     onError: error => {
-      console.error('Ошибка при создании опроса:', error)
+      console.error('Ошибка:', error)
     }
   })
 

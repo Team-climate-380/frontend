@@ -7,7 +7,7 @@ import { useForm } from '@mantine/form'
 export interface IInitialValues {
   name: string
   // participants: ParticipantsValue | []
-  department?: string
+  department?: string | null
   startedAt?: Date | null
   finishedAt?: Date | null
   comment?: string
@@ -15,7 +15,7 @@ export interface IInitialValues {
   isFavorite?: boolean
 }
 
-export const useCreateSurvey = (initialValues: IInitialValues) => {
+export const useSurvey = (initialValues: IInitialValues) => {
   const formSurveyData = useForm({
     initialValues,
     validateInputOnChange: true,
