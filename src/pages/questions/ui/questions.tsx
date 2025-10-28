@@ -6,65 +6,14 @@ import { FavoriteIcon } from '@/features/filters/ui/favorite-icon'
 import { SearchInput } from '@/widgets/search-input'
 import { useState, useEffect } from 'react'
 import { useQueryParams } from '@/shared/hooks/useQueryParams'
-import { getQuestions, IQuestionsResponce } from '@/entities/question/api/get-questions'
+import { getQuestions } from '@/entities/question/api/get-questions'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { Loader } from '@mantine/core'
 import { useIntersection } from '@mantine/hooks'
 import { QuestionForm } from '@/features/question-form'
 import { QuestionsList } from '@/features/questions-list'
-
-//const filters and const questions - mock data, TODO: delete after back-end requests implementation
-const reponceServer: IQuestionsResponce = {
-  data: [
-    {
-      id: 24,
-      text: 'Как вы оцениваете уровень доверия между членами команды?',
-      question_type: 'ratingScale',
-      is_favorite: false,
-      surveys: []
-    },
-    {
-      id: 25,
-      text: 'Вы довольны своей работой?',
-      question_type: 'ratingScale',
-      is_favorite: false,
-      surveys: []
-    },
-    {
-      id: 26,
-      text: 'Согласны ли вы с тем, что ваша работа ценится в команде?',
-      question_type: `consentGiven`,
-      is_favorite: false,
-      surveys: []
-    },
-    {
-      id: 27,
-      text: 'Считаете ли вы свою работу эффективной',
-      question_type: 'ratingScale',
-      is_favorite: false,
-      surveys: []
-    },
-    {
-      id: 28,
-      text: 'Как вы оценили бы уровень морального состояния в команде?',
-      question_type: 'ratingScale',
-      is_favorite: false
-    }
-  ],
-  page: 1,
-  per_page: 20,
-  total: 5,
-  num_pages: 1,
-  has_next: false,
-  has_previous: false
-}
-const questionsList = {
-  //  convert responceServer to application media
-  count: reponceServer.total,
-  next: reponceServer.has_next,
-  previous: reponceServer.has_previous,
-  results: reponceServer.data
-}
+import { IQuestion } from '@/entities/question/type'
+// import { RightPanel } from '@/shared/ui/drawer'
 
 const QuestionPage = () => {
   const [questionFormIsVisible, setQuestionFormIsVisible] = useState(false) //new question form visibility
@@ -74,12 +23,12 @@ const QuestionPage = () => {
   })
   //инициализация URL при первом рендере
   useEffect(() => {
-    setParams({ filter: 'all', page: '1', per_page: '2' }, true)
+    setParams({ filter: 'all', page: '1', per_page: '20' }, true)
   }, [])
 
   const currentFilter = queryParams.filter ?? 'all'
   const currentPage = Number(queryParams.page ?? '1')
-  const currentPerPage = Number(queryParams.per_page ?? '2')
+  const currentPerPage = Number(queryParams.per_page ?? '20')
   const currentSearch = queryParams.search ?? ''
 
   const filters = [
@@ -112,7 +61,7 @@ const QuestionPage = () => {
     getNextPageParam: lastPage => (lastPage?.has_next ? lastPage.page + 1 : undefined)
   })
 
-  const questionsFromServer = data?.pages?.flatMap(page => (page ? (page.data ?? []) : [])) ?? questionsList.results
+  // const questionsFromServer = data?.pages?.flatMap(page => (page ? (page.data ?? []) : [])) ?? questionsList.results
 
   useEffect(() => {
     if (entry?.isIntersecting && hasNextPage && !isFetchingNextPage) {
@@ -132,6 +81,20 @@ const QuestionPage = () => {
 
   return (
     <div className={styles.main}>
+      {/* {isRightPanelOpen && (  // drower test
+        <RightPanel
+          onClose={() => {
+            setIsRightPanelOpen(false)
+          }}
+          opened
+          header={
+            <Header title="Вопросы">
+              <Filter filters={filters} value={currentFilter} />
+            </Header>
+          }
+          content={<QuestionsList questions={questionsList.results} allowContextMenu={false} />}
+        ></RightPanel>
+      )} */}
       <Header
         title="Вопросы"
         actions={
@@ -159,7 +122,9 @@ const QuestionPage = () => {
         )}
         {/* TODO implement form from #52 task}*/}
         <div className={styles['questions-list']}>
-          <QuestionsList questions={questionsFromServer} />
+          <QuestionsList
+            questions={data?.pages.flatMap(pageItem => pageItem?.data).filter((q): q is IQuestion => Boolean(q)) ?? []}
+          />
         </div>
       </div>
       <div ref={ref} className={styles.loader_container}>
