@@ -4,7 +4,7 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import { useIntersection } from '@mantine/hooks'
 import { useQueryParams } from '@/shared/hooks/useQueryParams'
 import { routes } from '@/shared/configs/routs/routes.config'
-import { getAllSurveys } from '@/entities/survey/forms/api.ts'
+import { getAllSurveys } from '@/entities/survey/forms/api'
 import { Text, List } from '@mantine/core'
 import { Header } from '@widgets/header/header'
 import { Filter } from '@/features/filters'
@@ -13,6 +13,7 @@ import { StatusEnum } from '@entities/survey-results/results-model'
 import { FavoriteIcon } from '@/features/filters/ui/favorite-icon'
 import { ListItemSurvey } from '@shared/ui/list-item-survey'
 import { Loader } from '@shared/ui/loader'
+import { Skeleton } from '@shared/ui/skeleton'
 import { Button } from '@shared/ui/button'
 import { IconCompletedSurvey } from '@shared/ui/icons/icon-completed-survey'
 import classes from './styles.module.scss'
@@ -70,15 +71,15 @@ const Surveys: React.FC = () => {
       }
     }
   ]
-
   const currentFilter = queryParams?.filter ?? 'all'
   const currentPage = Number(queryParams.page ?? '1')
   const currentDepartment = Number(queryParams?.department)
+  const searchQuery = queryParams?.search?.toLowerCase()
 
   const { status, data, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteQuery({
-    queryKey: ['surveys/', currentFilter, currentDepartment],
+    queryKey: ['surveys', currentFilter, currentDepartment, searchQuery],
     queryFn: ({ pageParam = currentPage }) => {
-      return getAllSurveys(pageParam, currentFilter, currentDepartment)
+      return getAllSurveys(pageParam, currentFilter, currentDepartment, searchQuery)
     },
     initialPageParam: 1,
     getNextPageParam: lastPage => (lastPage?.has_next ? lastPage.page + 1 : undefined)
@@ -126,7 +127,7 @@ const Surveys: React.FC = () => {
 
       <div className={classes.container}>
         {status === 'pending' ? (
-          <Loader size={'xl'} />
+          <Skeleton />
         ) : (
           <>
             <List

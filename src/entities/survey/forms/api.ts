@@ -27,12 +27,21 @@ export const createSurvey = async (surveyPayload: Record<string, unknown>) => {
   throw new Error('Не удалось создать опрос')
 }
 
-export const getAllSurveys = async (pageParam: number, currentFilter: string, currentDepartment: number) => {
+export const getAllSurveys = async (
+  pageParam: number,
+  currentFilter: string,
+  currentDepartment: number,
+  searchQuery: string
+) => {
   let url = `/api/surveys/?page=${pageParam}&filter=${currentFilter}`
   const queryParams = window.location?.search
 
   if (queryParams.includes('department')) {
     url = url + `&department=${currentDepartment}`
+  }
+
+  if (queryParams.includes('search')) {
+    url = `/api/surveys/?page=${pageParam}&search=${searchQuery}`
   }
 
   const response = await api.get<ISurveysResponse>(`${url}`)
