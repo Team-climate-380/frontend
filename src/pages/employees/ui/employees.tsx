@@ -14,7 +14,6 @@ import { PopupMenu, PopupMenuItem } from '@/shared/ui/popup-menu'
 import { Employee } from '@/entities/employees/type'
 import { getPopupMenuItems } from '../configs/employees-context-menu'
 import { DeleteIcon } from '@/shared/ui/icons/delete-icon'
-import { nanoid } from 'nanoid'
 const Employees: React.FC = () => {
   const [isVisibleAddEmployees, setIsVisibleAddEmployees] = useState(false)
   const [editingEmployeeId, setEditingEmployeeId] = useState<number | null>()
@@ -135,15 +134,9 @@ const Employees: React.FC = () => {
                 )
               } else {
                 return (
-                  <div key={nanoid(3)}>
+                  <div key={employee.id}>
                     <EmployeesItem employee={employee} onContextMenu={handleContextMenu} isDeleted={isDeleted}>
-                      {isDeleted && (
-                        <DeleteIcon
-                          onClick={() => handleCancelDelete(employee.id)}
-                          className={style.delete_icon}
-                          key={nanoid(3)}
-                        />
-                      )}
+                      {isDeleted && <DeleteIcon onClick={() => handleCancelDelete(employee.id)} />}
                     </EmployeesItem>
                   </div>
                 )
