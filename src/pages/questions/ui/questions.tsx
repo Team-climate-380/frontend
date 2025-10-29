@@ -9,7 +9,7 @@ import { useQueryParams } from '@/shared/hooks/useQueryParams'
 import { getQuestions } from '@/entities/question/api/get-questions'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { Loader } from '@/shared/ui/loader'
-// import { Skeleton } from '@/shared/ui/skeleton'
+import { Skeleton } from '@/shared/ui/skeleton'
 import { useIntersection } from '@mantine/hooks'
 import { QuestionForm } from '@/features/question-form'
 import { QuestionsList } from '@/features/questions-list'
@@ -22,6 +22,7 @@ const QuestionPage = () => {
   const { ref, entry } = useIntersection({
     threshold: 1
   })
+
   //инициализация URL при первом рендере
   useEffect(() => {
     setParams({ filter: 'all', page: '1', per_page: '20' }, true)
@@ -121,11 +122,17 @@ const QuestionPage = () => {
             />
           </div>
         )}
-        <div className={styles['questions-list']}>
-          <QuestionsList
-            questions={data?.pages.flatMap(pageItem => pageItem?.data).filter((q): q is IQuestion => Boolean(q)) ?? []}
-          />
-        </div>
+        {data ? (
+          <div className={styles['questions-list']}>
+            <QuestionsList
+              questions={
+                data?.pages.flatMap(pageItem => pageItem?.data).filter((q): q is IQuestion => Boolean(q)) ?? []
+              }
+            />
+          </div>
+        ) : (
+          <Skeleton />
+        )}
       </div>
       <div ref={ref} className={styles.loader_container}>
         {isFetchingNextPage && <Loader size="lg" />}
