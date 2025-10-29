@@ -11,9 +11,10 @@ import classes from './question-form.module.scss'
 import { createNewQuestion } from '@/entities/question/api/create-new-question'
 import { useState } from 'react'
 import { Loader } from '@/shared/ui/loader'
+import { updateQuestion } from '@/entities/question/api/update-question'
+import { QuestionTypeData, QuestionTypeDisplay } from '@/entities/question/utils/question-actions'
 
-const questionTypeData = Object.values(QuestionTypeEnum)
-
+const questionTypeDataUI = Object.values(QuestionTypeEnum).map(key => QuestionTypeDisplay(key))
 export type QuestionFormProps = ICreateEditFormProps & {
   formData?: IQuestionForm
 }
@@ -26,7 +27,10 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ isOpen, isCreateForm
     if (isCreateForm) {
       setLoading(true)
       try {
-        const result = await createNewQuestion(data)
+        const result = await createNewQuestion({
+          text: data.text,
+          question_type: QuestionTypeData(data.question_type)
+        })
 
         if (!result) {
           console.error('Ошибка при создании вопроса')
@@ -40,10 +44,23 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ isOpen, isCreateForm
         closeForm()
       }
     } else {
-      console.log('edit form', data) //PATCH
+      setLoading(true)
+      try {
+        const result = await updateQuestion(formData!.id, {
+          ...data,
+          question_type: QuestionTypeData(questionForm.getValues().question_type)
+        })
+        if (!result) {
+          console.error('Ошибка при редактировании вопроса')
+          return
+        }
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setLoading(false)
+        closeForm()
+      }
     }
-    console.log(data)
-    closeForm()
   }
 
   return isOpen ? (
@@ -63,7 +80,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ isOpen, isCreateForm
           }}
           className={classes.questionFormDropdown}
           aria-label="Тип вопроса"
-          data={questionTypeData}
+          data={questionTypeDataUI}
           key={questionForm.key('question_type')}
           {...questionForm.getInputProps('question_type')}
         />

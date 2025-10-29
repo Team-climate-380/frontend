@@ -9,7 +9,7 @@ export const MenuLink: React.FC<TMenuLink> = ({ id, link, name, children }: TMen
   const navigate = useNavigate()
   const setParams = useQueryParams().setParams
   const getParam = useQueryParams().getParam
-  const isActive = window.location.pathname === link
+  const isActive = window.location.pathname.includes(link)
   const onChildClick = (queryKey: string, queryValue: string) => {
     setParams({ [queryKey]: `${queryValue}` }, false)
   }
@@ -21,7 +21,7 @@ export const MenuLink: React.FC<TMenuLink> = ({ id, link, name, children }: TMen
       label={name}
       key={id}
       childrenOffset="3"
-      defaultOpened={isActive}
+      opened={isActive}
       className={clsx(styles.link, styles.pageLink, styles[`link_active-${isActive}`])}
       rightSection={null}
       onClick={() => navigate(link)}

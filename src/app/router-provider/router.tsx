@@ -1,4 +1,5 @@
 import { createBrowserRouter } from 'react-router'
+import { Navigate } from 'react-router-dom'
 import { routes } from '@shared/configs/routs'
 import { LazyLoginPage } from '@pages/login'
 import { LazyNotFound } from '@/pages/not-found'
@@ -24,11 +25,7 @@ export const router = createBrowserRouter([
     children: [
       {
         path: routes.home(),
-        element: (
-          <ProtectedRoute>
-            <LazySurveys />
-          </ProtectedRoute>
-        )
+        element: <Navigate to={routes.surveys()} />
       },
 
       {

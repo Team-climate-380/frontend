@@ -7,7 +7,7 @@ const apiClient = new ApiClient()
 export const getDepartments = async () => {
   const response = await apiClient.get<DepartmentInfo[]>(`/api/departments/`)
   if (response.status === 'success' && 'data' in response) return response.data
-  if (response.status === 'error' && 'message' in response) console.error(response.message)
+  if (response.status === 'error' && 'message' in response) throw new Error(response.message)
 }
 
 export const createDepartment = async (name: string) => {

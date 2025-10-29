@@ -1,9 +1,10 @@
 import React from 'react'
 import { QuestionsResult } from '@/widgets/questions-result/ui/questions-result'
 import classes from '../styles/styles.module.scss'
-import { useResultsQuery } from '@/entities/survey-results/results-model'
+import { useResultsQuery, useSurveyResultMutations } from '@/entities/survey-results/results-model'
 import { useQueryParams } from '@/shared/hooks/useQueryParams'
-import { CloseButton, Loader } from '@mantine/core'
+import { Loader } from '@shared/ui/loader'
+import { CloseButton } from '@mantine/core'
 import { MoreButton } from '@/shared/ui/more-button'
 import { PopupMenu } from '@/shared/ui/popup-menu'
 import { PopupMenuItem } from '@/shared/ui/popup-menu/types/types'
@@ -17,22 +18,42 @@ const SurveyResults: React.FC<SurveyResultsProps> = ({ fullResults = true, withD
   const { getParam } = useQueryParams()
   const surveyId = Number(getParam('surveyId'))
   const { data, isPending, isError } = useResultsQuery(surveyId)
+  const { editSurvey } = useSurveyResultMutations()
 
   const itemsActive: PopupMenuItem[] = [
-    { type: 'action', label: 'Остановить опрос', action: () => {} },
+    {
+      type: 'action',
+      label: 'Остановить опрос',
+      action: () => {
+        editSurvey.mutate({ id: surveyId, surveyChange: { status: 'completed' } })
+      }
+    },
     { type: 'action', label: 'Дублировать', action: () => {} },
     { type: 'link', label: 'Полные результаты', url: `/full-results?surveyId=${surveyId}` },
     { type: 'link', label: 'Агрегированные результаты', url: `/short-results?surveyId=${surveyId}` },
-    { type: 'action', label: 'В архив', action: () => {} },
+    {
+      type: 'action',
+      label: 'В архив',
+      action: () => {
+        editSurvey.mutate({ id: surveyId, surveyChange: { status: 'archived' } })
+      }
+    },
     { type: 'divider' },
     { type: 'action', label: 'Удалить', action: () => {}, important: true }
   ]
 
   const itemsComplited: PopupMenuItem[] = [
     { type: 'action', label: 'Дублировать', action: () => {} },
+
     { type: 'link', label: 'Полные результаты', url: `/full-results?surveyId=${surveyId}` },
     { type: 'link', label: 'Агрегированные результаты', url: `/short-results?surveyId=${surveyId}` },
-    { type: 'action', label: 'В архив', action: () => {} },
+    {
+      type: 'action',
+      label: 'В архив',
+      action: () => {
+        editSurvey.mutate({ id: surveyId, surveyChange: { status: 'archived' } })
+      }
+    },
     { type: 'divider' },
     { type: 'action', label: 'Удалить', action: () => {}, important: true }
   ]

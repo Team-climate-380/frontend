@@ -11,6 +11,7 @@ export interface QuestionResultProps {
     employer: Employer
   }[]
   answer_options: { id: number; text: string; is_correct: boolean }[]
+  surveys: number[]
 }
 
 export interface employeesProps {
@@ -27,7 +28,7 @@ interface Employer {
 interface Props {
   question: QuestionResultProps
   fullResults: boolean
-  employees: employeesProps[]
+  employees: employeesProps[] | undefined
 }
 
 export const QuestionResult: React.FC<Props> = ({ question, fullResults, employees }) => {
@@ -57,11 +58,13 @@ export const QuestionResult: React.FC<Props> = ({ question, fullResults, employe
 
   const time: Record<number, number> = {}
 
-  employees.forEach(employee => {
-    if (employee.survey_sec > 0) {
-      time[employee.employee] = employee.survey_sec
-    }
-  })
+  if (employees) {
+    employees.forEach(employee => {
+      if (employee.survey_sec > 0) {
+        time[employee.employee] = employee.survey_sec
+      }
+    })
+  }
 
   question.user_answers.forEach(answer => {
     if (typeof answer.result === 'string' && Object.prototype.hasOwnProperty.call(counts, answer.result)) {

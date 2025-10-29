@@ -1,4 +1,5 @@
-import { Anchor, Flex, List, Loader, Text } from '@mantine/core'
+import { Anchor, Flex, List, Text } from '@mantine/core'
+import { Loader } from '@shared/ui/loader'
 import style from './not-found.module.scss'
 import { Suspense } from 'react'
 import { routes } from '@/shared/configs/routs'
@@ -7,7 +8,7 @@ import NotFound404 from './images/NotFound404.svg'
 
 const NotFound: React.FC = () => {
   return (
-    <Suspense fallback={<Loader color="blue" />}>
+    <Suspense fallback={<Loader size={'xl'} />}>
       <Flex mih={431} direction="column" wrap="nowrap" className={style.notFound} justify="space-between">
         <Flex direction="column" gap="52px">
           <Flex className={style.notFound_header} justify="flex-start" align="center" direction="row" wrap="nowrap">

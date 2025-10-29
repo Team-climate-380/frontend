@@ -2,11 +2,12 @@ import { Question } from '@/entities/question'
 import { IQuestion } from '@/entities/question/type'
 import { FC } from 'react'
 
-interface IQProp {
+interface IQuestionsListUIProps {
   questions: IQuestion[]
+  allowContextMenu?: boolean
 }
 
-export const QuestionsListUI: FC<IQProp> = ({ questions }) => {
+export const QuestionsListUI: FC<IQuestionsListUIProps> = ({ questions, allowContextMenu }) => {
   return (
     <>
       {questions
@@ -20,6 +21,7 @@ export const QuestionsListUI: FC<IQProp> = ({ questions }) => {
                   is_favorite={question[1].is_favorite}
                   surveys={question[1].surveys}
                   question_type={question[1].question_type}
+                  allowContextMenu={allowContextMenu}
                 />
               </>
             )
