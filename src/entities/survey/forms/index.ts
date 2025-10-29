@@ -1,1 +1,1 @@
-export { useCreateSurvey } from './lib/use-create-survey'
+export { useCreateSurvey } from './lib/use-survey'

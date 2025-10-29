@@ -45,6 +45,20 @@
   padding-inline: 28px;
 }
 
+.buttonWithStatus {
+  padding-block: 24px;
+  padding-inline: 28px;
+}
+
 .optionButtons {
   margin-top: 20px;
+}
+.error {
+  font-size: 12px;
+  color: #da2b10;
+}
+
+.success {
+  font-size: 12px;
+  color: #75da10;
 }

@@ -15,6 +15,7 @@ import { ProtectedRoute } from '@/features/auth/index'
 import { LazyPasswordRecovery } from '@/pages/password-recovery'
 import { Menu } from '@/widgets/menu/ui/menu'
 import { ResultLayout } from '@/widgets/result-layout'
+import { LazyEditSurvey } from '@/pages/edit-survey'
 
 stateInitialization()
 
@@ -49,6 +50,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <LazyCreatingSurvey />
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: routes.edit_survey_path(),
+        element: (
+          <ProtectedRoute>
+            <LazyEditSurvey />
           </ProtectedRoute>
         )
       },
