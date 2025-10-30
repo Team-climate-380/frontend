@@ -14,7 +14,6 @@ import { useIntersection } from '@mantine/hooks'
 import { QuestionForm } from '@/features/question-form'
 import { QuestionsList } from '@/features/questions-list'
 import { IQuestion } from '@/entities/question/type'
-// import { RightPanel } from '@/shared/ui/drawer'
 
 const QuestionPage = () => {
   const [questionFormIsVisible, setQuestionFormIsVisible] = useState(false) //new question form visibility
@@ -50,7 +49,7 @@ const QuestionPage = () => {
     }
   ]
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, error } = useInfiniteQuery({
     queryKey: ['questions', currentFilter, currentPerPage, currentSearch],
     queryFn: async ({ pageParam = currentPage }) =>
       await getQuestions({
@@ -63,7 +62,7 @@ const QuestionPage = () => {
     getNextPageParam: lastPage => (lastPage?.has_next ? lastPage.page + 1 : undefined)
   })
 
-  // const questionsFromServer = data?.pages?.flatMap(page => (page ? (page.data ?? []) : [])) ?? questionsList.results
+  const questions = data?.pages.flatMap(pageItem => pageItem?.data).filter((q): q is IQuestion => Boolean(q)) ?? []
 
   useEffect(() => {
     if (entry?.isIntersecting && hasNextPage && !isFetchingNextPage) {
@@ -83,20 +82,6 @@ const QuestionPage = () => {
 
   return (
     <div className={styles.main}>
-      {/* {isRightPanelOpen && (  // drower test
-        <RightPanel
-          onClose={() => {
-            setIsRightPanelOpen(false)
-          }}
-          opened
-          header={
-            <Header title="Вопросы">
-              <Filter filters={filters} value={currentFilter} />
-            </Header>
-          }
-          content={<QuestionsList questions={questionsList.results} allowContextMenu={false} />}
-        ></RightPanel>
-      )} */}
       <Header
         title="Вопросы"
         actions={
@@ -122,16 +107,18 @@ const QuestionPage = () => {
             />
           </div>
         )}
-        {data ? (
+        {isError ? (
+          <div className={styles['error-message']}>
+            Ошибка при загрузке данных: {error instanceof Error ? error.message : 'Неизвестная ошибка'}
+          </div>
+        ) : isLoading ? (
+          <Skeleton />
+        ) : questions.length > 0 ? (
           <div className={styles['questions-list']}>
-            <QuestionsList
-              questions={
-                data?.pages.flatMap(pageItem => pageItem?.data).filter((q): q is IQuestion => Boolean(q)) ?? []
-              }
-            />
+            <QuestionsList questions={questions} />
           </div>
         ) : (
-          <Skeleton />
+          <span className={styles['no-data']}>По Вашему запросу нет данных. Измените параметры поиска</span>
         )}
       </div>
       <div ref={ref} className={styles.loader_container}>

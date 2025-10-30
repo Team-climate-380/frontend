@@ -23,6 +23,18 @@
     min-height: 134px;
   }
 
+  .no-data {
+    color: rgb(25, 74, 133);
+    font-size: 20px;
+    font-weight: 400;
+  }
+
+  .error-message {
+    color: rgb(177, 32, 32);
+    font-size: 20px;
+    font-weight: 400;
+  }
+
   .questions-list {
     display: flex;
     flex: 1;
