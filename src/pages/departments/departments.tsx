@@ -9,10 +9,10 @@ import { Department } from '@/shared/ui/department'
 import { Header } from '@/widgets/header/header'
 import { PopupMenu } from '@/shared/ui/popup-menu'
 import { departmentsContextMenu } from './configs/departments-context-menu.config'
-import { Loader } from '@/shared/ui/loader'
 import { SearchInput } from '@/widgets/search-input'
 import { useQueryParams } from '@/shared/hooks/useQueryParams'
 import { IconExclamationCircleFilled } from '@tabler/icons-react'
+import { Skeleton } from '@/shared/ui/skeleton'
 
 export const Departments: React.FC = () => {
   const [isCreateNewFormVisible, setIsCreateNewFormVisible] = useState(false)
@@ -93,8 +93,10 @@ export const Departments: React.FC = () => {
         <ScrollArea type="scroll">
           {isCreateNewFormVisible && <GroupForm onSubmit={handleSubmit} />}
           <List listStyleType="none">
-            {isPending && <Loader />}
-            {!data && isError && 'Ошибка загрузки данных о группах...'}
+            {isPending && <Skeleton />}
+            {!data &&
+              isError &&
+              `Не удалось загрузить данные о группах. Пожалуйста, обновите страницу или повторите попытку позже.`}
             {filteredDepartments &&
               filteredDepartments.map(department => {
                 return (
