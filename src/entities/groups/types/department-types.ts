@@ -6,6 +6,7 @@ export type EmployeeInfo = {
 export type DepartmentInfo = {
   id: number
   department_name: string
+  to_delete: boolean
   employees_count: number
   employees?: EmployeeInfo[]
 }
