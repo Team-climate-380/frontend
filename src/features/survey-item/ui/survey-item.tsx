@@ -1,22 +1,25 @@
-import { ReactNode } from 'react'
+import clsx from 'clsx'
 import { useDepartmentQuery } from '@/entities/groups/api/departments-api'
-import { useContextMenu } from '@/shared/hooks/use-context-menu.ts'
+import { useContextMenu } from '@/shared/hooks/use-context-menu'
 import { routes } from '@shared/configs/routs'
-import { ListItem, Text } from '@mantine/core'
-import { deleteSurvey } from '@entities/survey/forms/api'
-import { SurveyResults, StatusEnum } from '@entities/survey-results/results-model'
-import { PopupMenu } from '@shared/ui/popup-menu/index.ts'
+import { ListItem } from '@mantine/core'
+import { SurveyResults } from '@entities/survey-results/results-model'
+import { PopupMenu } from '@shared/ui/popup-menu/index'
+import { SurveyStatusIcon } from '@entities/survey/ui/survey-status-icon'
+import { SurveyDeleteIcon } from '@entities/survey/ui/survey-delete-icon'
+import { useDeleteSurveyMutation } from '@/entities/survey/api/api'
 import { FavoriteIconFilled } from '@/shared/ui/icons/favorite-icon-filled'
 import classes from './styles.module.scss'
 
-export interface ListItemSurveyProps {
+export interface SurveyItemProps {
   surveys: SurveyResults[]
-  element?: ReactNode
 }
 
-export const ListItemSurvey: React.FC<ListItemSurveyProps> = ({ surveys, element }) => {
+export const SurveyItem: React.FC<SurveyItemProps> = ({ surveys }) => {
   const { contextMenu, handleRightClick, handleContextMenuClose } = useContextMenu()
   const { data } = useDepartmentQuery()
+
+  const { deleteSurveyMutate, cancelDeleteSurveyMutate } = useDeleteSurveyMutation()
 
   return (
     <>
@@ -30,30 +33,16 @@ export const ListItemSurvey: React.FC<ListItemSurveyProps> = ({ surveys, element
         return (
           <ListItem
             key={item.id}
-            className={classes.item}
+            className={clsx(classes.item, item.to_delete && classes.itemToDelete)}
             onContextMenu={evt => handleRightClick(evt, item.id)}
             icon={
               item.is_favorite ? (
                 <>
-                  {item?.status === StatusEnum.Active ? (
-                    <Text size="xs" c={'#75899C'}>
-                      {item.finished_count}/{employeeCount}
-                    </Text>
-                  ) : (
-                    element
-                  )}
+                  <SurveyStatusIcon status={item.status} finishedCount={item.finished_count} allCount={employeeCount} />
                   <FavoriteIconFilled fill={'#FFD014'} width="11" height="11" />
                 </>
               ) : (
-                <>
-                  {item?.status === StatusEnum.Active ? (
-                    <Text size="xs" c={'#75899C'}>
-                      {item.finished_count}/{employeeCount}
-                    </Text>
-                  ) : (
-                    element
-                  )}
-                </>
+                <SurveyStatusIcon status={item?.status} finishedCount={item.finished_count} allCount={employeeCount} />
               )
             }
           >
@@ -67,8 +56,7 @@ export const ListItemSurvey: React.FC<ListItemSurveyProps> = ({ surveys, element
                   {
                     type: 'link',
                     label: 'Редактировать',
-                    // change on url for edit survey
-                    url: routes.new_survey()
+                    url: routes.edit_survey(contextMenu?.selectedId)
                   },
                   {
                     type: 'divider'
@@ -77,12 +65,24 @@ export const ListItemSurvey: React.FC<ListItemSurveyProps> = ({ surveys, element
                     type: 'action',
                     label: 'Удалить',
                     important: true,
-                    action: () => deleteSurvey(contextMenu?.selectedId)
+                    action: () => {
+                      deleteSurveyMutate(contextMenu?.selectedId)
+                      handleContextMenuClose()
+                    }
                   }
                 ]}
                 onClose={handleContextMenuClose}
               />
             )}
+            <SurveyDeleteIcon
+              isAddedToDelete={item.to_delete}
+              handleClick={e => {
+                e.preventDefault()
+
+                item.to_delete = !item.to_delete
+                cancelDeleteSurveyMutate(item)
+              }}
+            />
           </ListItem>
         )
       })}

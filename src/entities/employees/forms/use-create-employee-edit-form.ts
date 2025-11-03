@@ -39,7 +39,7 @@ export const useCreateEmployeeEditForm = (initialValues?: TEmployeeForm) => {
         return null
       },
       tg_username: value => {
-        if (value[0] !== '@') {
+        if (value && value[0] !== '@') {
           return 'Введите имя в формате @telegram'
         }
         if (value && !/^@[A-Za-z0-9][A-Za-z0-9_]+$/.test(value)) {

@@ -2,6 +2,10 @@
   position: relative;
 }
 
+.itemToDelete {
+  text-decoration: line-through;
+}
+
 .comment {
   display: block;
   position: absolute;

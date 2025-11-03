@@ -4,18 +4,17 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import { useIntersection } from '@mantine/hooks'
 import { useQueryParams } from '@/shared/hooks/useQueryParams'
 import { routes } from '@/shared/configs/routs/routes.config'
-import { getAllSurveys } from '@/entities/survey/forms/api'
-import { Text, List } from '@mantine/core'
+import { getAllSurveys } from '@entities/survey/api/api'
+import { List } from '@mantine/core'
 import { Header } from '@widgets/header/header'
 import { Filter } from '@/features/filters'
 import { SearchInput } from '@/widgets/search-input'
 import { StatusEnum } from '@entities/survey-results/results-model'
 import { FavoriteIcon } from '@/features/filters/ui/favorite-icon'
-import { ListItemSurvey } from '@shared/ui/list-item-survey'
+import { SurveyItem } from '@features/survey-item'
 import { Loader } from '@shared/ui/loader'
 import { Skeleton } from '@shared/ui/skeleton'
 import { Button } from '@shared/ui/button'
-import { IconCompletedSurvey } from '@shared/ui/icons/icon-completed-survey'
 import classes from './styles.module.scss'
 
 const Surveys: React.FC = () => {
@@ -144,34 +143,10 @@ const Surveys: React.FC = () => {
                 }
               }}
             >
-              <ListItemSurvey
-                surveys={draftSurveys}
-                element={
-                  <Text
-                    size="xs"
-                    c={'#75899C'}
-                    tt="uppercase"
-                    fw={700}
-                    styles={{
-                      root: {
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        backgroundColor: '#EFF1F3',
-                        padding: '5px 2px',
-                        width: '19px',
-                        height: '17px',
-                        borderRadius: '5%'
-                      }
-                    }}
-                  >
-                    ч
-                  </Text>
-                }
-              />
-              <ListItemSurvey surveys={activeSurveys} />
-              <ListItemSurvey surveys={completedSurveys} element={<IconCompletedSurvey />} />
-              <ListItemSurvey surveys={archivedSurveys} />
+              <SurveyItem surveys={draftSurveys} />
+              <SurveyItem surveys={activeSurveys} />
+              <SurveyItem surveys={completedSurveys} />
+              <SurveyItem surveys={archivedSurveys} />
             </List>
             <div ref={ref}>{isFetchingNextPage && <Loader />}</div>
           </>

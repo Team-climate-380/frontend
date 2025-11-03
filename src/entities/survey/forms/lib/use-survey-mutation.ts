@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 import dayjs from 'dayjs'
-import { createSurvey, updateSurvey } from '../api'
+import { createSurvey, updateSurvey } from '@entities/survey/api/api'
 import { UseFormReturnType } from '@mantine/form'
 import { TQuestion } from '@/entities/question/model/types'
 import { IInitialValues } from './use-survey'

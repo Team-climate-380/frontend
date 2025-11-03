@@ -1,3 +1,4 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { DepartmentInfo } from '@/entities/groups'
 import { SurveyResults } from '@/entities/survey-results/results-model'
 import { ApiClient } from '@/shared/lib/api-client'
@@ -32,7 +33,7 @@ export const createSurvey = async (surveyPayload: Record<string, unknown>) => {
   throw new Error('Не удалось создать опрос')
 }
 
-export const updateSurvey = async (surveyPayload: Record<string, unknown>, id: number) => {
+export const updateSurvey = async (surveyPayload: Partial<SurveyResults>, id: number) => {
   const response = await api.patch(`/api/surveys/${id}/`, surveyPayload, {})
   if ('data' in response) {
     return response.data
@@ -77,12 +78,38 @@ export const getAllSurveys = async (
 }
 
 export const deleteSurvey = async (id: number | undefined | null) => {
-  console.log(`удалить опрос: ${id}`)
-  // TODO: ждем, пока бэк реализует удаление опроса
+  const response = await api.delete(`/api/surveys/${id}/`)
 
-  // const response = await api.delete(`/api/surveys/${id}/`)
-  // if ('error' in response) {
-  //   throw new Error('Не удалось удалить опрос')
-  // }
-  // return response.data
+  if ('error' in response) {
+    throw new Error('Ошибка при удалении опроса')
+  }
+}
+
+export const useDeleteSurveyMutation = () => {
+  const queryClient = useQueryClient()
+
+  const { mutate: deleteSurveyMutate } = useMutation({
+    mutationFn: deleteSurvey,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['surveys'] })
+    },
+    onError: error => {
+      console.error('Ошибка:', error)
+    }
+  })
+
+  const { mutate: cancelDeleteSurveyMutate } = useMutation({
+    mutationFn: (updatedSurvey: SurveyResults) => {
+      const idUpdatedSurvey: number = updatedSurvey.id
+      return updateSurvey(updatedSurvey, idUpdatedSurvey)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['surveys'] })
+    },
+    onError: error => {
+      console.error('Ошибка:', error)
+    }
+  })
+
+  return { deleteSurveyMutate, cancelDeleteSurveyMutate }
 }
