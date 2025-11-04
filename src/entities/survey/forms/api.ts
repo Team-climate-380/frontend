@@ -1,4 +1,5 @@
-import { DepartmentInfo, EmployeeInfo } from '@/entities/groups'
+import { DepartmentInfo } from '@/entities/groups'
+import { SurveyResults } from '@/entities/survey-results/results-model'
 import { ApiClient } from '@/shared/lib/api-client'
 import { ISurveysResponse } from '../types'
 
@@ -6,17 +7,21 @@ const api = new ApiClient({})
 
 export const fetchParticipants = async (): Promise<string[]> => {
   // TODO: сейчас department принимает объект, а не массив, также сервер не принимает список пользователей
-
-  const [departmentsRes, employeesRes] = await Promise.all([
-    api.get<DepartmentInfo[]>('/api/departments/'),
-    api.get<EmployeeInfo[]>('/api/employees/')
-  ])
-  if ('data' in departmentsRes && 'data' in employeesRes) {
+  const departmentsRes = await api.get<DepartmentInfo[]>('/api/departments/')
+  if ('data' in departmentsRes) {
     const departmentOptions = departmentsRes.data.map(dep => dep.department_name)
-    // const employeeOptions = employeesRes.data.map(emp => emp.full_name)
-    return [...departmentOptions /*, ...employeeOptions */]
+    return departmentOptions
   }
   return []
+  // const [departmentsRes, employeesRes] = await Promise.all([
+  //   api.get<DepartmentInfo[]>('/api/departments/'),
+  //   api.get<EmployeeInfo[]>('/api/employees/')
+  // ])
+  // if ('data' in departmentsRes && 'data' in employeesRes) {
+  //   const departmentOptions = departmentsRes.data.map(dep => dep.department_name)
+  //   const employeeOptions = employeesRes.data.map(emp => emp.full_name)
+  //   return [...departmentOptions /*, ...employeeOptions */]
+  // }
 }
 
 export const createSurvey = async (surveyPayload: Record<string, unknown>) => {
@@ -27,24 +32,44 @@ export const createSurvey = async (surveyPayload: Record<string, unknown>) => {
   throw new Error('Не удалось создать опрос')
 }
 
+export const updateSurvey = async (surveyPayload: Record<string, unknown>, id: number) => {
+  const response = await api.patch(`/api/surveys/${id}/`, surveyPayload, {})
+  if ('data' in response) {
+    return response.data
+  }
+  throw new Error('Не удалось обновить опрос')
+}
+
+export const fetchSurveyById = async (id: number) => {
+  const response = await api.get<SurveyResults>(`/api/surveys/${id}/`)
+  if (response.status === 'success' && 'data' in response) return response.data
+  throw new Error('Не удалось получить данные опроса')
+}
+
 export const getAllSurveys = async (
   pageParam: number,
   currentFilter: string,
-  currentDepartment: number,
+  currentDepartment: number | null | undefined,
   searchQuery: string
 ) => {
-  let url = `/api/surveys/?page=${pageParam}&filter=${currentFilter}`
-  const queryParams = window.location?.search
+  // Строим параметры запроса явно, чтобы не терять фильтры
+  const params = new URLSearchParams()
 
-  if (queryParams.includes('department')) {
-    url = url + `&department=${currentDepartment}`
+  params.set('page', String(pageParam))
+  if (currentFilter) params.set('filter', currentFilter)
+
+  if (typeof currentDepartment === 'number' && !Number.isNaN(currentDepartment)) {
+    params.set('department', String(currentDepartment))
   }
 
-  if (queryParams.includes('search')) {
-    url = `/api/surveys/?page=${pageParam}&search=${searchQuery}`
+  const trimmedSearch = (searchQuery ?? '').trim()
+  if (trimmedSearch) {
+    params.set('search', trimmedSearch)
   }
 
-  const response = await api.get<ISurveysResponse>(`${url}`)
+  const url = `/api/surveys/?${params.toString()}`
+  const response = await api.get<ISurveysResponse>(url)
+
   if (response.status === 'success' && 'data' in response) {
     return response.data
   }
@@ -55,10 +80,9 @@ export const deleteSurvey = async (id: number | undefined | null) => {
   console.log(`удалить опрос: ${id}`)
   // TODO: ждем, пока бэк реализует удаление опроса
 
-  // const response = await api.delete(`/api/surveys/${id}`)
-
+  // const response = await api.delete(`/api/surveys/${id}/`)
   // if ('error' in response) {
-  //   throw new Error('Не удалось удлаить опрос')
+  //   throw new Error('Не удалось удалить опрос')
   // }
   // return response.data
 }
