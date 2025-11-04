@@ -32,11 +32,16 @@ export const getQuestions = async ({
     per_page: String(per_page),
     ...(search ? { search: search } : {})
   })
-  const response = await apiClient.get(`/api/questions/?${queryString}`)
-  if (response.status === 'success' && 'data' in response) {
-    return response.data as IQuestionsResponce
-  } else if ('message' in response) {
-    console.error('Ошибка при загрузке вопросов', response.message)
+
+  try {
+    const response = await apiClient.get(`/api/questions/?${queryString}`)
+    if (response.status === 'success' && 'data' in response) {
+      return response.data as IQuestionsResponce
+    }
+    const message = 'message' in response ? response.message : 'Неизвестная ошибка сервера'
+    throw new Error(message)
+  } catch (error) {
+    console.error('Ошибка при загрузке вопросов:', error)
+    throw error instanceof Error ? error : new Error('Не удалось загрузить вопросы')
   }
-  return null
 }

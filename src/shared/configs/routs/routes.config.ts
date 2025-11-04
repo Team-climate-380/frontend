@@ -6,6 +6,8 @@ export const routes = {
   questions: (queryParams?: typeParams) => createUrl('/questions/', {}, queryParams),
   surveys: () => '/surveys',
   new_survey: () => '/new-survey',
+  edit_survey_path: () => '/edit-survey',
+  edit_survey: (id: number) => `/edit-survey?surveyId=${id}`,
   results_survey: (id: number) => `/results-survey?surveyId=${id}`,
   results_survey_path: () => '/results-survey',
   full_results: (id: number) => `/full-results?surveyId=${id}`,

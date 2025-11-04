@@ -2,20 +2,24 @@ import { Accordion, List } from '@mantine/core'
 import styles from '../styles/department-list-item.module.scss'
 import { SyntheticEvent } from 'react'
 import { DepartmentInfo } from '@/entities/groups/types/department-types'
+import clsx from 'clsx'
+import { DeleteIcon } from '../../icons/delete-icon'
 
 export const DepartmentListItem: React.FC<
-  DepartmentInfo & { onContextMenu: (e: SyntheticEvent, id: number) => void }
-> = ({ id, department_name, employees_count, employees, onContextMenu }) => {
+  DepartmentInfo & { onContextMenu: (e: SyntheticEvent, id: number) => void; handleCancelDelete: () => void }
+> = ({ id, department_name, to_delete, employees_count, employees, onContextMenu, handleCancelDelete }) => {
   const hasEmployees = employees_count > 0
   return (
-    <Accordion multiple chevronSize="0">
-      <Accordion.Item key={id} value={department_name} style={{ border: 'none' }}>
+    <Accordion key={id} multiple chevronSize="0" className={styles.container}>
+      <Accordion.Item value={department_name} style={{ border: 'none' }}>
         <Accordion.Control
           onContextMenu={e => onContextMenu(e, id)}
           disabled={!hasEmployees}
           className={styles['group-button']}
         >
-          <span className={styles['group-name']}>{department_name}</span>
+          <span className={clsx(styles['group-name'], styles[`group-name_to-delete_${to_delete}`])}>
+            {department_name}
+          </span>
           <span className={styles['group-count']}>{employees_count}</span>
         </Accordion.Control>
         {hasEmployees ? (
@@ -23,7 +27,10 @@ export const DepartmentListItem: React.FC<
             <List className={styles['employees-list']}>
               {employees?.map(employee => {
                 return (
-                  <List.Item key={employee.id} className={styles['employees-list-item']}>
+                  <List.Item
+                    key={employee.id}
+                    className={clsx(styles['employees-list-item'], styles[`to-delete_${to_delete}`])}
+                  >
                     {employee.full_name}
                   </List.Item>
                 )
@@ -34,6 +41,7 @@ export const DepartmentListItem: React.FC<
           ''
         )}
       </Accordion.Item>
+      {to_delete && <DeleteIcon onClick={handleCancelDelete} />}
     </Accordion>
   )
 }

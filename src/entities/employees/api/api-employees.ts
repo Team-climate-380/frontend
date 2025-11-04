@@ -36,3 +36,25 @@ export const changeEmployee = async (
   }
   return null
 }
+
+export const deleteEmployee = async (idEmployee: number) => {
+  const response = await apiClient.delete(`/api/employees/${idEmployee}`)
+  if (response.status === 'success' && 'data' in response) {
+    return response.data
+  } else if ('message' in response) {
+    console.error('Ошибка при удалении сотрудника', response.message)
+  }
+  return null
+}
+
+export const cancelDeleteEmployee = async (idEmployee: number): Promise<Employee | null> => {
+  const response = await apiClient.patch<Employee>(`/api/employees/${idEmployee}`, {
+    to_inactivate: false
+  })
+  if (response.status === 'success' && 'data' in response) {
+    return response.data
+  } else if ('message' in response) {
+    console.error('Ошибка при удалении сотрудника', response.message)
+  }
+  return null
+}

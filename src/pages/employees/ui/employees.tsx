@@ -3,21 +3,21 @@ import style from './style.module.css'
 import { Button } from '@/shared/ui/button'
 import { Filter } from '@/features/filters'
 import { EmployeesItem } from '@/entities/employees/ui/employee-item'
-import { getEmployees } from '@/entities/employees/api/api-employees'
+import { cancelDeleteEmployee, getEmployees } from '@/entities/employees/api/api-employees'
 import { useQueryParams } from '@/shared/hooks/useQueryParams'
 import { useQuery } from '@tanstack/react-query'
-import { Loader } from '@mantine/core'
+import { Loader } from '@shared/ui/loader'
 import { useEffect, useMemo, useState } from 'react'
 import { SearchInput } from '@/widgets/search-input'
 import { EmployeeForm } from '@/features/employee-form'
 import { PopupMenu, PopupMenuItem } from '@/shared/ui/popup-menu'
 import { Employee } from '@/entities/employees/type'
 import { getPopupMenuItems } from '../configs/employees-context-menu'
-
+import { DeleteIcon } from '@/shared/ui/icons/delete-icon'
+import { nanoid } from 'nanoid'
 const Employees: React.FC = () => {
   const [isVisibleAddEmployees, setIsVisibleAddEmployees] = useState(false)
   const [editingEmployeeId, setEditingEmployeeId] = useState<number | null>()
-  const [deletedEmployeesIds, setDeletedEmployeesIds] = useState<number[]>([])
   const [openedMenuId, setOpenedMenuId] = useState<number | null>(null)
   const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null)
   const [menuItems, setMenuItems] = useState<PopupMenuItem[]>([])
@@ -74,8 +74,9 @@ const Employees: React.FC = () => {
 
   const handleAddEmployees = () => setIsVisibleAddEmployees(true)
 
-  const handleCancelDelete = (id: number) => {
-    setDeletedEmployeesIds(prev => prev.filter(employeeId => id !== employeeId))
+  const handleCancelDelete = async (id: number) => {
+    await cancelDeleteEmployee(id)
+    handleEmployeeUpdated()
   }
 
   const handleContextMenu = (e: React.MouseEvent, employee: Employee) => {
@@ -83,7 +84,7 @@ const Employees: React.FC = () => {
     setOpenedMenuId(employee.id)
     setMenuPosition({ x: e.clientX, y: e.clientY })
     setMenuItems(
-      getPopupMenuItems(employee, () => setEditingEmployeeId(employee.id), setDeletedEmployeesIds, handleMenuClose)
+      getPopupMenuItems(employee, () => setEditingEmployeeId(employee.id), handleMenuClose, handleEmployeeUpdated)
     )
   }
 
@@ -117,8 +118,7 @@ const Employees: React.FC = () => {
             .reverse()
             .map(employee => {
               const isEditingEmployee = editingEmployeeId === employee.id
-              const isDeletingEmployee = deletedEmployeesIds.includes(employee.id)
-
+              const isDeleted = employee.to_inactivate
               if (isEditingEmployee) {
                 return (
                   <EmployeeForm
@@ -135,13 +135,17 @@ const Employees: React.FC = () => {
                 )
               } else {
                 return (
-                  <EmployeesItem
-                    key={employee.id}
-                    employee={employee}
-                    onContextMenu={handleContextMenu}
-                    isDeleted={isDeletingEmployee}
-                    onCancelDelete={handleCancelDelete}
-                  />
+                  <div key={nanoid(3)}>
+                    <EmployeesItem employee={employee} onContextMenu={handleContextMenu} isDeleted={isDeleted}>
+                      {isDeleted && (
+                        <DeleteIcon
+                          onClick={() => handleCancelDelete(employee.id)}
+                          className={style.delete_icon}
+                          key={nanoid(3)}
+                        />
+                      )}
+                    </EmployeesItem>
+                  </div>
                 )
               }
             })}
@@ -156,11 +160,7 @@ const Employees: React.FC = () => {
           />
         )}
 
-        {isLoading && (
-          <div className={style.loader}>
-            <Loader />
-          </div>
-        )}
+        {isLoading && <Loader />}
       </div>
     </div>
   )

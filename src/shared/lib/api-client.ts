@@ -53,7 +53,9 @@ export class ApiClient {
     headers,
     method,
     body
-  }: RequestType): Promise<{ status: string; error: unknown; message: string } | { status: string; data: T }> {
+  }: RequestType): Promise<
+    { status: string; error: unknown; message: string; statusCode?: number } | { status: string; data: T }
+  > {
     try {
       let response = await this.doFetch({ url, headers, method, body })
 
@@ -65,9 +67,26 @@ export class ApiClient {
           useSessionState.getState().logout()
         }
       }
-      const data = await response.json().catch(() => ({}))
+
+      const contentType = response.headers.get('content-type') || ''
+
+      let data
+      if (response.status === 204 || response.headers.get('content-length') === '0') {
+        data = {} as T
+      } else if (contentType.includes('application/json')) {
+        data = await response.json().catch(() => ({}))
+      } else {
+        const text = await response.text().catch(() => '')
+        data = text.trim() === '' ? {} : { message: text.trim() }
+      }
+
       if (!response.ok) {
-        return { status: 'error', error: data, message: data?.message || 'Unexpected error' }
+        return {
+          status: 'error',
+          error: data,
+          message: data?.message || response.statusText || 'Unexpected error',
+          statusCode: response.status
+        }
       }
 
       return { status: 'success', data }

@@ -1,11 +1,10 @@
 import { Input } from '@/shared/ui/input'
 import { FunctionComponent } from 'react'
-import classes from './styles/styles.module.scss'
-import { Flex, Grid, Group } from '@mantine/core'
+import classes from '../../styles/styles.module.scss'
+import { Flex, Grid, Group, Select } from '@mantine/core'
 import { MoreButton } from '@/shared/ui/more-button'
 import { CloseButton } from '@/shared/ui/close-button'
-import { MultySelect } from '@/shared/ui/multy-select'
-import { useCreateSurvey } from '@/entities/survey/forms'
+import { useSurvey } from '@/entities/survey/forms/lib/use-survey'
 import { DatePickerInput } from '@mantine/dates'
 import 'dayjs/locale/ru'
 import '@mantine/dates/styles.css'
@@ -17,18 +16,16 @@ import { useQuery } from '@tanstack/react-query'
 import { fetchParticipants } from '@/entities/survey/forms/api'
 import { useSurveyMutation } from '@/entities/survey/forms/lib/use-survey-mutation'
 
-const SurveyForm: FunctionComponent = () => {
-  const { isLoading: areParticipantsLoading } = useQuery({
+const CreateSurveyForm: FunctionComponent = () => {
+  const { data: departmentOptions, isLoading: areParticipantsLoading } = useQuery({
     queryKey: ['participants'],
     queryFn: fetchParticipants
   })
 
   const today = dayjs().locale('ru').format('DD MMMM YYYY')
-  const surveyTitle = `Новый опрос ${today}`
-
   const initialFormValues = {
-    name: surveyTitle,
-    department: [] as string[],
+    name: `Новый опрос ${today}`,
+    department: '',
     startedAt: null,
     finishedAt: null,
     comment: '',
@@ -36,9 +33,9 @@ const SurveyForm: FunctionComponent = () => {
     questions: [] as TQuestion[]
   }
 
-  const formData = useCreateSurvey(initialFormValues)
+  const formData = useSurvey(initialFormValues)
 
-  const { submitSurvey, isSubmitting } = useSurveyMutation(formData)
+  const { submitSurvey, isSubmitting, isError, isSuccess } = useSurveyMutation(formData)
 
   return (
     <form onSubmit={formData.onSubmit(values => submitSurvey(values))}>
@@ -53,12 +50,17 @@ const SurveyForm: FunctionComponent = () => {
           </Group>
         </Grid.Col>
         <Grid.Col span={10.5}>
-          <MultySelect
+          <Select
             label={'Кто участвует'}
-            data={['Test1', 'Test2', 'Test3']}
+            data={departmentOptions}
             nothingFoundMessage={areParticipantsLoading ? 'Загрузка...' : 'Ничего не найдено'}
             key={formData.key('department')}
             {...formData.getInputProps('department')}
+            classNames={{
+              input: classes.input,
+              label: classes.label,
+              root: classes.root
+            }}
           />
         </Grid.Col>
         <Grid.Col span={5.5}>
@@ -129,9 +131,11 @@ const SurveyForm: FunctionComponent = () => {
             {isSubmitting ? 'Сохраняется...' : 'Сохранить'}
           </Button>
         </Group>
+        {isSuccess && <p className={classes.success}>Опрос успешно создан</p>}
+        {isError && <p className={classes.error}>Ошибка при создании</p>}
       </Flex>
     </form>
   )
 }
 
-export default SurveyForm
+export default CreateSurveyForm

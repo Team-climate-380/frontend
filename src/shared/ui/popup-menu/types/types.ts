@@ -25,7 +25,7 @@ export type ContextMenuProps = {
   onClose: () => void
   positionX?: number
   positionY?: number
-  classname?: 'string'
+  classname?: string
 }
 
 export type PopupMenuItem =
