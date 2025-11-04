@@ -20,11 +20,10 @@ export const createDepartment = async (name: string) => {
   return response
 }
 
-export const editDepartment = async (id: number, name: string) => {
+export const editDepartment = async (id: number, toEdit: { department_name?: string; to_delete?: boolean }) => {
   const response = await apiClient.patch<Pick<DepartmentInfo, 'id' | 'department_name'>>(
     `/api/departments/${id}/`,
-    {},
-    { department_name: name }
+    toEdit
   )
   if (response.status === 'success' && 'data' in response) return response.data
   if (response.status === 'error' && 'error' in response) {
@@ -35,7 +34,9 @@ export const editDepartment = async (id: number, name: string) => {
 export const deleteDepartment = async (id: number) => {
   const response = await apiClient.delete(`/api/departments/${id}/`)
   if (response.status === 'error' && 'error' in response) {
-    throw new Error(response.message)
+    const error = new Error(response.message) as Error & { status?: number }
+    error.status = response.statusCode
+    throw error
   }
   return response
 }
@@ -51,7 +52,8 @@ export const useDepartmentMutations = () => {
   const handleSuccess = async () => {
     await queryClient.invalidateQueries({ queryKey: ['departments'] })
   }
-  const handleError = (err: Error) => console.error(err)
+  const handleError = (error: Error) => console.error(error)
+
   const createDepartmentMutation = useMutation({
     mutationFn: (newGroupName: string) => {
       return createDepartment(newGroupName)
@@ -59,19 +61,32 @@ export const useDepartmentMutations = () => {
     onSuccess: handleSuccess,
     onError: handleError
   })
+
   const editDepartmentMutation = useMutation({
-    mutationFn: ({ id, new_name }: { id: number; new_name: string }) => {
-      return editDepartment(id, new_name)
+    mutationFn: ({ id, new_name, to_delete }: { id: number; new_name?: string; to_delete?: boolean }) => {
+      return editDepartment(id, { department_name: new_name, to_delete: to_delete })
     },
     onSuccess: handleSuccess,
     onError: handleError
   })
-  const deleteDepartmentMutation = useMutation({
-    mutationFn: (id: number) => {
+
+  const deleteDepartmentMutation = useMutation<
+    unknown,
+    Error & { status?: number },
+    { id: number; onFullDepartmentError?: () => void }
+  >({
+    mutationFn: ({ id }: { id: number; onError?: () => void }) => {
       return deleteDepartment(id)
     },
     onSuccess: handleSuccess,
-    onError: handleError
+    onError: (error, variables) => {
+      const status = error?.status
+      if (status === 400) {
+        variables.onFullDepartmentError?.()
+      } else {
+        console.error(error)
+      }
+    }
   })
 
   return { createDepartmentMutation, editDepartmentMutation, deleteDepartmentMutation }

@@ -37,3 +37,12 @@ header .header_button {
   overflow-y: auto;
   flex: 1;
 }
+
+.error-modal_title {
+  font-weight: 500;
+}
+
+.error-modal_text {
+  margin-block: 0;
+  color: rgb(73, 82, 90);
+}
