@@ -3,7 +3,6 @@ import { Session, SessionActions } from './types'
 import { getCookie, setCookie } from '@/shared/lib/cookies'
 import { SESSION_COOKIE_NAME, SESSION_EXP_TIME } from './constants'
 import { deleteCookie } from '@/shared/lib/cookies/set-cookie'
-import { apiClient } from '@/shared/lib/api-client'
 
 const initialState: Session = {
   isAuth: false,
@@ -27,12 +26,7 @@ export const useSessionState = create<Session & SessionActions>(set => {
       setCookie(SESSION_COOKIE_NAME, { expired: currentDate, data: newState })
     },
 
-    logout: async () => {
-      try {
-        await apiClient.post('/api/auth/logout')
-      } catch (error) {
-        console.error(error)
-      }
+    logout: () => {
       set(initialState)
       deleteCookie(SESSION_COOKIE_NAME)
     }

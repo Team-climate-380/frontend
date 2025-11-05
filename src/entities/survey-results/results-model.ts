@@ -4,6 +4,13 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 const client = new ApiClient()
 
+export enum StatusEnum {
+  Draft = 'draft',
+  Active = 'active',
+  Completed = 'completed',
+  Archived = 'archived'
+}
+
 export interface SurveyResults {
   id: number
   name: string

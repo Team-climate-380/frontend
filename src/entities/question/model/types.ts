@@ -11,7 +11,7 @@ export interface IQuestionCreate {
 }
 
 export interface TQuestion {
-  id?: string
+  id?: string | number
   text: string
   type?: string
   is_favorite?: boolean

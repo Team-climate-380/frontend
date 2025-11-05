@@ -8,12 +8,12 @@ import { useState, useEffect } from 'react'
 import { useQueryParams } from '@/shared/hooks/useQueryParams'
 import { getQuestions } from '@/entities/question/api/get-questions'
 import { useInfiniteQuery } from '@tanstack/react-query'
-import { Loader } from '@mantine/core'
+import { Loader } from '@/shared/ui/loader'
+import { Skeleton } from '@/shared/ui/skeleton'
 import { useIntersection } from '@mantine/hooks'
 import { QuestionForm } from '@/features/question-form'
 import { QuestionsList } from '@/features/questions-list'
 import { IQuestion } from '@/entities/question/type'
-// import { RightPanel } from '@/shared/ui/drawer'
 
 const QuestionPage = () => {
   const [questionFormIsVisible, setQuestionFormIsVisible] = useState(false) //new question form visibility
@@ -21,6 +21,7 @@ const QuestionPage = () => {
   const { ref, entry } = useIntersection({
     threshold: 1
   })
+
   //инициализация URL при первом рендере
   useEffect(() => {
     setParams({ filter: 'all', page: '1', per_page: '20' }, true)
@@ -48,7 +49,7 @@ const QuestionPage = () => {
     }
   ]
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, error } = useInfiniteQuery({
     queryKey: ['questions', currentFilter, currentPerPage, currentSearch],
     queryFn: async ({ pageParam = currentPage }) =>
       await getQuestions({
@@ -61,7 +62,7 @@ const QuestionPage = () => {
     getNextPageParam: lastPage => (lastPage?.has_next ? lastPage.page + 1 : undefined)
   })
 
-  // const questionsFromServer = data?.pages?.flatMap(page => (page ? (page.data ?? []) : [])) ?? questionsList.results
+  const questions = data?.pages.flatMap(pageItem => pageItem?.data).filter((q): q is IQuestion => Boolean(q)) ?? []
 
   useEffect(() => {
     if (entry?.isIntersecting && hasNextPage && !isFetchingNextPage) {
@@ -81,20 +82,6 @@ const QuestionPage = () => {
 
   return (
     <div className={styles.main}>
-      {/* {isRightPanelOpen && (  // drower test
-        <RightPanel
-          onClose={() => {
-            setIsRightPanelOpen(false)
-          }}
-          opened
-          header={
-            <Header title="Вопросы">
-              <Filter filters={filters} value={currentFilter} />
-            </Header>
-          }
-          content={<QuestionsList questions={questionsList.results} allowContextMenu={false} />}
-        ></RightPanel>
-      )} */}
       <Header
         title="Вопросы"
         actions={
@@ -120,15 +107,22 @@ const QuestionPage = () => {
             />
           </div>
         )}
-        {/* TODO implement form from #52 task}*/}
-        <div className={styles['questions-list']}>
-          <QuestionsList
-            questions={data?.pages.flatMap(pageItem => pageItem?.data).filter((q): q is IQuestion => Boolean(q)) ?? []}
-          />
-        </div>
+        {isError ? (
+          <div className={styles['error-message']}>
+            Ошибка при загрузке данных: {error instanceof Error ? error.message : 'Неизвестная ошибка'}
+          </div>
+        ) : isLoading ? (
+          <Skeleton />
+        ) : questions.length > 0 ? (
+          <div className={styles['questions-list']}>
+            <QuestionsList questions={questions} />
+          </div>
+        ) : (
+          <span className={styles['no-data']}>По Вашему запросу нет данных. Измените параметры поиска</span>
+        )}
       </div>
       <div ref={ref} className={styles.loader_container}>
-        {isFetchingNextPage && <Loader color="blue" />}
+        {isFetchingNextPage && <Loader size="lg" />}
       </div>
     </div>
   )

@@ -1,3 +1,7 @@
+.container {
+  display: flex;
+}
+
 .group-button {
   color: inherit;
   background-color: transparent;
@@ -16,6 +20,11 @@
 .group-button .group-name {
   font-size: 16px;
   font-weight: 500;
+
+  &_to-delete_true {
+    text-decoration: line-through;
+    color: rgba(142, 107, 107, 0.8);
+  }
 }
 
 .group-button[aria-expanded='true'] .group-name {
@@ -48,4 +57,13 @@ span:has(.group-name) {
 
 .employees-list-item {
   margin-bottom: 10px;
+}
+
+.to-delete_true {
+  text-decoration: line-through;
+  color: rgba(142, 107, 107, 0.8);
+
+  & div {
+    text-decoration: inherit;
+  }
 }

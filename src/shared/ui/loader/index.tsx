@@ -1,3 +1,1 @@
-export const Loader: React.FC = () => {
-  return <div>Loading...</div>
-}
+export { LoaderOval as Loader } from './ui/loader'
