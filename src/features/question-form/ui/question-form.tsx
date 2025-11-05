@@ -13,30 +13,54 @@ import { useState } from 'react'
 import { Loader } from '@/shared/ui/loader'
 import { updateQuestion } from '@/entities/question/api/update-question'
 import { QuestionTypeData, QuestionTypeDisplay } from '@/entities/question/utils/question-actions'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { IQuestion } from '@/entities/question/type'
 
 const questionTypeDataUI = Object.values(QuestionTypeEnum).map(key => QuestionTypeDisplay(key))
 export type QuestionFormProps = ICreateEditFormProps & {
   formData?: IQuestionForm
 }
 
+type TPayload = {
+  id: number
+  body: Partial<IQuestion>
+}
+
 export const QuestionForm: React.FC<QuestionFormProps> = ({ isOpen, isCreateForm, closeForm, formData }) => {
   const [isLoading, setLoading] = useState(false)
   const questionForm = useCreateEditQuestionForm(formData)
+  const queryClient = useQueryClient()
+  const createQuestionMutation = useMutation({
+    mutationFn: (data: IQuestionForm) =>
+      createNewQuestion({
+        text: data.text,
+        question_type: QuestionTypeData(data.question_type)
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['questions'] })
+    },
+    onError: error => {
+      console.error(`Ошибка обновления: ${error.message}`)
+    }
+  })
+  const updateQuestionMutation = useMutation({
+    mutationFn: (payload: TPayload) => updateQuestion(payload.id, payload.body),
+    onSuccess: data => {
+      if (data && data.id) {
+        queryClient.setQueryData(['questions', data.id], data)
+        queryClient.invalidateQueries({ queryKey: ['questions'] })
+      }
+    },
+    onError: error => {
+      console.error(`Ошибка обновления: ${error.message}`)
+    }
+  })
 
   const handleSubmit = async (data: IQuestionForm) => {
     if (isCreateForm) {
       setLoading(true)
       try {
-        const result = await createNewQuestion({
-          text: data.text,
-          question_type: QuestionTypeData(data.question_type)
-        })
-
-        if (!result) {
-          console.error('Ошибка при создании вопроса')
-          return
-        }
-        console.log('Вопрос успешно создан', data)
+        createQuestionMutation.mutate(data)
       } catch (error) {
         console.error(error)
       } finally {
@@ -46,14 +70,13 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ isOpen, isCreateForm
     } else {
       setLoading(true)
       try {
-        const result = await updateQuestion(formData!.id, {
-          ...data,
-          question_type: QuestionTypeData(questionForm.getValues().question_type)
+        updateQuestionMutation.mutate({
+          id: formData!.id,
+          body: {
+            ...data,
+            question_type: QuestionTypeData(questionForm.getValues().question_type)
+          }
         })
-        if (!result) {
-          console.error('Ошибка при редактировании вопроса')
-          return
-        }
       } catch (error) {
         console.error(error)
       } finally {

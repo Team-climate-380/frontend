@@ -8,6 +8,7 @@ import { toggleFavorite } from '../utils/question-actions'
 import { deleteQuestion } from '../api/delete-question'
 import { QuestionForm } from '@/features/question-form'
 import { QuestionTypeEnum, QuestionTypeEnum as QTE } from '../forms/use-create-edit-question-form'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 export const QuestionUI: FC<IQuestion & { allowContextMenu?: boolean }> = ({
   id,
@@ -25,10 +26,31 @@ export const QuestionUI: FC<IQuestion & { allowContextMenu?: boolean }> = ({
   const [isEditing, setIsEditing] = useState(false)
   const [position, setPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
   const [isFavorite, setIsFavorite] = useState(is_favorite)
+  const MENUSIZEWIDTH: number = 290 // px
+  const MENUSIZEHEIGHT: number = 250 // px
+  const queryClient = useQueryClient()
+  const deleteQuestionMutate = useMutation({
+    mutationFn: () => deleteQuestion(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['questions'] })
+    },
+    onError: error => {
+      console.error(`Ошибка при удалении: ${error.message}`)
+    }
+  })
   const handleContextMenu = (e: React.MouseEvent) => {
     if (!allowContextMenu) return
     e.preventDefault()
-    setPosition({ x: e.clientX, y: e.clientY })
+    const { innerWidth: w, innerHeight: h } = window
+    let posX = e.clientX
+    if (posX + MENUSIZEWIDTH > w) {
+      posX = Math.max(0, w - MENUSIZEWIDTH - 80) // отступ 80px от края
+    } // Если меню выступает за нижний край, подвинем вверх
+    let posY = e.clientY
+    if (posY + MENUSIZEHEIGHT > h) {
+      posY = Math.max(0, h - MENUSIZEHEIGHT - 30)
+    }
+    setPosition({ x: posX, y: posY })
     setDropdownVisible(prev => !prev)
   }
   const close = () => setDropdownVisible(false)
@@ -59,11 +81,18 @@ export const QuestionUI: FC<IQuestion & { allowContextMenu?: boolean }> = ({
                 }
               },
               { type: 'divider' },
-              { type: 'action', label: 'Удалить', action: () => deleteQuestion(id), important: true }
+              {
+                type: 'action',
+                label: 'Удалить',
+                action: async () => {
+                  deleteQuestionMutate.mutate()
+                },
+                important: true
+              }
             ]}
             onClose={close}
-            positionX={position?.x}
-            positionY={position?.y}
+            positionX={position.x}
+            positionY={position.y}
           />
         )}
       </div>
