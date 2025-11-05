@@ -3,6 +3,7 @@ import { AuthorizationLayout } from '@/widgets/authorization-layout'
 import style from './style.module.scss'
 import { useNavigate } from 'react-router'
 import { routes } from '@/shared/configs/routs'
+import { Logo } from '@shared/ui/logo/index'
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate()
@@ -19,14 +20,12 @@ const LoginPage: React.FC = () => {
                 style={{
                   width: '34px',
                   height: '34px',
-                  background: '#000',
-                  color: '#fff',
                   borderRadius: '50%',
                   marginTop: '36px',
                   marginLeft: '63px'
                 }}
               >
-                Logo
+                <Logo variant="dark" alt="Логотип" />
               </div>
               <div className={style.login_form__wrapper}>
                 <LoginForm onRestorePassword={HandleClickRestorePassword} />

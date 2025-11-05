@@ -11,19 +11,18 @@ export const QuestionsListUI: FC<IQuestionsListUIProps> = ({ questions, allowCon
   return (
     <>
       {questions
-        ? Object.entries(questions).map(question => {
+        ? questions.map(question => {
             return (
-              <>
+              <div key={question.id}>
                 <Question
-                  key={question[1].id}
-                  id={question[1].id}
-                  text={question[1].text}
-                  is_favorite={question[1].is_favorite}
-                  surveys={question[1].surveys}
-                  question_type={question[1].question_type}
+                  id={question.id}
+                  text={question.text}
+                  is_favorite={question.is_favorite}
+                  surveys={question.surveys}
+                  question_type={question.question_type}
                   allowContextMenu={allowContextMenu}
                 />
-              </>
+              </div>
             )
           })
         : null}
