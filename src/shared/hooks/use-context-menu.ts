@@ -23,9 +23,9 @@ export const useContextMenu = (
 
   const handleRightClick = (e: SyntheticEvent, id?: number) => {
     e.preventDefault()
-    const { left, right, top } = e.currentTarget.getBoundingClientRect()
-    const leftPosition = leftShift ? left + leftShift : right
-    const topPosition = topShift ? top + topShift : top
+    const { clientX, clientY } = e as unknown as MouseEvent
+    const leftPosition = leftShift ? clientX + leftShift : clientX
+    const topPosition = topShift ? clientY + topShift : clientY
     setContextMenu({ isVisible: true, selectedId: id, left: leftPosition, top: topPosition })
   }
 

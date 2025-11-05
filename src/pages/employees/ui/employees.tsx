@@ -14,12 +14,14 @@ import { PopupMenu, PopupMenuItem } from '@/shared/ui/popup-menu'
 import { Employee } from '@/entities/employees/type'
 import { getPopupMenuItems } from '../configs/employees-context-menu'
 import { DeleteIcon } from '@/shared/ui/icons/delete-icon'
+import { useContextMenu } from '@/shared/hooks/use-context-menu'
 const Employees: React.FC = () => {
   const [isVisibleAddEmployees, setIsVisibleAddEmployees] = useState(false)
   const [editingEmployeeId, setEditingEmployeeId] = useState<number | null>()
-  const [openedMenuId, setOpenedMenuId] = useState<number | null>(null)
-  const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null)
   const [menuItems, setMenuItems] = useState<PopupMenuItem[]>([])
+
+  const { contextMenu, handleRightClick, handleContextMenuClose } = useContextMenu(undefined, 10, 0)
+
   const { getParam, setParams, getDecodedSearch } = useQueryParams()
 
   useEffect(() => {
@@ -45,8 +47,8 @@ const Employees: React.FC = () => {
   ]
 
   const handleMenuClose = () => {
-    setOpenedMenuId(null)
-    setMenuPosition(null)
+    handleContextMenuClose()
+    setMenuItems([])
   }
 
   const paramURL = `?sort=${encodeURIComponent(currentSort)}`
@@ -80,11 +82,8 @@ const Employees: React.FC = () => {
 
   const handleContextMenu = (e: React.MouseEvent, employee: Employee) => {
     e.preventDefault()
-    setOpenedMenuId(employee.id)
-    setMenuPosition({ x: e.clientX, y: e.clientY })
-    setMenuItems(
-      getPopupMenuItems(employee, () => setEditingEmployeeId(employee.id), handleMenuClose, handleEmployeeUpdated)
-    )
+    handleRightClick(e, employee.id)
+    setMenuItems(getPopupMenuItems(employee, setEditingEmployeeId, handleMenuClose, handleEmployeeUpdated))
   }
 
   return (
@@ -143,12 +142,12 @@ const Employees: React.FC = () => {
               }
             })}
 
-        {openedMenuId && menuPosition && (
+        {contextMenu.isVisible && contextMenu.selectedId && menuItems.length > 0 && (
           <PopupMenu
             type="context"
             items={menuItems}
-            positionX={menuPosition.x}
-            positionY={menuPosition.y}
+            positionX={contextMenu.left}
+            positionY={contextMenu.top}
             onClose={handleMenuClose}
           />
         )}
