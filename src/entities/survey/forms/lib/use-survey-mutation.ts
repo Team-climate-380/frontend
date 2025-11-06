@@ -20,8 +20,8 @@ export const useSurveyMutation = (form: UseFormReturnType<IInitialValues>, mode?
         comment: values.comment,
         department_name: values.department?.trim(),
         is_favorite: values.isFavorite,
-        started_at: values.startedAt ? dayjs(values.startedAt).format('YYYY-MM-DD') : null,
-        finished_at: values.finishedAt ? dayjs(values.finishedAt).format('YYYY-MM-DD') : null,
+        started_at: values.startedAt ? dayjs(values.startedAt).format('YYYY-MM-DD') : '',
+        finished_at: values.finishedAt ? dayjs(values.finishedAt).format('YYYY-MM-DD') : '',
         questions: values.questions.map((question: TQuestion) => {
           const newQuestion = question
           delete newQuestion.id
