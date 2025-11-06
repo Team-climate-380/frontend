@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { DepartmentInfo } from '@/entities/groups'
 import { SurveyResults } from '@/entities/survey-results/results-model'
 import { ApiClient } from '@/shared/lib/api-client'
-import { ISurveysResponse } from '../types'
+import { ISurveysResponse, TSurveyUpdate } from '../types'
 
 const api = new ApiClient({})
 
@@ -33,8 +33,8 @@ export const createSurvey = async (surveyPayload: Record<string, unknown>) => {
   throw new Error('Не удалось создать опрос')
 }
 
-export const updateSurvey = async (surveyPayload: Partial<SurveyResults>, id: number) => {
-  const response = await api.patch(`/api/surveys/${id}/`, surveyPayload, {})
+export const updateSurvey = async (surveyPayload: Partial<TSurveyUpdate>, id: number) => {
+  const response = await api.patch<SurveyResults>(`/api/surveys/${id}/`, surveyPayload, {})
   if ('data' in response) {
     return response.data
   }
@@ -83,33 +83,45 @@ export const deleteSurvey = async (id: number | undefined | null) => {
   if ('error' in response) {
     throw new Error('Ошибка при удалении опроса')
   }
+
+  return null
 }
 
 export const useDeleteSurveyMutation = () => {
   const queryClient = useQueryClient()
 
+  const getOnSuccess = () => {
+    queryClient.invalidateQueries({ queryKey: ['surveys'] })
+  }
+
+  const getOnError = (error: Error) => {
+    console.error('Ошибка мутации:', error)
+  }
+
   const { mutate: deleteSurveyMutate } = useMutation({
     mutationFn: deleteSurvey,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['surveys'] })
-    },
-    onError: error => {
-      console.error('Ошибка:', error)
-    }
+    onSuccess: getOnSuccess,
+    onError: getOnError
   })
 
   const { mutate: cancelDeleteSurveyMutate } = useMutation({
     mutationFn: (updatedSurvey: SurveyResults) => {
-      const idUpdatedSurvey: number = updatedSurvey.id
-      return updateSurvey(updatedSurvey, idUpdatedSurvey)
+      // const idUpdatedSurvey: number = updatedSurvey.id
+      return updateSurvey(updatedSurvey, updatedSurvey.id)
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['surveys'] })
-    },
-    onError: error => {
-      console.error('Ошибка:', error)
-    }
+    onSuccess: getOnSuccess,
+    onError: getOnError
   })
 
-  return { deleteSurveyMutate, cancelDeleteSurveyMutate }
+  const { mutate: toggleFavoriteMutate } = useMutation({
+    mutationFn: (updatedSurvey: SurveyResults) => {
+      // const idUpdatedSurvey: number = updatedSurvey.id
+      const toggleFavoriteSurvey = { is_favorite: !updatedSurvey.is_favorite }
+      return updateSurvey(toggleFavoriteSurvey, updatedSurvey.id)
+    },
+    onSuccess: getOnSuccess,
+    onError: getOnError
+  })
+
+  return { deleteSurveyMutate, cancelDeleteSurveyMutate, toggleFavoriteMutate }
 }

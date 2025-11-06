@@ -2,30 +2,34 @@ import { useNavigate } from 'react-router'
 import { useEffect, useMemo } from 'react'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useIntersection } from '@mantine/hooks'
+import { useDeleteSurveyMutation } from '@/entities/survey/api/api'
+import { useDepartmentQuery } from '@/entities/groups/api/departments-api'
 import { useQueryParams } from '@/shared/hooks/useQueryParams'
+import { useContextMenu } from '@/shared/hooks/use-context-menu'
 import { routes } from '@/shared/configs/routs/routes.config'
 import { getAllSurveys } from '@entities/survey/api/api'
 import { List } from '@mantine/core'
 import { Header } from '@widgets/header/header'
 import { Filter } from '@/features/filters'
 import { SearchInput } from '@/widgets/search-input'
-import { StatusEnum } from '@entities/survey-results/results-model'
+import { PopupMenu } from '@shared/ui/popup-menu/index'
+import { SurveyStatusIcon } from '@entities/survey/ui/survey-status-icon'
+import { SurveyDeleteIcon } from '@entities/survey/ui/survey-delete-icon'
+import { FavoriteIconFilled } from '@/shared/ui/icons/favorite-icon-filled'
 import { FavoriteIcon } from '@/features/filters/ui/favorite-icon'
-import { SurveyItem } from '@features/survey-item'
 import { Loader } from '@shared/ui/loader'
 import { Skeleton } from '@shared/ui/skeleton'
 import { Button } from '@shared/ui/button'
+import { SurveyResults } from '@entities/survey-results/results-model'
 import classes from './styles.module.scss'
 
 const Surveys: React.FC = () => {
-  const { ref, entry } = useIntersection({
-    root: null,
-    threshold: 1
-  })
-
   const navigate = useNavigate()
-
   const { queryParams, setParams } = useQueryParams()
+  const { contextMenu, handleRightClick, handleContextMenuClose } = useContextMenu()
+  const { deleteSurveyMutate, cancelDeleteSurveyMutate, toggleFavoriteMutate } = useDeleteSurveyMutation()
+  const { data: departmentData } = useDepartmentQuery()
+
   const filters = [
     {
       icon: <FavoriteIcon />,
@@ -75,6 +79,11 @@ const Surveys: React.FC = () => {
   const currentDepartment = Number(queryParams?.department)
   const searchQuery = queryParams?.search?.toLowerCase()
 
+  const { ref, entry } = useIntersection({
+    root: null,
+    threshold: 1
+  })
+
   const { status, data, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteQuery({
     queryKey: ['surveys', currentFilter, currentDepartment, searchQuery],
     queryFn: ({ pageParam = currentPage }) => {
@@ -93,22 +102,6 @@ const Surveys: React.FC = () => {
   const allSurveys = useMemo(() => {
     return data?.pages?.flatMap(page => page?.data) || []
   }, [data])
-
-  const completedSurveys = useMemo(() => {
-    return allSurveys?.filter(item => item?.status === StatusEnum.Completed)
-  }, [allSurveys])
-
-  const activeSurveys = useMemo(() => {
-    return allSurveys?.filter(item => item?.status === StatusEnum.Active)
-  }, [allSurveys])
-
-  const draftSurveys = useMemo(() => {
-    return allSurveys?.filter(item => item?.status === StatusEnum.Draft)
-  }, [allSurveys])
-
-  const archivedSurveys = useMemo(() => {
-    return allSurveys?.filter(item => item?.status === StatusEnum.Archived)
-  }, [allSurveys])
 
   return (
     <>
@@ -132,22 +125,114 @@ const Surveys: React.FC = () => {
             <List
               styles={{
                 root: { display: 'flex', flexDirection: 'column', gap: '20px' },
-                itemWrapper: { display: 'grid', gridTemplateColumns: 'min-content 1fr' },
+                itemWrapper: {
+                  display: 'grid',
+                  gridTemplateColumns: 'min-content 1fr',
+                  gridTemplateRows: '1fr 1fr'
+                },
                 itemIcon: {
                   display: 'grid',
-                  alignItems: 'center',
+                  gridRow: '1/2',
+                  placeItems: 'center',
                   gap: '12px',
                   gridTemplateColumns: 'minmax(35px, 1fr)',
                   justifyItems: 'center',
                   gridAutoFlow: 'column'
+                },
+                itemLabel: {
+                  display: 'grid',
+                  gridRow: '1/3',
+                  columnGap: '15px',
+                  gridTemplateColumns: 'minmax(min-content, max-content) 1fr',
+                  gridTemplateRows: '1fr auto',
+                  alignSelf: 'start',
+                  marginTop: '-3px'
                 }
               }}
             >
-              <SurveyItem surveys={draftSurveys} />
-              <SurveyItem surveys={activeSurveys} />
-              <SurveyItem surveys={completedSurveys} />
-              <SurveyItem surveys={archivedSurveys} />
+              {allSurveys?.map((item: SurveyResults) => {
+                const departmentName = departmentData?.find(dep => dep.department_name === item.department?.name)
+                let employeeCount: number = 0
+                if (departmentName) {
+                  employeeCount = departmentName.employees_count
+                }
+                return (
+                  <List.Item
+                    key={item.id}
+                    className={item.to_delete ? classes.itemToDelete : ''}
+                    onContextMenu={evt => handleRightClick(evt, item.id)}
+                    icon={
+                      item.is_favorite ? (
+                        <>
+                          <SurveyStatusIcon
+                            status={item.status}
+                            finishedCount={item.finished_count}
+                            allCount={employeeCount}
+                          />
+                          <FavoriteIconFilled fill={'#FFD014'} width="11" height="11" />
+                        </>
+                      ) : (
+                        <SurveyStatusIcon
+                          status={item?.status}
+                          finishedCount={item.finished_count}
+                          allCount={employeeCount}
+                        />
+                      )
+                    }
+                  >
+                    {`${item.name} (${item.department?.name})`}
+                    <span className={classes.comment}>{item.comment ?? ''}</span>
+
+                    {contextMenu.isVisible && contextMenu.selectedId === item.id && (
+                      <PopupMenu
+                        type={'context'}
+                        items={[
+                          {
+                            type: 'link',
+                            label: 'Редактировать',
+                            url: routes.edit_survey(contextMenu.selectedId)
+                          },
+                          {
+                            type: 'action',
+                            label: item.is_favorite === true ? 'Убрать из избранного' : 'В избранное',
+                            action: () => {
+                              toggleFavoriteMutate(item)
+                              handleContextMenuClose()
+                            }
+                          },
+                          {
+                            type: 'divider'
+                          },
+                          {
+                            type: 'action',
+                            label: 'Удалить',
+                            important: true,
+                            action: () => {
+                              deleteSurveyMutate(contextMenu?.selectedId)
+                              handleContextMenuClose()
+                            }
+                          }
+                        ]}
+                        onClose={handleContextMenuClose}
+                        positionX={contextMenu?.left}
+                        positionY={contextMenu?.top}
+                      />
+                    )}
+
+                    <SurveyDeleteIcon
+                      isAddedToDelete={item.to_delete}
+                      handleClick={e => {
+                        e.preventDefault()
+
+                        item.to_delete = !item.to_delete
+                        cancelDeleteSurveyMutate(item)
+                      }}
+                    />
+                  </List.Item>
+                )
+              })}
             </List>
+
             <div ref={ref}>{isFetchingNextPage && <Loader />}</div>
           </>
         )}

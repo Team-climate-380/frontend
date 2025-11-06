@@ -16,8 +16,8 @@ export const SurveyDeleteIcon: React.FC<SurveyDeleteIconProps> = ({ isAddedToDel
           onClick={e => handleClick(e)}
           styles={{
             root: {
-              position: 'absolute',
-              left: '-30px',
+              gridRow: '1/3',
+              gridColumn: '2/3',
               backgroundColor: 'inherit'
             }
           }}
