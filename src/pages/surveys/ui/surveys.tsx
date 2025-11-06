@@ -190,7 +190,7 @@ const Surveys: React.FC = () => {
                           {
                             type: 'link',
                             label: 'Редактировать',
-                            url: routes.edit_survey(contextMenu.selectedId)
+                            url: routes.edit_survey(item.id)
                           },
                           {
                             type: 'action',
@@ -208,7 +208,7 @@ const Surveys: React.FC = () => {
                             label: 'Удалить',
                             important: true,
                             action: () => {
-                              deleteSurveyMutate(contextMenu?.selectedId)
+                              deleteSurveyMutate(item.id)
                               handleContextMenuClose()
                             }
                           }

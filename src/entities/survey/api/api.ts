@@ -77,7 +77,7 @@ export const getAllSurveys = async (
   throw new Error('Ошибка при получении данных')
 }
 
-export const deleteSurvey = async (id: number | undefined | null) => {
+export const deleteSurvey = async (id: number) => {
   const response = await api.delete(`/api/surveys/${id}/`)
 
   if ('error' in response) {
@@ -106,7 +106,6 @@ export const useDeleteSurveyMutation = () => {
 
   const { mutate: cancelDeleteSurveyMutate } = useMutation({
     mutationFn: (updatedSurvey: SurveyResults) => {
-      // const idUpdatedSurvey: number = updatedSurvey.id
       return updateSurvey(updatedSurvey, updatedSurvey.id)
     },
     onSuccess: getOnSuccess,
@@ -115,7 +114,6 @@ export const useDeleteSurveyMutation = () => {
 
   const { mutate: toggleFavoriteMutate } = useMutation({
     mutationFn: (updatedSurvey: SurveyResults) => {
-      // const idUpdatedSurvey: number = updatedSurvey.id
       const toggleFavoriteSurvey = { is_favorite: !updatedSurvey.is_favorite }
       return updateSurvey(toggleFavoriteSurvey, updatedSurvey.id)
     },
