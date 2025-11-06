@@ -115,6 +115,7 @@ export const Departments: React.FC = () => {
                     <Department
                       department={department}
                       onContextMenu={e => {
+                        if (department.to_delete) return
                         handleRightClick(e, department.id)
                       }}
                       isEdited={department.id === selectedForEdit ? true : false}
