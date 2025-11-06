@@ -1,6 +1,5 @@
 import { SyntheticEvent } from 'react'
-import { ActionIcon } from '@mantine/core'
-import { DeleteIcon } from '@shared/ui/icons/delete-icon'
+import { DeleteButton } from '@shared/ui/delete-button/index'
 
 export interface SurveyDeleteIconProps {
   isAddedToDelete: boolean
@@ -11,9 +10,7 @@ export const SurveyDeleteIcon: React.FC<SurveyDeleteIconProps> = ({ isAddedToDel
   if (isAddedToDelete)
     return (
       <>
-        <ActionIcon
-          aria-label="Отменить удаление опроса"
-          onClick={e => handleClick(e)}
+        <DeleteButton
           styles={{
             root: {
               gridRow: '1/3',
@@ -21,10 +18,11 @@ export const SurveyDeleteIcon: React.FC<SurveyDeleteIconProps> = ({ isAddedToDel
               backgroundColor: 'inherit'
             }
           }}
-        >
-          <DeleteIcon />
-        </ActionIcon>
+          itemLabel={'опроса'}
+          onClick={handleClick}
+        />
       </>
     )
+
   return null
 }
