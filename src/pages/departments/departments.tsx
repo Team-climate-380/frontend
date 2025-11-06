@@ -20,7 +20,18 @@ export const Departments: React.FC = () => {
   const [isDeleteErrorVisible, setIsDeleteErrorVisible] = useState(false)
   const [filteredDepartments, setFilteredDepartments] = useState<DepartmentInfo[]>()
 
-  const { contextMenu, setContextMenu, handleRightClick, handleContextMenuClose } = useContextMenu()
+  const { contextMenu, setContextMenu, handleRightClick, handleContextMenuClose } = useContextMenu(
+    {
+      isVisible: false,
+      selectedId: null,
+      left: 0,
+      top: 0
+    },
+    0,
+    10,
+    true
+  )
+
   const menuItems = departmentsContextMenu({
     handleEdit: handleEditClick,
     handleDelete: handleDeleteClick,
