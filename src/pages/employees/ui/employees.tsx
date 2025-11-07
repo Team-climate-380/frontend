@@ -163,7 +163,6 @@ const Employees: React.FC = () => {
             onClose={handleMenuClose}
           />
         )}
-
         {isLoading && <Loader />}
         {hasError && !isLoading && (
           <div className={style.error_message}>
