@@ -13,9 +13,8 @@ import { Header } from '@widgets/header/header'
 import { Filter } from '@/features/filters'
 import { SearchInput } from '@/widgets/search-input'
 import { PopupMenu } from '@shared/ui/popup-menu/index'
-import { SurveyStatusIcon } from '@entities/survey/ui/survey-status-icon'
-import { SurveyDeleteIcon } from '@entities/survey/ui/survey-delete-icon'
-import { FavoriteIconFilled } from '@/shared/ui/icons/favorite-icon-filled'
+import { SurveyItem } from '@entities/survey/ui/survey-item'
+import { SurveyCancelDelete } from '@entities/survey/ui/survey-delete-icon'
 import { FavoriteIcon } from '@/features/filters/ui/favorite-icon'
 import { Loader } from '@shared/ui/loader'
 import { Skeleton } from '@shared/ui/skeleton'
@@ -77,7 +76,7 @@ const Surveys: React.FC = () => {
   const currentFilter = queryParams?.filter ?? 'all'
   const currentPage = Number(queryParams.page ?? '1')
   const currentDepartment = Number(queryParams?.department)
-  const searchQuery = queryParams?.search?.toLowerCase()
+  const searchQuery = queryParams?.search ? decodeURIComponent(queryParams?.search?.toLowerCase()) : ''
 
   const { ref, entry } = useIntersection({
     root: null,
@@ -157,30 +156,18 @@ const Surveys: React.FC = () => {
                   employeeCount = departmentName.employees_count
                 }
                 return (
-                  <List.Item
-                    key={item.id}
+                  <SurveyItem
+                    id={item.id}
+                    name={item.name}
+                    status={item.status}
+                    comment={item.comment}
+                    isFavorite={item.is_favorite}
+                    finishedCount={item.finished_count}
+                    allCount={employeeCount}
+                    departmentName={item.department?.name}
                     className={item.to_delete ? classes.itemToDelete : ''}
                     onContextMenu={evt => handleRightClick(evt, item.id)}
-                    icon={
-                      item.is_favorite ? (
-                        <>
-                          <SurveyStatusIcon
-                            status={item.status}
-                            finishedCount={item.finished_count}
-                            allCount={employeeCount}
-                          />
-                          <FavoriteIconFilled fill={'#FFD014'} width="11" height="11" />
-                        </>
-                      ) : (
-                        <SurveyStatusIcon
-                          status={item?.status}
-                          finishedCount={item.finished_count}
-                          allCount={employeeCount}
-                        />
-                      )
-                    }
                   >
-                    {`${item.name} (${item.department?.name})`}
                     <span className={classes.comment}>{item.comment ?? ''}</span>
 
                     {contextMenu.isVisible && contextMenu.selectedId === item.id && (
@@ -219,7 +206,7 @@ const Surveys: React.FC = () => {
                       />
                     )}
 
-                    <SurveyDeleteIcon
+                    <SurveyCancelDelete
                       isAddedToDelete={item.to_delete}
                       handleClick={e => {
                         e.preventDefault()
@@ -228,7 +215,7 @@ const Surveys: React.FC = () => {
                         cancelDeleteSurveyMutate(item)
                       }}
                     />
-                  </List.Item>
+                  </SurveyItem>
                 )
               })}
             </List>

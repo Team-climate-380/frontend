@@ -1,16 +1,16 @@
 import { SyntheticEvent } from 'react'
-import { DeleteButton } from '@shared/ui/delete-button/index'
+import { CancelDeleteButton } from '@shared/ui/cancel-delete-button/index'
 
-export interface SurveyDeleteIconProps {
+export interface SurveyCancelDeleteProps {
   isAddedToDelete: boolean
   handleClick: (e: SyntheticEvent) => void
 }
 
-export const SurveyDeleteIcon: React.FC<SurveyDeleteIconProps> = ({ isAddedToDelete, handleClick }) => {
+export const SurveyCancelDelete: React.FC<SurveyCancelDeleteProps> = ({ isAddedToDelete, handleClick }) => {
   if (isAddedToDelete)
     return (
       <>
-        <DeleteButton
+        <CancelDeleteButton
           styles={{
             root: {
               gridRow: '1/3',
