@@ -3,7 +3,7 @@ import classes from '../styles/styles.module.scss'
 import { Flex } from '@mantine/core'
 import clsx from 'clsx'
 import { Button } from '../../button/ui/button'
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 export const ContextMenu: React.FC<ContextMenuProps> = ({ items, onClose, positionX, positionY, classname }) => {
   const menuRef = useRef<HTMLDivElement>(null)
@@ -11,6 +11,23 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ items, onClose, positi
     x: positionX || 0,
     y: positionY || 0
   })
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        onClose()
+      }
+    }
+    const handleEscKeyDown = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
+
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('keydown', handleEscKeyDown)
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleEscKeyDown)
+    }
+  }, [onClose])
 
   useLayoutEffect(() => {
     if (!menuRef.current) return
@@ -81,7 +98,6 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ items, onClose, positi
           )
         })}
       </Flex>
-      <div className={classes.backdrop} onClick={onClose} />
     </>
   )
 }

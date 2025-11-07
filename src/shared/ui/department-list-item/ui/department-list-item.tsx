@@ -3,7 +3,7 @@ import styles from '../styles/department-list-item.module.scss'
 import { SyntheticEvent } from 'react'
 import { DepartmentInfo } from '@/entities/groups/types/department-types'
 import clsx from 'clsx'
-import { DeleteIcon } from '../../icons/delete-icon'
+import { CancelDeleteButton } from '../../cancel-delete-button'
 
 export const DepartmentListItem: React.FC<
   DepartmentInfo & { onContextMenu: (e: SyntheticEvent, id: number) => void; handleCancelDelete: () => void }
@@ -41,7 +41,17 @@ export const DepartmentListItem: React.FC<
           ''
         )}
       </Accordion.Item>
-      {to_delete && <DeleteIcon onClick={handleCancelDelete} />}
+      {to_delete && (
+        <CancelDeleteButton
+          onClick={handleCancelDelete}
+          itemLabel="группы"
+          styles={{
+            root: {
+              backgroundColor: 'inherit'
+            }
+          }}
+        />
+      )}
     </Accordion>
   )
 }

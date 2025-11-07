@@ -17,15 +17,21 @@ const initialState = {
 export const useContextMenu = (
   customInitialState: TContextMenu = initialState,
   leftShift?: number,
-  topShift?: number
+  topShift?: number,
+  relativeToElement?: boolean
 ) => {
   const [contextMenu, setContextMenu] = useState<TContextMenu>(customInitialState)
 
   const handleRightClick = (e: SyntheticEvent, id?: number) => {
     e.preventDefault()
-    const { left, right, top } = e.currentTarget.getBoundingClientRect()
-    const leftPosition = leftShift ? left + leftShift : right
-    const topPosition = topShift ? top + topShift : top
+    const { clientX, clientY } = e as React.MouseEvent
+    let leftPosition = leftShift ? clientX + leftShift : clientX
+    let topPosition = topShift ? clientY + topShift : clientY
+    if (relativeToElement) {
+      const { left, right, top } = e.currentTarget.getBoundingClientRect()
+      leftPosition = leftShift ? left + leftShift : right
+      topPosition = topShift ? top + topShift : top
+    }
     setContextMenu({ isVisible: true, selectedId: id, left: leftPosition, top: topPosition })
   }
 
