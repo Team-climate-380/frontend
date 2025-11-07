@@ -13,7 +13,7 @@ import { Button } from '@/shared/ui/button'
 import { QuestionCreate } from '@/entities/question/ui/question-create'
 import { TQuestion } from '@/entities/question/model/types'
 import { useQuery } from '@tanstack/react-query'
-import { fetchParticipants } from '@/entities/survey/forms/api'
+import { fetchParticipants } from '@entities/survey/api/api'
 import { useSurveyMutation } from '@/entities/survey/forms/lib/use-survey-mutation'
 
 const CreateSurveyForm: FunctionComponent = () => {
