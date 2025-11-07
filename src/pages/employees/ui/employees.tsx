@@ -13,8 +13,8 @@ import { EmployeeForm } from '@/features/employee-form'
 import { PopupMenu, PopupMenuItem } from '@/shared/ui/popup-menu'
 import { Employee } from '@/entities/employees/type'
 import { getPopupMenuItems } from '../configs/employees-context-menu'
-import { DeleteIcon } from '@/shared/ui/icons/delete-icon'
 import { useContextMenu } from '@/shared/hooks/use-context-menu'
+import { CancelDeleteButton } from '@/shared/ui/cancel-delete-button'
 const Employees: React.FC = () => {
   const [isVisibleAddEmployees, setIsVisibleAddEmployees] = useState(false)
   const [editingEmployeeId, setEditingEmployeeId] = useState<number | null>()
@@ -52,7 +52,7 @@ const Employees: React.FC = () => {
   }
 
   const paramURL = `?sort=${encodeURIComponent(currentSort)}`
-  const { data, isLoading, refetch } = useQuery({
+  const { data, isLoading, refetch, isError } = useQuery({
     queryKey: ['employees', paramURL],
     queryFn: async () => await getEmployees(paramURL)
   })
@@ -82,9 +82,11 @@ const Employees: React.FC = () => {
 
   const handleContextMenu = (e: React.MouseEvent, employee: Employee) => {
     e.preventDefault()
+    if (employee.to_inactivate) return
     handleRightClick(e, employee.id)
     setMenuItems(getPopupMenuItems(employee, setEditingEmployeeId, handleMenuClose, handleEmployeeUpdated))
   }
+  const hasError = isError || data === null
 
   return (
     <div className={style.wrapper_employees}>
@@ -135,7 +137,17 @@ const Employees: React.FC = () => {
                 return (
                   <div key={employee.id}>
                     <EmployeesItem employee={employee} onContextMenu={handleContextMenu} isDeleted={isDeleted}>
-                      {isDeleted && <DeleteIcon onClick={() => handleCancelDelete(employee.id)} />}
+                      {isDeleted && (
+                        <CancelDeleteButton
+                          itemLabel="сотрудника"
+                          onClick={() => handleCancelDelete(employee.id)}
+                          styles={{
+                            root: {
+                              backgroundColor: 'inherit'
+                            }
+                          }}
+                        />
+                      )}
                     </EmployeesItem>
                   </div>
                 )
@@ -153,6 +165,12 @@ const Employees: React.FC = () => {
         )}
 
         {isLoading && <Loader />}
+        {hasError && !isLoading && (
+          <div className={style.error_message}>
+            <p>Произошла ошибка при загрузке сотрудников</p>
+            <Button onClick={handleEmployeeUpdated}>Попробовать снова</Button>
+          </div>
+        )}
       </div>
     </div>
   )
