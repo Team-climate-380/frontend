@@ -27,9 +27,9 @@ export const Menu: React.FC = () => {
       name: 'Люди'
     },
     {
-      id: 'Команды',
+      id: 'Группы',
       link: routes.departments(),
-      name: 'Команды'
+      name: 'Группы'
     },
     {
       id: 'Вопросы',
