@@ -4,7 +4,6 @@ import { SurveyStatusIcon } from '@entities/survey/ui/survey-status-icon'
 import { FavoriteIconFilled } from '@/shared/ui/icons/favorite-icon-filled'
 
 export interface SurveyItemProps {
-  id: number
   name: string
   status: string
   comment: string
@@ -18,7 +17,6 @@ export interface SurveyItemProps {
 }
 
 export const SurveyItem: React.FC<SurveyItemProps> = ({
-  id,
   name,
   status,
   isFavorite,
@@ -32,7 +30,6 @@ export const SurveyItem: React.FC<SurveyItemProps> = ({
   return (
     <>
       <ListItem
-        key={id}
         className={className}
         onContextMenu={onContextMenu}
         icon={
