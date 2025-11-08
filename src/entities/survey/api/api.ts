@@ -87,7 +87,7 @@ export const deleteSurvey = async (id: number) => {
   return null
 }
 
-export const useDeleteSurveyMutation = () => {
+export const useToggleSurveyMutation = () => {
   const queryClient = useQueryClient()
 
   const getOnSuccess = () => {

@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router'
 import { useEffect, useMemo } from 'react'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useIntersection } from '@mantine/hooks'
-import { useDeleteSurveyMutation } from '@/entities/survey/api/api'
+import { useToggleSurveyMutation } from '@/entities/survey/api/api'
 import { useDepartmentQuery } from '@/entities/groups/api/departments-api'
 import { useQueryParams } from '@/shared/hooks/useQueryParams'
 import { useContextMenu } from '@/shared/hooks/use-context-menu'
@@ -26,7 +26,7 @@ const Surveys: React.FC = () => {
   const navigate = useNavigate()
   const { queryParams, setParams } = useQueryParams()
   const { contextMenu, handleRightClick, handleContextMenuClose } = useContextMenu()
-  const { deleteSurveyMutate, cancelDeleteSurveyMutate, toggleFavoriteMutate } = useDeleteSurveyMutation()
+  const { deleteSurveyMutate, cancelDeleteSurveyMutate, toggleFavoriteMutate } = useToggleSurveyMutation()
   const { data: departmentData } = useDepartmentQuery()
 
   const filters = [
@@ -157,7 +157,7 @@ const Surveys: React.FC = () => {
                 }
                 return (
                   <SurveyItem
-                    id={item.id}
+                    key={item.id}
                     name={item.name}
                     status={item.status}
                     comment={item.comment}
