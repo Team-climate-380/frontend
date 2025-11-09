@@ -158,6 +158,7 @@ const Surveys: React.FC = () => {
                 return (
                   <SurveyItem
                     key={item.id}
+                    surveyId={item.id}
                     name={item.name}
                     status={item.status}
                     comment={item.comment}
