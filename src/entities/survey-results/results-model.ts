@@ -27,6 +27,7 @@ export interface SurveyResults {
     name: string
   }
   employees: employeesProps[] | undefined
+  to_delete: boolean
 }
 
 export interface SurveyPatch {

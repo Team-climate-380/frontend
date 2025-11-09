@@ -4,7 +4,7 @@ import { PopupMenuItem } from '@/shared/ui/popup-menu'
 
 export const getPopupMenuItems = (
   employee: Employee,
-  setEditingEmployee: (e: Employee | null) => void,
+  setEditingEmployee: (employeeId: number | null) => void,
   handleMenuClose: () => void,
   handleEmployeesUpdate: () => void
 ): PopupMenuItem[] => [
@@ -12,7 +12,7 @@ export const getPopupMenuItems = (
     type: 'action',
     label: 'Редактировать',
     action: () => {
-      setEditingEmployee(employee)
+      setEditingEmployee(employee.id)
       handleMenuClose()
     }
   },
