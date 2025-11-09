@@ -21,6 +21,7 @@ export const QuestionsListUI: FC<IQuestionsListUIProps> = ({ questions, allowCon
                   surveys={question.surveys}
                   question_type={question.question_type}
                   allowContextMenu={allowContextMenu}
+                  to_delete={question.to_delete}
                 />
               </div>
             )

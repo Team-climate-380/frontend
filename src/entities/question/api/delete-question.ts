@@ -12,3 +12,15 @@ export const deleteQuestion = async (id: number) => {
   }
   return null
 }
+
+export const cancelDeleteQuestion = async (id: number): Promise<IQuestion | null> => {
+  const response = await apiClient.patch<IQuestion>(`/api/questions/${id}`, {
+    to_delete: false
+  })
+  if (response.status === 'success' && 'data' in response) {
+    return response.data
+  } else if ('message' in response) {
+    console.error('Ошибка при удалении вопроса', response.message)
+  }
+  return null
+}

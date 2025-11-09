@@ -10,6 +10,7 @@ export const Question: FC<IQuestion & { allowContextMenu?: boolean }> = question
       text={question.text}
       question_type={question.question_type}
       allowContextMenu={question.allowContextMenu}
+      to_delete={question.to_delete}
     />
   )
 }
