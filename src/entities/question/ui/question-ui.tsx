@@ -10,7 +10,7 @@ import { QuestionForm } from '@/features/question-form'
 import { QuestionTypeEnum, QuestionTypeEnum as QTE } from '../forms/use-create-edit-question-form'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import clsx from 'clsx'
-import { DeleteIcon } from '@/shared/ui/icons/delete-icon'
+import { CancelDeleteButton } from '@/shared/ui/cancel-delete-button'
 
 export const QuestionUI: FC<IQuestion & { allowContextMenu?: boolean }> = ({
   id,
@@ -78,9 +78,16 @@ export const QuestionUI: FC<IQuestion & { allowContextMenu?: boolean }> = ({
         <Text size="md" className={style.text}>
           {text} <span className={style.question_type}> ({QuestionTypeLabels[question_type as QuestionTypeEnum]})</span>
         </Text>
-        <button className={style.delete_button} onClick={() => cancelDeteleQuestionMutate.mutate()}>
-          {to_delete && <DeleteIcon />}
-        </button>
+        <>
+          {to_delete && (
+            <CancelDeleteButton
+              onClick={() => cancelDeteleQuestionMutate.mutate()}
+              itemLabel="вопроса"
+              className={style.delete_button}
+            />
+          )}
+        </>
+
         {dropdownVisible && allowContextMenu && (
           <ContextMenu
             items={[
