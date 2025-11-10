@@ -13,6 +13,7 @@ import { SearchInput } from '@/widgets/search-input'
 import { useQueryParams } from '@/shared/hooks/useQueryParams'
 import { IconExclamationCircleFilled } from '@tabler/icons-react'
 import { Skeleton } from '@/shared/ui/skeleton'
+import { TextNotification } from '@/shared/ui/text-notification'
 
 export const Departments: React.FC = () => {
   const [isCreateNewFormVisible, setIsCreateNewFormVisible] = useState(false)
@@ -103,11 +104,12 @@ export const Departments: React.FC = () => {
       <div className={styles.main}>
         <ScrollArea type="scroll">
           {isCreateNewFormVisible && <GroupForm onSubmit={handleSubmit} />}
+          {isPending && <Skeleton />}
+          {isError && <TextNotification variant="data-not-loaded" />}
+          {data && data.length > 0 && filteredDepartments && filteredDepartments.length === 0 && (
+            <TextNotification variant="no-search-result" />
+          )}
           <List listStyleType="none">
-            {isPending && <Skeleton />}
-            {!data &&
-              isError &&
-              `Не удалось загрузить данные о группах. Пожалуйста, обновите страницу или повторите попытку позже.`}
             {filteredDepartments &&
               filteredDepartments.map(department => {
                 return (
