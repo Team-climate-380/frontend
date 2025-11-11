@@ -13,6 +13,7 @@ import { SearchInput } from '@/widgets/search-input'
 import { useQueryParams } from '@/shared/hooks/useQueryParams'
 import { IconExclamationCircleFilled } from '@tabler/icons-react'
 import { Skeleton } from '@/shared/ui/skeleton'
+import { useClickOutside } from '@mantine/hooks'
 
 export const Departments: React.FC = () => {
   const [isCreateNewFormVisible, setIsCreateNewFormVisible] = useState(false)
@@ -20,26 +21,23 @@ export const Departments: React.FC = () => {
   const [isDeleteErrorVisible, setIsDeleteErrorVisible] = useState(false)
   const [filteredDepartments, setFilteredDepartments] = useState<DepartmentInfo[]>()
 
-  const { contextMenu, setContextMenu, handleRightClick, handleContextMenuClose } = useContextMenu(
-    {
-      isVisible: false,
-      selectedId: null,
-      left: 0,
-      top: 0
-    },
-    0,
-    10,
-    true
-  )
+  const editFormRef = useClickOutside(() => {
+    setSelectedForEdit(null)
+  })
+  const createFormRef = useClickOutside(() => {
+    setIsCreateNewFormVisible(false)
+  })
+
+  const { contextMenu, setContextMenu, handleRightClick, handleContextMenuClose } = useContextMenu()
+
+  const { data, isPending, isError } = useDepartmentQuery()
+  const { createDepartmentMutation, editDepartmentMutation, deleteDepartmentMutation } = useDepartmentMutations()
 
   const menuItems = departmentsContextMenu({
     handleEdit: handleEditClick,
     handleDelete: handleDeleteClick,
     id: contextMenu.selectedId
   })
-
-  const { data, isPending, isError } = useDepartmentQuery()
-  const { createDepartmentMutation, editDepartmentMutation, deleteDepartmentMutation } = useDepartmentMutations()
 
   const { getDecodedSearch } = useQueryParams()
   const searchQuery = getDecodedSearch().trim().toLowerCase()
@@ -62,16 +60,27 @@ export const Departments: React.FC = () => {
       return
     }
     if (selectedForEdit) {
-      editDepartmentMutation.mutate({ id: selectedForEdit, new_name: values.name })
-      setSelectedForEdit(null)
+      editDepartmentMutation.mutate({
+        id: selectedForEdit,
+        new_name: values.name,
+        onEditSuccess: () => setSelectedForEdit(null)
+      })
     } else {
-      createDepartmentMutation.mutate(values.name)
-      setIsCreateNewFormVisible(false)
+      createDepartmentMutation.mutate({
+        newGroupName: values.name,
+        onCreateSuccess: () => setIsCreateNewFormVisible(false)
+      })
     }
+  }
+
+  function handleCreateClick() {
+    setIsCreateNewFormVisible(true)
+    setSelectedForEdit(null)
   }
 
   function handleEditClick(id: number | null | undefined) {
     if (!id) return
+    setIsCreateNewFormVisible(false)
     setSelectedForEdit(id)
     setContextMenu({ ...contextMenu, isVisible: false, selectedId: null })
   }
@@ -94,7 +103,7 @@ export const Departments: React.FC = () => {
         actions={
           <>
             <SearchInput />
-            <Button className={styles.header_button} onClick={() => setIsCreateNewFormVisible(!isCreateNewFormVisible)}>
+            <Button className={styles.header_button} onClick={handleCreateClick}>
               Создать группу
             </Button>
           </>
@@ -102,8 +111,8 @@ export const Departments: React.FC = () => {
       ></Header>
       <div className={styles.main}>
         <ScrollArea type="scroll">
-          {isCreateNewFormVisible && <GroupForm onSubmit={handleSubmit} />}
-          <List listStyleType="none">
+          {isCreateNewFormVisible && <GroupForm onSubmit={handleSubmit} formRef={createFormRef} />}
+          <List listStyleType="none" aria-label="Список групп">
             {isPending && <Skeleton />}
             {!data &&
               isError &&
@@ -121,6 +130,7 @@ export const Departments: React.FC = () => {
                       isEdited={department.id === selectedForEdit ? true : false}
                       onSubmit={handleSubmit}
                       handleCancelDelete={() => handleCancelDelete(department.id)}
+                      formRef={editFormRef}
                     />
                   </List.Item>
                 )
