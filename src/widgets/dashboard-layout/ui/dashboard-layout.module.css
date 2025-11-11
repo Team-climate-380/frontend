@@ -22,7 +22,7 @@
   margin-inline-start: 23px;
 }
 
-.logoutButton[data-variant="primary"] {
+.logoutButton[data-variant='primary'] {
   margin: 20px 0;
   padding-inline-start: 0;
   background-color: transparent;

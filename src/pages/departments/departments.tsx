@@ -103,7 +103,7 @@ export const Departments: React.FC = () => {
         actions={
           <>
             <SearchInput />
-            <Button className={styles.header_button} onClick={handleCreateClick}>
+            <Button className={styles.header_button} onClick={handleCreateClick} disabled={isCreateNewFormVisible}>
               Создать группу
             </Button>
           </>
@@ -111,7 +111,13 @@ export const Departments: React.FC = () => {
       ></Header>
       <div className={styles.main}>
         <ScrollArea type="scroll">
-          {isCreateNewFormVisible && <GroupForm onSubmit={handleSubmit} formRef={createFormRef} />}
+          {isCreateNewFormVisible && (
+            <GroupForm
+              onSubmit={handleSubmit}
+              closeForm={() => setIsCreateNewFormVisible(false)}
+              formRef={createFormRef}
+            />
+          )}
           <List listStyleType="none" aria-label="Список групп">
             {isPending && <Skeleton />}
             {!data &&
@@ -130,6 +136,7 @@ export const Departments: React.FC = () => {
                       isEdited={department.id === selectedForEdit ? true : false}
                       onSubmit={handleSubmit}
                       handleCancelDelete={() => handleCancelDelete(department.id)}
+                      closeGroupForm={() => setSelectedForEdit(null)}
                       formRef={editFormRef}
                     />
                   </List.Item>

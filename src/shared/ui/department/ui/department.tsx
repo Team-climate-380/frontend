@@ -10,6 +10,7 @@ type DepartmentProps = {
   onContextMenu: (e: SyntheticEvent, id: number) => void
   onSubmit: (values: Partial<ValuesFormGroups>) => void
   handleCancelDelete: () => void
+  closeGroupForm: () => void
   formRef?: RefObject<HTMLFormElement>
 }
 
@@ -19,10 +20,11 @@ export const Department: React.FC<DepartmentProps> = ({
   onContextMenu,
   onSubmit,
   handleCancelDelete,
+  closeGroupForm,
   formRef
 }) => {
   return isEdited ? (
-    <GroupForm name={department.department_name} onSubmit={onSubmit} formRef={formRef} />
+    <GroupForm name={department.department_name} onSubmit={onSubmit} closeForm={closeGroupForm} formRef={formRef} />
   ) : (
     <DepartmentListItem
       {...department}
