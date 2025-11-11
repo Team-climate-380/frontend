@@ -58,7 +58,7 @@ export const getAllSurveys = async (
 
   params.set('page', String(pageParam))
 
-  if (currentFilter) params.set('filter', currentFilter)
+  if (currentFilter) params.set('status', currentFilter)
 
   if (currentDepartment) {
     params.set('department', currentDepartment)

@@ -30,7 +30,7 @@ const Surveys: React.FC = () => {
   const { data: departmentData } = useDepartmentQuery()
 
   const currentDepartment = queryParams?.department ?? ''
-  const currentFilter = queryParams?.filter ?? 'all'
+  const currentFilter = queryParams?.status ?? 'all'
   const currentPage = Number(queryParams.page ?? '1')
   const searchQuery = queryParams?.search ? decodeURIComponent(queryParams?.search?.toLowerCase()) : ''
 
@@ -39,42 +39,42 @@ const Surveys: React.FC = () => {
       icon: <FavoriteIcon />,
       value: 'favorite',
       setValue: () => {
-        setParams({ filter: 'favorite', page: '1', per_page: '20', department: currentDepartment }, true)
+        setParams({ status: 'favorite', page: '1', per_page: '20', department: currentDepartment }, true)
       }
     },
     {
       title: 'Все',
       value: 'all',
       setValue: () => {
-        setParams({ filter: 'all', page: '1', per_page: '20', department: currentDepartment }, true)
+        setParams({ status: 'all', page: '1', per_page: '20', department: currentDepartment }, true)
       }
     },
     {
       title: 'Текущие',
-      value: 'active',
+      value: 'current',
       setValue: () => {
-        setParams({ filter: 'current', page: '1', per_page: '20', department: currentDepartment }, true)
+        setParams({ status: 'current', page: '1', per_page: '20', department: currentDepartment }, true)
       }
     },
     {
       title: 'Черновики',
       value: 'drafts',
       setValue: () => {
-        setParams({ filter: 'drafts', page: '1', per_page: '20', department: currentDepartment }, true)
+        setParams({ status: 'drafts', page: '1', per_page: '20', department: currentDepartment }, true)
       }
     },
     {
       title: 'Завершённые',
       value: 'finished',
       setValue: () => {
-        setParams({ filter: 'finished', page: '1', per_page: '20', department: currentDepartment }, true)
+        setParams({ status: 'finished', page: '1', per_page: '20', department: currentDepartment }, true)
       }
     },
     {
       title: 'Архив',
       value: 'archive',
       setValue: () => {
-        setParams({ filter: 'archive', page: '1', per_page: '20', department: currentDepartment }, true)
+        setParams({ status: 'archive', page: '1', per_page: '20', department: currentDepartment }, true)
       }
     }
   ]
