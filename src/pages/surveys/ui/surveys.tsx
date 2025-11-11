@@ -8,7 +8,7 @@ import { useQueryParams } from '@/shared/hooks/useQueryParams'
 import { useContextMenu } from '@/shared/hooks/use-context-menu'
 import { routes } from '@/shared/configs/routs/routes.config'
 import { getAllSurveys } from '@entities/survey/api/api'
-import { List } from '@mantine/core'
+import { List, Text } from '@mantine/core'
 import { Header } from '@widgets/header/header'
 import { Filter } from '@/features/filters'
 import { SearchInput } from '@/widgets/search-input'
@@ -29,61 +29,62 @@ const Surveys: React.FC = () => {
   const { deleteSurveyMutate, cancelDeleteSurveyMutate, toggleFavoriteMutate } = useToggleSurveyMutation()
   const { data: departmentData } = useDepartmentQuery()
 
+  const currentDepartment = queryParams?.department ?? ''
+  const currentFilter = queryParams?.filter ?? 'all'
+  const currentPage = Number(queryParams.page ?? '1')
+  const searchQuery = queryParams?.search ? decodeURIComponent(queryParams?.search?.toLowerCase()) : ''
+
   const filters = [
     {
       icon: <FavoriteIcon />,
       value: 'favorite',
       setValue: () => {
-        setParams({ filter: 'favorite', page: '1', per_page: '20' }, true)
+        setParams({ filter: 'favorite', page: '1', per_page: '20', department: currentDepartment }, true)
       }
     },
     {
       title: 'Все',
       value: 'all',
       setValue: () => {
-        setParams({ filter: 'all', page: '1', per_page: '20' }, true)
+        setParams({ filter: 'all', page: '1', per_page: '20', department: currentDepartment }, true)
       }
     },
     {
       title: 'Текущие',
-      value: 'current',
+      value: 'active',
       setValue: () => {
-        setParams({ filter: 'current', page: '1', per_page: '20' }, true)
+        setParams({ filter: 'current', page: '1', per_page: '20', department: currentDepartment }, true)
       }
     },
     {
       title: 'Черновики',
       value: 'drafts',
       setValue: () => {
-        setParams({ filter: 'drafts', page: '1', per_page: '20' }, true)
+        setParams({ filter: 'drafts', page: '1', per_page: '20', department: currentDepartment }, true)
       }
     },
     {
       title: 'Завершённые',
       value: 'finished',
       setValue: () => {
-        setParams({ filter: 'finished', page: '1', per_page: '20' }, true)
+        setParams({ filter: 'finished', page: '1', per_page: '20', department: currentDepartment }, true)
       }
     },
     {
       title: 'Архив',
       value: 'archive',
       setValue: () => {
-        setParams({ filter: 'archive', page: '1', per_page: '20' }, true)
+        setParams({ filter: 'archive', page: '1', per_page: '20', department: currentDepartment }, true)
       }
     }
   ]
-  const currentFilter = queryParams?.filter ?? 'all'
-  const currentPage = Number(queryParams.page ?? '1')
-  const currentDepartment = Number(queryParams?.department)
-  const searchQuery = queryParams?.search ? decodeURIComponent(queryParams?.search?.toLowerCase()) : ''
 
   const { ref, entry } = useIntersection({
     root: null,
     threshold: 1
   })
 
-  const { status, data, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteQuery({
+  const { status, error, data, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteQuery({
     queryKey: ['surveys', currentFilter, currentDepartment, searchQuery],
     queryFn: ({ pageParam = currentPage }) => {
       return getAllSurveys(pageParam, currentFilter, currentDepartment, searchQuery)
@@ -119,6 +120,9 @@ const Surveys: React.FC = () => {
       <div className={classes.container}>
         {status === 'pending' ? (
           <Skeleton />
+        ) : error ? (
+          // TODO: add component
+          <Text>Не удалось загрузить данные. Пожалуйста, обновите страницу или повторите попытку позже.</Text>
         ) : (
           <>
             <List
@@ -149,75 +153,80 @@ const Surveys: React.FC = () => {
                 }
               }}
             >
-              {allSurveys?.map((item: SurveyResults) => {
-                const departmentName = departmentData?.find(dep => dep.department_name === item.department?.name)
-                let employeeCount: number = 0
-                if (departmentName) {
-                  employeeCount = departmentName.employees_count
-                }
-                return (
-                  <SurveyItem
-                    key={item.id}
-                    name={item.name}
-                    status={item.status}
-                    comment={item.comment}
-                    isFavorite={item.is_favorite}
-                    finishedCount={item.finished_count}
-                    allCount={employeeCount}
-                    departmentName={item.department?.name}
-                    className={item.to_delete ? classes.itemToDelete : ''}
-                    onContextMenu={evt => handleRightClick(evt, item.id)}
-                  >
-                    <span className={classes.comment}>{item.comment ?? ''}</span>
+              {allSurveys.length === 0 ? (
+                // TODO: add component
+                <Text>По вашему запросу ничего не найдено. Попробуйте изменить формулировку или параметры поиска.</Text>
+              ) : (
+                allSurveys?.map((item: SurveyResults) => {
+                  const departmentName = departmentData?.find(dep => dep.department_name === item.department?.name)
+                  let employeeCount: number = 0
+                  if (departmentName) {
+                    employeeCount = departmentName.employees_count
+                  }
+                  return (
+                    <SurveyItem
+                      key={item.id}
+                      name={item.name}
+                      status={item.status}
+                      comment={item.comment}
+                      isFavorite={item.is_favorite}
+                      finishedCount={item.finished_count}
+                      allCount={employeeCount}
+                      departmentName={item.department?.name}
+                      className={item.to_delete ? classes.itemToDelete : ''}
+                      onContextMenu={evt => handleRightClick(evt, item.id)}
+                    >
+                      <span className={classes.comment}>{item.comment ?? ''}</span>
 
-                    {contextMenu.isVisible && contextMenu.selectedId === item.id && (
-                      <PopupMenu
-                        type={'context'}
-                        items={[
-                          {
-                            type: 'link',
-                            label: 'Редактировать',
-                            url: routes.edit_survey(item.id)
-                          },
-                          {
-                            type: 'action',
-                            label: item.is_favorite === true ? 'Убрать из избранного' : 'В избранное',
-                            action: () => {
-                              toggleFavoriteMutate(item)
-                              handleContextMenuClose()
+                      {contextMenu.isVisible && contextMenu.selectedId === item.id && (
+                        <PopupMenu
+                          type={'context'}
+                          items={[
+                            {
+                              type: 'link',
+                              label: 'Редактировать',
+                              url: routes.edit_survey(item.id)
+                            },
+                            {
+                              type: 'action',
+                              label: item.is_favorite === true ? 'Убрать из избранного' : 'В избранное',
+                              action: () => {
+                                toggleFavoriteMutate(item)
+                                handleContextMenuClose()
+                              }
+                            },
+                            {
+                              type: 'divider'
+                            },
+                            {
+                              type: 'action',
+                              label: 'Удалить',
+                              important: true,
+                              action: () => {
+                                deleteSurveyMutate(item.id)
+                                handleContextMenuClose()
+                              }
                             }
-                          },
-                          {
-                            type: 'divider'
-                          },
-                          {
-                            type: 'action',
-                            label: 'Удалить',
-                            important: true,
-                            action: () => {
-                              deleteSurveyMutate(item.id)
-                              handleContextMenuClose()
-                            }
-                          }
-                        ]}
-                        onClose={handleContextMenuClose}
-                        positionX={contextMenu?.left}
-                        positionY={contextMenu?.top}
+                          ]}
+                          onClose={handleContextMenuClose}
+                          positionX={contextMenu?.left}
+                          positionY={contextMenu?.top}
+                        />
+                      )}
+
+                      <SurveyCancelDelete
+                        isAddedToDelete={item.to_delete}
+                        handleClick={e => {
+                          e.preventDefault()
+
+                          item.to_delete = !item.to_delete
+                          cancelDeleteSurveyMutate(item)
+                        }}
                       />
-                    )}
-
-                    <SurveyCancelDelete
-                      isAddedToDelete={item.to_delete}
-                      handleClick={e => {
-                        e.preventDefault()
-
-                        item.to_delete = !item.to_delete
-                        cancelDeleteSurveyMutate(item)
-                      }}
-                    />
-                  </SurveyItem>
-                )
-              })}
+                    </SurveyItem>
+                  )
+                })
+              )}
             </List>
 
             <div ref={ref}>{isFetchingNextPage && <Loader />}</div>

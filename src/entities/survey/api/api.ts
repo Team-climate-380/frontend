@@ -50,17 +50,18 @@ export const fetchSurveyById = async (id: number) => {
 export const getAllSurveys = async (
   pageParam: number,
   currentFilter: string,
-  currentDepartment: number | null | undefined,
+  currentDepartment: string,
   searchQuery: string
 ) => {
   // Строим параметры запроса явно, чтобы не терять фильтры
   const params = new URLSearchParams()
 
   params.set('page', String(pageParam))
+
   if (currentFilter) params.set('filter', currentFilter)
 
-  if (typeof currentDepartment === 'number' && !Number.isNaN(currentDepartment)) {
-    params.set('department', String(currentDepartment))
+  if (currentDepartment) {
+    params.set('department', currentDepartment)
   }
 
   const trimmedSearch = (searchQuery ?? '').trim()
