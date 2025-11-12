@@ -8,6 +8,7 @@ export const getDepartments = async () => {
   const response = await apiClient.get<DepartmentInfo[]>(`/api/departments/`)
   if (response.status === 'success' && 'data' in response) return response.data
   if (response.status === 'error' && 'message' in response) throw new Error(response.message)
+  throw new Error('Ошибка получения данных о группах')
 }
 
 export const createDepartment = async (name: string) => {
@@ -29,6 +30,7 @@ export const editDepartment = async (id: number, toEdit: { department_name?: str
   if (response.status === 'error' && 'error' in response) {
     throw new Error(response.message)
   }
+  return response
 }
 
 export const deleteDepartment = async (id: number) => {

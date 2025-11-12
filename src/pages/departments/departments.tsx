@@ -19,7 +19,7 @@ export const Departments: React.FC = () => {
   const [isCreateNewFormVisible, setIsCreateNewFormVisible] = useState(false)
   const [selectedForEdit, setSelectedForEdit] = useState<null | number>(null)
   const [isDeleteErrorVisible, setIsDeleteErrorVisible] = useState(false)
-  const [filteredDepartments, setFilteredDepartments] = useState<DepartmentInfo[]>()
+  const [filteredDepartments, setFilteredDepartments] = useState<DepartmentInfo[]>([])
 
   const { contextMenu, setContextMenu, handleRightClick, handleContextMenuClose } = useContextMenu(
     {
@@ -39,23 +39,24 @@ export const Departments: React.FC = () => {
     id: contextMenu.selectedId
   })
 
-  const { data, isPending, isError } = useDepartmentQuery()
+  const { data, isPending, isError, isSuccess } = useDepartmentQuery()
+
   const { createDepartmentMutation, editDepartmentMutation, deleteDepartmentMutation } = useDepartmentMutations()
 
   const { getDecodedSearch } = useQueryParams()
   const searchQuery = getDecodedSearch().trim().toLowerCase()
-  const searchDepartments = () => {
-    if (searchQuery && data) {
-      const filtered = data.filter(department => department.department_name.toLowerCase().includes(searchQuery))
+  const setDepartments = () => {
+    if (isSuccess) {
+      const filtered = searchQuery
+        ? data.filter(department => department.department_name.toLowerCase().includes(searchQuery))
+        : data
       setFilteredDepartments(filtered)
-      return
     }
-    setFilteredDepartments(data)
   }
 
   useEffect(() => {
     if (!data) return
-    searchDepartments()
+    setDepartments()
   }, [data, searchQuery])
 
   const handleSubmit = (values: Partial<ValuesFormGroups>) => {
@@ -105,29 +106,30 @@ export const Departments: React.FC = () => {
         <ScrollArea type="scroll">
           {isCreateNewFormVisible && <GroupForm onSubmit={handleSubmit} />}
           {isPending && <Skeleton />}
-          {isError && <TextNotification variant="data-not-loaded" />}
-          {data && data.length > 0 && filteredDepartments && filteredDepartments.length === 0 && (
-            <TextNotification variant="no-search-result" />
-          )}
-          <List listStyleType="none">
-            {filteredDepartments &&
-              filteredDepartments.map(department => {
-                return (
-                  <List.Item key={department.id}>
-                    <Department
-                      department={department}
-                      onContextMenu={e => {
-                        if (department.to_delete) return
-                        handleRightClick(e, department.id)
-                      }}
-                      isEdited={department.id === selectedForEdit ? true : false}
-                      onSubmit={handleSubmit}
-                      handleCancelDelete={() => handleCancelDelete(department.id)}
-                    />
-                  </List.Item>
-                )
-              })}
-          </List>
+          {isError && <TextNotification variant="data_not_loaded" />}
+          {isSuccess &&
+            (searchQuery && filteredDepartments.length === 0 ? (
+              <TextNotification variant="no_search_result" />
+            ) : (
+              <List listStyleType="none">
+                {filteredDepartments.map(department => {
+                  return (
+                    <List.Item key={department.id}>
+                      <Department
+                        department={department}
+                        onContextMenu={e => {
+                          if (department.to_delete) return
+                          handleRightClick(e, department.id)
+                        }}
+                        isEdited={department.id === selectedForEdit ? true : false}
+                        onSubmit={handleSubmit}
+                        handleCancelDelete={() => handleCancelDelete(department.id)}
+                      />
+                    </List.Item>
+                  )
+                })}
+              </List>
+            ))}
         </ScrollArea>
       </div>
       {contextMenu.isVisible && (
