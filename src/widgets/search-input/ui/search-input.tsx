@@ -48,6 +48,7 @@ export const SearchInput = () => {
           onKeyDown={handleKeyDown}
           rightSection={inputValue !== '' ? <MantineInput.ClearButton onClick={handleClear} /> : undefined}
           rightSectionPointerEvents="auto"
+          autoFocus
         />
       )}
       <SearchIcon className={style.search_icon} onClick={handleClickIconSearch} />

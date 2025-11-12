@@ -1,4 +1,4 @@
-.button {
+.root {
   cursor: pointer;
   transition: all 0.2s ease;
   padding-inline: 20px;
@@ -6,34 +6,29 @@
   border-radius: 6px;
 }
 
-.primary {
-  background-color: #06121e;
-  color: #ffffff;
-
-  &:hover {
-    background-color: #000000;
-  }
+.root[data-variant='primary'] {
+  --button-bg: #06121e;
+  --button-hover: #000000;
+  --button-color: #ffffff;
 }
 
-.ghost {
-  background-color: transparent;
-  color: #06121e;
-  padding: 0;
-
-  &:hover {
-    background-color: transparent;
+.root[data-variant='ghost'] {
+  --button-hover: transparent;
+  background: transparent;
+  :hover {
     color: #06121e;
   }
+  color: #06121e;
+  padding: 0;
 }
 
-.md {
+.root[data-size='md'] {
   font-size: 13px;
   font-weight: 500;
 }
 
-.lg {
+.root[data-size='lg'] {
   height: 39px;
   font-size: 16px;
   font-weight: 500;
-  padding-inline: 24px;
 }

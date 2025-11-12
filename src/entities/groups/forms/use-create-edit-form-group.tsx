@@ -1,12 +1,13 @@
-import { useForm } from '@mantine/form'
+import { createFormActions, useForm } from '@mantine/form'
 
 export interface ValuesFormGroups {
   name: string
 }
 
 export const useCreateEditFormGroup = (initialValues: Partial<ValuesFormGroups>) => {
-  const formGroupData = useForm({
+  const formGroupData = useForm<Partial<ValuesFormGroups>>({
     mode: 'uncontrolled',
+    name: 'group-form',
     initialValues: initialValues ?? { name: '' },
 
     validate: {
@@ -23,3 +24,5 @@ export const useCreateEditFormGroup = (initialValues: Partial<ValuesFormGroups>)
   })
   return formGroupData
 }
+
+export const groupFormActions = createFormActions<Partial<ValuesFormGroups>>('group-form')

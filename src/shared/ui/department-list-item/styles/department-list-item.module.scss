@@ -31,6 +31,10 @@
   font-weight: 700;
 }
 
+.group-button[aria-expanded='true'] .group-name_has-employees_false {
+  font-weight: 500;
+}
+
 span:has(.group-name) {
   padding-top: 0;
 }
