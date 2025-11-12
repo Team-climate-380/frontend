@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import styles from './styles/departments.module.scss'
 import { useContextMenu } from '@shared/hooks/use-context-menu'
 import { ValuesFormGroups } from '@/entities/groups/forms/use-create-edit-form-group'
-import { List, ScrollArea, Modal, Group } from '@mantine/core'
+import { List, ScrollArea } from '@mantine/core'
 import { Button } from '@/shared/ui/button'
 import { DepartmentInfo, GroupForm, useDepartmentMutations, useDepartmentQuery } from '@/entities/groups'
 import { Department } from '@/shared/ui/department'
@@ -11,10 +11,10 @@ import { PopupMenu } from '@/shared/ui/popup-menu'
 import { departmentsContextMenu } from './configs/departments-context-menu.config'
 import { SearchInput } from '@/widgets/search-input'
 import { useQueryParams } from '@/shared/hooks/useQueryParams'
-import { IconExclamationCircleFilled } from '@tabler/icons-react'
 import { Skeleton } from '@/shared/ui/skeleton'
 import { TextNotification } from '@/shared/ui/text-notification'
 import { useClickOutside } from '@mantine/hooks'
+import { NotificationModal } from '@/shared/ui/notification-modal'
 
 export const Departments: React.FC = () => {
   const [isCreateNewFormVisible, setIsCreateNewFormVisible] = useState(false)
@@ -157,25 +157,15 @@ export const Departments: React.FC = () => {
           positionY={contextMenu.top}
         ></PopupMenu>
       )}
-      <Modal
+      <NotificationModal
+        type="error"
         opened={isDeleteErrorVisible}
-        withinPortal
         onClose={() => {
           setIsDeleteErrorVisible(false)
         }}
-        title={
-          <Group gap="xs" align="center">
-            <IconExclamationCircleFilled size={40} color="red" />
-            <h3 className={styles['error-modal_title']}>Невозможно удалить группу</h3>
-          </Group>
-        }
-        centered
-        closeButtonProps={{ 'aria-label': 'Закрыть уведомление' }}
-      >
-        <p className={styles['error-modal_text']}>
-          Похоже, в этой группе ещё есть люди. Удалите или переместите их, и тогда группу можно будет удалить.
-        </p>
-      </Modal>
+        title={'Невозможно удалить группу'}
+        text={'Похоже, в этой группе ещё есть люди. Удалите или переместите их, и тогда группу можно будет удалить.'}
+      />
     </div>
   )
 }
