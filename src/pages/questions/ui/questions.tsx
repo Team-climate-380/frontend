@@ -87,7 +87,7 @@ const QuestionPage = () => {
       icon: <FavoriteIcon />,
       value: 'favorite',
       setValue: () => {
-        setParams({ filter: 'favorite', page: '1', per_page: '20' }, true)
+        setParams({ is_favorite: 'true', page: '1', per_page: '20' }, true)
       }
     },
     {
