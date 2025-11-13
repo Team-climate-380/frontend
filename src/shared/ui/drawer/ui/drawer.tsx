@@ -8,7 +8,7 @@ interface QuestionsDrawerProps {
   opened: boolean
   onClose: () => void
   content: ReactNode
-  header: ReactNode
+  header?: ReactNode
 }
 
 export const RightPanel: React.FC<QuestionsDrawerProps> = ({ opened, onClose, content, header }) => {
@@ -24,6 +24,7 @@ export const RightPanel: React.FC<QuestionsDrawerProps> = ({ opened, onClose, co
       radius={8}
       scrollAreaComponent={ScrollArea.Autosize}
       overlayProps={{ backgroundOpacity: 0 }}
+      // closeOnClickOutside={false}
       closeButtonProps={{
         icon: <CloseIcon />
       }}

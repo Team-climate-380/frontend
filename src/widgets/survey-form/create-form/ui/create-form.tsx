@@ -16,7 +16,11 @@ import { useQuery } from '@tanstack/react-query'
 import { fetchParticipants } from '@entities/survey/api/api'
 import { useSurveyMutation } from '@/entities/survey/forms/lib/use-survey-mutation'
 
-const CreateSurveyForm: FunctionComponent = () => {
+export interface CreateSurveyFormProps {
+  onOpenButtons: () => void
+}
+
+const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({ onOpenButtons }) => {
   const { data: departmentOptions, isLoading: areParticipantsLoading } = useQuery({
     queryKey: ['participants'],
     queryFn: fetchParticipants
@@ -104,9 +108,7 @@ const CreateSurveyForm: FunctionComponent = () => {
               <QuestionCreate
                 key={question.id}
                 title={`${index + 1} Вопрос`}
-                onOpenButtons={() => {
-                  console.log('Sidebar')
-                }}
+                onOpenButtons={() => onOpenButtons()}
                 textInputProps={formData.getInputProps(`questions.${index}.text`)}
                 typeInputProps={formData.getInputProps(`questions.${index}.type`)}
               />
