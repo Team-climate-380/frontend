@@ -13,6 +13,7 @@ import clsx from 'clsx'
 import { CancelDeleteButton } from '@/shared/ui/cancel-delete-button'
 
 export const QuestionUI: FC<IQuestion & { allowContextMenu?: boolean }> = ({
+  numeration,
   id,
   is_favorite,
   text,
@@ -73,7 +74,7 @@ export const QuestionUI: FC<IQuestion & { allowContextMenu?: boolean }> = ({
         onClick={close}
         onContextMenu={handleContextMenu}
       >
-        <span className={style.id}>{id}</span>
+        <span className={style.id}>{numeration}</span>
         <div className={style.isFavorite}>{isFavorite && <FavoriteIconFilled width={11} height={11} />}</div>
         <Text size="md" className={style.text}>
           {text} <span className={style.question_type}> ({QuestionTypeLabels[question_type as QuestionTypeEnum]})</span>

@@ -5,6 +5,7 @@ import { IQuestion } from '../type'
 export const Question: FC<IQuestion & { allowContextMenu?: boolean }> = question => {
   return (
     <QuestionUI
+      numeration={question.numeration}
       id={question.id}
       is_favorite={question.is_favorite}
       text={question.text}

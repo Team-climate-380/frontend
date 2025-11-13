@@ -11,10 +11,11 @@ export const QuestionsListUI: FC<IQuestionsListUIProps> = ({ questions, allowCon
   return (
     <>
       {questions
-        ? questions.map(question => {
+        ? questions.map((question, index) => {
             return (
               <div key={question.id}>
                 <Question
+                  numeration={index + 1}
                   id={question.id}
                   text={question.text}
                   is_favorite={question.is_favorite}
