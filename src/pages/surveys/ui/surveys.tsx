@@ -51,9 +51,9 @@ const Surveys: React.FC = () => {
     },
     {
       title: 'Текущие',
-      value: 'current',
+      value: 'active',
       setValue: () => {
-        setParams({ status: 'current', page: '1', per_page: '20', department: currentDepartment }, true)
+        setParams({ status: 'active', page: '1', per_page: '20', department: currentDepartment }, true)
       }
     },
     {
