@@ -2,8 +2,8 @@ import { Button } from '@/shared/ui/button'
 import { IconArrowLeft } from '@tabler/icons-react'
 import style from './style.module.scss'
 import { Input } from '@/shared/ui/input'
-import { useRestorePasswordData } from '../model/use-password-recovery-form'
-import { Anchor, Box, Center, Group, Paper } from '@mantine/core'
+import { useRestorePasswordData, useRestorePasswordMutation } from '../model/use-password-recovery-form'
+import { Anchor, Box, Center, Group, Paper, Text } from '@mantine/core'
 
 export interface InitialRestorePassword {
   email: string
@@ -15,13 +15,20 @@ interface PasswordRecoveryFormProps {
   initialValues?: InitialRestorePassword
 }
 
-export const PasswordRecoveryForm: React.FC<PasswordRecoveryFormProps> = ({ onHandleClickBack, initialValues }) => {
+export const PasswordRecoveryForm: React.FC<PasswordRecoveryFormProps> = ({
+  onHandleClickBack,
+  initialValues,
+  onRestorePassword
+}) => {
   const passwordRecoveryData = useRestorePasswordData(initialValues)
-  const handleRestorePassword = (e: React.FormEvent) => {
+  const { mutateAsync, isPending, isSuccess, isError, error } = useRestorePasswordMutation()
+  const handleRestorePassword = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (passwordRecoveryData.isValid()) {
-      console.log('Сброс пароля')
-    }
+    if (!passwordRecoveryData.isValid()) return
+
+    await mutateAsync(passwordRecoveryData.values.email)
+    passwordRecoveryData.reset()
+    onRestorePassword()
   }
   return (
     <form onSubmit={handleRestorePassword}>
@@ -42,11 +49,27 @@ export const PasswordRecoveryForm: React.FC<PasswordRecoveryFormProps> = ({ onHa
               </Box>
             </Center>
           </Anchor>
-          <Button type="submit" className={style.control} size="md" disabled={!passwordRecoveryData.isValid()}>
+          <Button
+            type="submit"
+            disabled={!passwordRecoveryData.isValid() || isPending}
+            className={style.control}
+            size="md"
+          >
             Сбросить пароль
           </Button>
         </Group>
       </Paper>
+      {isError && (
+        <Text size="sm" c="red">
+          {' '}
+          {error.message ?? 'Произошла ошибка при сбросе пароля'}
+        </Text>
+      )}
+      {isSuccess && (
+        <Text size="sm" c="green">
+          Письмо для восстановления отправлено на почту
+        </Text>
+      )}{' '}
     </form>
   )
 }
