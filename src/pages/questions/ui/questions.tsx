@@ -4,7 +4,7 @@ import { Button } from '@/shared/ui/button'
 import { Filter } from '@/features/filters'
 import { FavoriteIcon } from '@/features/filters/ui/favorite-icon'
 import { SearchInput } from '@/widgets/search-input'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useQueryParams } from '@/shared/hooks/useQueryParams'
 import { getQuestions } from '@/entities/question/api/get-questions'
 import { useInfiniteQuery } from '@tanstack/react-query'
@@ -21,6 +21,7 @@ const QuestionPage = () => {
   const { ref, entry } = useIntersection({
     threshold: 1
   })
+  const formRef = useRef<HTMLDivElement>(null)
 
   //инициализация URL при первом рендере
   useEffect(() => {
@@ -80,6 +81,17 @@ const QuestionPage = () => {
     setQuestionFormIsVisible(prev => !prev)
   }
 
+  useEffect(() => {
+    if (!questionFormIsVisible) return
+    function handleClickOutside(event: MouseEvent) {
+      if (formRef.current && !formRef.current.contains(event.target as Node)) {
+        setQuestionFormIsVisible(false)
+      }
+    }
+    document.addEventListener('click', handleClickOutside)
+    return () => document.removeEventListener('click', handleClickOutside)
+  }, [questionFormIsVisible])
+
   return (
     <div className={styles.main}>
       <Header
@@ -87,7 +99,15 @@ const QuestionPage = () => {
         actions={
           <>
             <SearchInput />
-            <Button onClick={setQuestionFormVisibility} variant="primary" size="md" disabled={questionFormIsVisible}>
+            <Button
+              onClick={e => {
+                e.stopPropagation()
+                setQuestionFormIsVisible(true)
+              }}
+              variant="primary"
+              size="md"
+              disabled={questionFormIsVisible}
+            >
               Новый вопрос
             </Button>
           </>
@@ -97,7 +117,7 @@ const QuestionPage = () => {
       </Header>
       <div className={styles['main-content']}>
         {questionFormIsVisible && (
-          <div className={styles['question-form']}>
+          <div className={styles['question-form']} ref={formRef} onClick={e => e.stopPropagation()}>
             <QuestionForm
               isOpen={questionFormIsVisible}
               isCreateForm={true}
