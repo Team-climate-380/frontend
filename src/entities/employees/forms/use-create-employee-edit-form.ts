@@ -11,7 +11,9 @@ export type TEmployeeForm = {
 
 export const departmentsData = await getDepartments()
 
-export const departmentsNames = departmentsData?.map(item => item.department_name)
+export const departmentsNames = departmentsData
+  ?.filter(item => item.to_delete === false)
+  ?.map(item => item.department_name)
 
 export const useCreateEmployeeEditForm = (initialValues?: TEmployeeForm) => {
   const formEmployeeData = useForm({

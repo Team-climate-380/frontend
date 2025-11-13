@@ -4,8 +4,8 @@ import { TEmployeeForm } from '../forms/use-create-employee-edit-form'
 
 const apiClient = new ApiClient()
 
-export const getEmployees = async (param: string): Promise<Employee[] | null> => {
-  const response = await apiClient.get<Employee[]>(`/api/employees${param}`)
+export const getEmployees = async (params: string): Promise<Employee[] | null> => {
+  const response = await apiClient.get<Employee[]>(`/api/employees${params}`)
   if (response.status === 'success' && 'data' in response) {
     return response.data
   } else if ('message' in response) {
