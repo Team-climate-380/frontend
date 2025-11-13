@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import { useNavigate } from 'react-router'
 import { useEffect, useMemo } from 'react'
 import { useInfiniteQuery } from '@tanstack/react-query'
@@ -15,7 +16,7 @@ import { TextNotification } from '@shared/ui/text-notification/text-notification
 import { SearchInput } from '@/widgets/search-input'
 import { PopupMenu } from '@shared/ui/popup-menu/index'
 import { SurveyItem } from '@entities/survey/ui/survey-item'
-import { SurveyCancelDelete } from '@entities/survey/ui/survey-delete-icon'
+import { SurveyCancelDelete } from '@entities/survey/ui/survey-cancel-delete'
 import { FavoriteIcon } from '@/features/filters/ui/favorite-icon'
 import { Loader } from '@shared/ui/loader'
 import { Skeleton } from '@shared/ui/skeleton'
@@ -173,12 +174,12 @@ const Surveys: React.FC = () => {
                       finishedCount={item.finished_count}
                       allCount={employeeCount}
                       departmentName={item.department?.name}
-                      className={item.to_delete ? classes.itemToDelete : ''}
+                      className={clsx(classes.item, { [classes.itemToDelete]: item.to_delete })}
                       onContextMenu={evt => handleRightClick(evt, item.id)}
                     >
                       <span className={classes.comment}>{item.comment ?? ''}</span>
 
-                      {contextMenu.isVisible && contextMenu.selectedId === item.id && (
+                      {contextMenu.isVisible && contextMenu.selectedId === item.id && !item.to_delete && (
                         <PopupMenu
                           type={'context'}
                           items={[
@@ -219,8 +220,7 @@ const Surveys: React.FC = () => {
                         handleClick={e => {
                           e.preventDefault()
 
-                          item.to_delete = !item.to_delete
-                          cancelDeleteSurveyMutate(item)
+                          cancelDeleteSurveyMutate({ ...item, to_delete: !item.to_delete })
                         }}
                       />
                     </SurveyItem>
