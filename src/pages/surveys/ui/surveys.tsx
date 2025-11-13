@@ -8,9 +8,10 @@ import { useQueryParams } from '@/shared/hooks/useQueryParams'
 import { useContextMenu } from '@/shared/hooks/use-context-menu'
 import { routes } from '@/shared/configs/routs/routes.config'
 import { getAllSurveys } from '@entities/survey/api/api'
-import { List, Text } from '@mantine/core'
+import { List } from '@mantine/core'
 import { Header } from '@widgets/header/header'
 import { Filter } from '@/features/filters'
+import { TextNotification } from '@shared/ui/text-notification/text-notification'
 import { SearchInput } from '@/widgets/search-input'
 import { PopupMenu } from '@shared/ui/popup-menu/index'
 import { SurveyItem } from '@entities/survey/ui/survey-item'
@@ -121,8 +122,7 @@ const Surveys: React.FC = () => {
         {status === 'pending' ? (
           <Skeleton />
         ) : error ? (
-          // TODO: add component
-          <Text>Не удалось загрузить данные. Пожалуйста, обновите страницу или повторите попытку позже.</Text>
+          <TextNotification variant={'data_not_loaded'} />
         ) : (
           <>
             <List
@@ -154,8 +154,7 @@ const Surveys: React.FC = () => {
               }}
             >
               {allSurveys.length === 0 ? (
-                // TODO: add component
-                <Text>По вашему запросу ничего не найдено. Попробуйте изменить формулировку или параметры поиска.</Text>
+                <TextNotification variant={'no_search_result'} />
               ) : (
                 allSurveys?.map((item: SurveyResults) => {
                   const departmentName = departmentData?.find(dep => dep.department_name === item.department?.name)
