@@ -196,7 +196,11 @@ const SurveyResults: React.FC<SurveyResultsProps> = ({ fullResults = true, withD
 
   return (
     <div className={classes.wrapper}>
-      {isPending && <Skeleton />}
+      {isPending && (
+        <div className={classes.skeleton}>
+          <Skeleton />
+        </div>
+      )}
       {!data && isError && 'Ошибка при загрузке результатов...'}
       {data && (
         <>
