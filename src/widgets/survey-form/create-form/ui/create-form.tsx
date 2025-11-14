@@ -15,8 +15,11 @@ import { TQuestion } from '@/entities/question/model/types'
 import { useQuery } from '@tanstack/react-query'
 import { fetchParticipants } from '@entities/survey/api/api'
 import { useSurveyMutation } from '@/entities/survey/forms/lib/use-survey-mutation'
+import { useNavigate } from 'react-router-dom'
+import { routes } from '@/shared/configs/routs'
 
 const CreateSurveyForm: FunctionComponent = () => {
+  const navigate = useNavigate()
   const { data: departmentOptions, isLoading: areParticipantsLoading } = useQuery({
     queryKey: ['participants'],
     queryFn: fetchParticipants
@@ -35,7 +38,7 @@ const CreateSurveyForm: FunctionComponent = () => {
 
   const formData = useSurvey(initialFormValues)
 
-  const { submitSurvey, isSubmitting, isError, isSuccess } = useSurveyMutation(formData)
+  const { submitSurvey, isSubmitting, isError, isSuccess } = useSurveyMutation(formData, { mode: 'create' })
 
   return (
     <form onSubmit={formData.onSubmit(values => submitSurvey(values))}>
@@ -45,8 +48,8 @@ const CreateSurveyForm: FunctionComponent = () => {
         </Grid.Col>
         <Grid.Col span={1.5}>
           <Group align="center" justify="end" gap="32px">
-            <MoreButton />
-            <CloseButton />
+            <MoreButton type="button" />
+            <CloseButton type="button" onClick={() => navigate(routes.surveys())} />
           </Group>
         </Grid.Col>
         <Grid.Col span={10.5}>

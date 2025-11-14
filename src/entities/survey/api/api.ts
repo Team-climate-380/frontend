@@ -7,10 +7,10 @@ import { ISurveysResponse, TSurveyUpdate } from '../types'
 const api = new ApiClient({})
 
 export const fetchParticipants = async (): Promise<string[]> => {
-  // TODO: сейчас department принимает объект, а не массив, также сервер не принимает список пользователей
   const departmentsRes = await api.get<DepartmentInfo[]>('/api/departments/')
   if ('data' in departmentsRes) {
-    const departmentOptions = departmentsRes.data.map(dep => dep.department_name)
+    const filteredDepartments = departmentsRes.data.filter(dep => !dep.to_delete)
+    const departmentOptions = filteredDepartments.map(dep => dep.department_name)
     return departmentOptions
   }
   return []
