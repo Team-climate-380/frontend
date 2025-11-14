@@ -47,6 +47,11 @@ export const SurveyItem: React.FC<SurveyItemProps> = ({
             <SurveyStatusIcon status={status} finishedCount={finishedCount} allCount={allCount} />
           )
         }
+        style={{
+          overflowWrap: 'break-word',
+          wordWrap: 'break-word',
+          wordBreak: 'break-word'
+        }}
       >
         {`${name} (${departmentName})`}
         {children}
