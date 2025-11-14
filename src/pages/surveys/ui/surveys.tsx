@@ -184,9 +184,9 @@ const Surveys: React.FC = () => {
                           type={'context'}
                           items={[
                             {
-                              type: 'link',
+                              type: 'action',
                               label: 'Редактировать',
-                              url: routes.edit_survey(item.id)
+                              action: () => navigate(routes.edit_survey(item.id))
                             },
                             {
                               type: 'action',

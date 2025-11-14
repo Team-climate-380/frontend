@@ -4,10 +4,13 @@ import { createSurvey, updateSurvey } from '@entities/survey/api/api'
 import { UseFormReturnType } from '@mantine/form'
 import { TQuestion } from '@/entities/question/model/types'
 import { IInitialValues } from './use-survey'
+import { useNavigate } from 'react-router'
+import { routes } from '@/shared/configs/routs'
 
 type Mode = { mode: 'create' } | { mode: 'edit'; id: number }
 
 export const useSurveyMutation = (form: UseFormReturnType<IInitialValues>, mode?: Mode) => {
+  const navigate = useNavigate()
   const {
     mutate: submitSurvey,
     isPending: isSubmitting,
@@ -36,6 +39,7 @@ export const useSurveyMutation = (form: UseFormReturnType<IInitialValues>, mode?
     onSuccess: () => {
       if (mode?.mode === 'create') {
         form.reset()
+        navigate(routes.surveys())
       }
     },
     onError: error => {
