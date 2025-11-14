@@ -104,31 +104,39 @@ export const QuestionResult: React.FC<Props> = ({ question, fullResults, employe
   return (
     <div className={classes.wrapper}>
       <h2 className={classes.title}>{question.text}</h2>
-      <ul className={classes.results__list}>
-        {sortedCounts.map(([answerText, count]) => (
-          <li key={answerText} className={classes.results__element}>
-            {answerText} — {count}
-          </li>
-        ))}
-      </ul>
-      {fullResults ? (
-        <div>
-          {sortedCounts.map(([answerText], index) => {
-            if (counts[answerText] !== 0) {
-              const employees = groupedAnswers[answerText] || []
-              return (
-                <div className={classes.user__list} key={index}>
-                  {employees.map((employer, index) => (
-                    <div key={index}>
-                      {employer.full_name} - {answerText}
-                      {time[employer.id] ? <>({formatTime(time[employer.id])})</> : <></>}
+      {sortedCounts && sortedCounts.length > 0 ? (
+        <>
+          <ul className={classes.results__list}>
+            {sortedCounts.map(([answerText, count], index) =>
+              count ? (
+                <li key={index} className={classes.results__element}>
+                  {answerText} — {count}
+                </li>
+              ) : null
+            )}
+          </ul>
+          {fullResults ? (
+            <div>
+              {sortedCounts.map(([answerText], index) => {
+                if (counts[answerText] !== 0) {
+                  const employees = groupedAnswers[answerText] || []
+                  return (
+                    <div className={classes.user__list} key={index}>
+                      {employees.map((employer, index) => (
+                        <div key={index}>
+                          {employer.full_name} - {answerText}
+                          {time[employer.id] ? <>({formatTime(time[employer.id])})</> : <></>}
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              )
-            }
-          })}
-        </div>
+                  )
+                }
+              })}
+            </div>
+          ) : (
+            <></>
+          )}
+        </>
       ) : (
         <></>
       )}
