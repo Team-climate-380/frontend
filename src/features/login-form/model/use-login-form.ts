@@ -17,6 +17,9 @@ export function useFormData(initialValues?: InitialFormData) {
         if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
           return 'Неверный формат почты'
         }
+        if (value.length > 256) {
+          return 'Почта должна быть не более 256 символов'
+        }
         return null
       },
       password: value => {
@@ -28,6 +31,9 @@ export function useFormData(initialValues?: InitialFormData) {
         }
         if (/^\d+$/.test(value)) {
           return 'Пароль не должен состоять только из цифр'
+        }
+        if (value.length > 128) {
+          return 'Пароль должен быть не более 128 символов'
         }
         return null
       }
