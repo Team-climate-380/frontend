@@ -77,7 +77,7 @@ export const useSurvey = (initialValues: IInitialValues) => {
       },
       questions: {
         text: value => (value && value.trim() === '' ? 'Введите текст вопроса' : null),
-        type: value => (value ? null : 'Выберите тип вопроса')
+        question_type: value => (value ? null : 'Выберите тип вопроса')
       }
     }
   })

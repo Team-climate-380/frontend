@@ -1,11 +1,11 @@
 import { clsx } from 'clsx'
 import { ReactNode } from 'react'
-import { Title } from '@mantine/core'
+import { Title, TitleOrder } from '@mantine/core'
 import styles from './styles/styles.module.scss'
 
 type THeaderProps = {
   title: string
-  order?: number
+  order?: TitleOrder
   children?: ReactNode
   actions?: ReactNode
   isDrawerHeader?: boolean

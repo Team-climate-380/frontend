@@ -59,9 +59,9 @@ export const QuestionUI: FC<IQuestion & { allowContextMenu?: boolean; setQuestio
   }
 
   const selectQuestion = useCallback(() => {
-    setQuestion({ id, text, question_type })
+    setQuestion({ id, text, question_type, is_favorite })
     console.log(7, text)
-  }, [id, text, question_type, setQuestion])
+  }, [id, text, question_type, setQuestion, is_favorite])
 
   return (
     <>

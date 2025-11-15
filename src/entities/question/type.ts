@@ -5,5 +5,6 @@ export interface IQuestion {
   text: string
   question_type: QuestionTypeEnum
   is_favorite: boolean
+  to_delete?: boolean
   surveys?: [] // TODO: понять как и где отображать
 }

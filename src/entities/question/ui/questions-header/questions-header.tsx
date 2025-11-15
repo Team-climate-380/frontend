@@ -1,3 +1,4 @@
+import { TitleOrder } from '@mantine/core'
 import { useQueryParams } from '@/shared/hooks/useQueryParams'
 import { Header } from '@/widgets/header/header'
 import { Filter } from '@/features/filters'
@@ -5,7 +6,7 @@ import { FavoriteIcon } from '@/features/filters/ui/favorite-icon'
 
 interface QuestionsHeaderProps {
   actions?: React.ReactNode
-  order?: number
+  order?: TitleOrder
   isDrawerHeader?: boolean
 }
 

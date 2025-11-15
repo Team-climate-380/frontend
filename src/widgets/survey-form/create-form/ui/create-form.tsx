@@ -18,9 +18,9 @@ import { useSurveyMutation } from '@/entities/survey/forms/lib/use-survey-mutati
 import { IQuestion } from '@/entities/question/type'
 
 export interface CreateSurveyFormProps {
-  onOpenButtons: () => void
-  selectQuestion: IQuestion
-  indexQuestion: string
+  onOpenButtons: (index: number) => void
+  selectQuestion: (item: IQuestion) => void
+  indexQuestion: number | undefined
 }
 
 const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({
@@ -123,17 +123,14 @@ const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({
       </Grid>
       <Flex direction="column" className={classes.questionsSection}>
         <Flex direction="column" gap={25}>
-          {formData.values.questions.map((question, index) => {
+          {formData.values.questions.map((question, index: number) => {
             return (
               <QuestionCreate
                 key={question.id}
                 title={`${index + 1} Вопрос`}
-                onOpenButtons={() => {
-                  onOpenButtons(index)
-                  console.log(index)
-                }}
+                onOpenButtons={() => onOpenButtons && onOpenButtons(index)}
                 textInputProps={formData.getInputProps(`questions.${index}.text`)}
-                typeInputProps={formData.getInputProps(`questions.${index}.type`)}
+                typeInputProps={formData.getInputProps(`questions.${index}.question_type`)}
               />
             )
           })}
