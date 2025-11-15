@@ -13,6 +13,7 @@ import classes from './employee-form.module.scss'
 import { addEmployee, changeEmployee } from '@/entities/employees/api/api-employees'
 import { UseFormReturnType } from '@mantine/form'
 import { useClickOutside } from '@mantine/hooks'
+import { useState } from 'react'
 
 export type EmployeeFormProps = ICreateEditFormProps & {
   employeeFormData?: TEmployeeForm
@@ -26,13 +27,19 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
   employeeFormData,
   onSubmit
 }) => {
+  const [form, setForm] = useState<HTMLFormElement | null>(null)
+  const [dropdown, setDropdown] = useState<HTMLDivElement | null>(null)
   const employeeForm = useCreateEmployeeEditForm(employeeFormData)
-  const formRef = useClickOutside(() => {
-    if (isOpen) {
-      closeForm()
-      employeeForm.reset()
-    }
-  })
+  useClickOutside(
+    () => {
+      if (isOpen) {
+        closeForm()
+        employeeForm.reset()
+      }
+    },
+    null,
+    [form, dropdown]
+  )
 
   const getChangedFields = (
     form: UseFormReturnType<TEmployeeForm>,
@@ -75,7 +82,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
     <form
       onSubmit={employeeForm.onSubmit(handleSubmit)}
       className={isCreateForm ? classes.formForNewEmployee : ''}
-      ref={formRef}
+      ref={setForm}
     >
       <Flex className={classes.container}>
         <Input
@@ -88,16 +95,19 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
           key={employeeForm.key('full_name')}
           {...employeeForm.getInputProps('full_name')}
         />
-        <Dropdown
-          styles={{
-            root: { '--mantine-scale': '0.945' },
-            input: { backgroundColor: 'var(--mantine-color-black-1)', border: 'var(--mantine-color-black-1)' }
-          }}
-          aria-label="Отдел"
-          data={departmentsNames}
-          key={employeeForm.key('department_name')}
-          {...employeeForm.getInputProps('department_name')}
-        />
+        <div ref={setDropdown}>
+          <Dropdown
+            comboboxProps={{ withinPortal: false }}
+            styles={{
+              root: { '--mantine-scale': '0.945' },
+              input: { backgroundColor: 'var(--mantine-color-black-1)', border: 'var(--mantine-color-black-1)' }
+            }}
+            aria-label="Отдел"
+            data={departmentsNames}
+            key={employeeForm.key('department_name')}
+            {...employeeForm.getInputProps('department_name')}
+          />
+        </div>
         <Input
           variant={'secondary'}
           styles={{
