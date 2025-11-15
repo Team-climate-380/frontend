@@ -79,13 +79,8 @@ export const QuestionUI: FC<IQuestion & { allowContextMenu?: boolean; setQuestio
   return (
     <>
       <div
-        className={style.question}
-        onClick={allowContextMenu ? close : selectQuestion}
-        onContextMenu={handleContextMenu}
-      >
-        <span className={style.id}>{id}</span>
         className={clsx(style.question, to_delete && style.to_delete)}
-        onClick={close}
+        onClick={allowContextMenu ? close : selectQuestion}
         onContextMenu={handleContextMenu}
       >
         <span className={style.id}>{numeration}</span>
