@@ -13,7 +13,6 @@ import clsx from 'clsx'
 import { CancelDeleteButton } from '@/shared/ui/cancel-delete-button'
 
 export const QuestionUI: FC<IQuestion & { allowContextMenu?: boolean; setQuestion?: (item: IQuestion) => void }> = ({
-export const QuestionUI: FC<IQuestion & { allowContextMenu?: boolean }> = (
   numeration,
   id,
   is_favorite,
