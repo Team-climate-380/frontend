@@ -20,6 +20,12 @@
   color: #ffd014;
 }
 
+.text {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
 .question_type {
   font-style: italic;
   color: #1e1e1e;

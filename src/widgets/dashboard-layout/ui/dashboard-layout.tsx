@@ -35,6 +35,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ contentSidebar
             position: 'relative',
             top: 0,
             minHeight: '100%',
+            minWidth: '201px',
             height: 'auto',
             overflow: 'hidden',
             background:
