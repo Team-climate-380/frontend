@@ -1,4 +1,5 @@
 import { useForm } from '@mantine/form'
+import { QuestionTypeDisplay } from '../utils/question-actions'
 
 export enum QuestionTypeEnum {
   ratingScale = 'ratingScale',
@@ -9,7 +10,7 @@ export enum QuestionTypeEnum {
 export interface IQuestionForm {
   id: number
   text: string
-  question_type: QuestionTypeEnum
+  question_type: string
   isfavorite?: boolean
 }
 
@@ -18,8 +19,9 @@ export const useCreateEditQuestionForm = (initialValue?: IQuestionForm) => {
     mode: 'uncontrolled',
     initialValues: initialValue ?? {
       id: 0,
-      question_type: QuestionTypeEnum.consentGiven,
-      text: ''
+      question_type: QuestionTypeDisplay(QuestionTypeEnum.consentGiven),
+      text: '',
+      isfavorite: false
     },
 
     validate: {

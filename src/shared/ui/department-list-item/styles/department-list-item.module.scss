@@ -20,6 +20,9 @@
 .group-button .group-name {
   font-size: 16px;
   font-weight: 500;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
 
   &_to-delete_true {
     text-decoration: line-through;
@@ -29,6 +32,10 @@
 
 .group-button[aria-expanded='true'] .group-name {
   font-weight: 700;
+}
+
+.group-button[aria-expanded='true'] .group-name_has-employees_false {
+  font-weight: 500;
 }
 
 span:has(.group-name) {

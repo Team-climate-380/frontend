@@ -79,7 +79,10 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ items, onClose, positi
             <div key={label ? label : index}>
               {item.type === 'action' && (
                 <Button
-                  onClick={item.action}
+                  onClick={e => {
+                    e.stopPropagation()
+                    item.action(e)
+                  }}
                   className={clsx(classes.button, { [classes.button_important]: item.important })}
                 >
                   {label}
@@ -88,6 +91,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ items, onClose, positi
               {item.type === 'link' && (
                 <a
                   href={`${item.url}`}
+                  onClick={e => e.stopPropagation()}
                   className={clsx(classes.button, classes.menu_link, { [classes.button_important]: item.important })}
                 >
                   {label}

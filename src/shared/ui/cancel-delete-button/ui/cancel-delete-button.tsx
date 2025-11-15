@@ -15,7 +15,10 @@ export const CancelDeleteButton: React.FC<CancelDeleteButtonProps> = ({ classNam
       <Tooltip label={`Отменить удаление ${itemLabel}`}>
         <ActionIcon
           aria-label={`Отменить удаление ${itemLabel}`}
-          onClick={onClick}
+          onClick={(e: SyntheticEvent) => {
+            e.stopPropagation()
+            onClick(e)
+          }}
           className={className}
           styles={styles}
         >

@@ -14,10 +14,16 @@ export const DepartmentListItem: React.FC<
       <Accordion.Item value={department_name} style={{ border: 'none' }}>
         <Accordion.Control
           onContextMenu={e => onContextMenu(e, id)}
-          disabled={!hasEmployees}
+          disabled={to_delete}
           className={styles['group-button']}
         >
-          <span className={clsx(styles['group-name'], styles[`group-name_to-delete_${to_delete}`])}>
+          <span
+            className={clsx(
+              styles['group-name'],
+              styles[`group-name_to-delete_${to_delete}`],
+              styles[`group-name_has-employees_${hasEmployees}`]
+            )}
+          >
             {department_name}
           </span>
           <span className={styles['group-count']}>{employees_count}</span>

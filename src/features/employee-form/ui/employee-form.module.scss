@@ -4,7 +4,7 @@
 
 .container {
   display: grid;
-  grid-template-columns: repeat(4, minmax(61px, 300px)) 61px;
+  grid-template-columns: repeat(4, minmax(61px, 300px)) 61px 25px;
   gap: 16px;
 }
 

@@ -16,6 +16,8 @@ import { useQuery } from '@tanstack/react-query'
 import { fetchParticipants } from '@entities/survey/api/api'
 import { useSurveyMutation } from '@/entities/survey/forms/lib/use-survey-mutation'
 import { IQuestion } from '@/entities/question/type'
+import { useNavigate } from 'react-router-dom'
+import { routes } from '@/shared/configs/routs'
 
 export interface CreateSurveyFormProps {
   onOpenButtons: (index: number) => void
@@ -28,6 +30,7 @@ const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({
   selectQuestion,
   indexQuestion
 }) => {
+  const navigate = useNavigate()
   const { data: departmentOptions, isLoading: areParticipantsLoading } = useQuery({
     queryKey: ['participants'],
     queryFn: fetchParticipants
@@ -46,7 +49,7 @@ const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({
 
   const formData = useSurvey(initialFormValues)
 
-  const { submitSurvey, isSubmitting, isError, isSuccess } = useSurveyMutation(formData)
+  const { submitSurvey, isSubmitting, isError, isSuccess } = useSurveyMutation(formData, { mode: 'create' })
 
   useEffect(() => {
     if (selectQuestion && indexQuestion === 0) {
@@ -69,8 +72,8 @@ const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({
         </Grid.Col>
         <Grid.Col span={1.5}>
           <Group align="center" justify="end" gap="32px">
-            <MoreButton />
-            <CloseButton />
+            <MoreButton type="button" />
+            <CloseButton type="button" onClick={() => navigate(routes.surveys())} />
           </Group>
         </Grid.Col>
         <Grid.Col span={10.5}>

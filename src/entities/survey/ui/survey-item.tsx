@@ -2,8 +2,10 @@ import React, { SyntheticEvent } from 'react'
 import { ListItem } from '@mantine/core'
 import { SurveyStatusIcon } from '@entities/survey/ui/survey-status-icon'
 import { FavoriteIconFilled } from '@/shared/ui/icons/favorite-icon-filled'
+import { useNavigate } from 'react-router'
 
 export interface SurveyItemProps {
+  surveyId: number
   name: string
   status: string
   comment: string
@@ -17,6 +19,7 @@ export interface SurveyItemProps {
 }
 
 export const SurveyItem: React.FC<SurveyItemProps> = ({
+  surveyId,
   name,
   status,
   isFavorite,
@@ -27,11 +30,13 @@ export const SurveyItem: React.FC<SurveyItemProps> = ({
   onContextMenu,
   children
 }) => {
+  const navigate = useNavigate()
   return (
     <>
       <ListItem
         className={className}
         onContextMenu={onContextMenu}
+        onClick={() => navigate(`/results-survey?surveyId=${surveyId}`)}
         icon={
           isFavorite ? (
             <>
@@ -42,6 +47,11 @@ export const SurveyItem: React.FC<SurveyItemProps> = ({
             <SurveyStatusIcon status={status} finishedCount={finishedCount} allCount={allCount} />
           )
         }
+        style={{
+          overflowWrap: 'break-word',
+          wordWrap: 'break-word',
+          wordBreak: 'break-word'
+        }}
       >
         {`${name} (${departmentName})`}
         {children}

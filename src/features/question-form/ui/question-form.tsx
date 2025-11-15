@@ -105,7 +105,11 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ isOpen, isCreateForm
           aria-label="Тип вопроса"
           data={questionTypeDataUI}
           key={questionForm.key('question_type')}
-          {...questionForm.getInputProps('question_type')}
+          defaultValue={
+            isCreateForm
+              ? QuestionTypeDisplay(QuestionTypeEnum.consentGiven)
+              : QuestionTypeDisplay(questionForm.getValues().question_type as QuestionTypeEnum)
+          }
         />
         <Textarea
           styles={{
