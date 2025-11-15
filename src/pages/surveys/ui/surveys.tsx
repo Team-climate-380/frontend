@@ -1,3 +1,4 @@
+// import clsx from 'clsx'
 import { useNavigate } from 'react-router'
 import { useEffect, useMemo } from 'react'
 import { useInfiniteQuery } from '@tanstack/react-query'
@@ -165,7 +166,8 @@ const Surveys: React.FC = () => {
                     finishedCount={item.finished_count}
                     allCount={employeeCount}
                     departmentName={item.department?.name}
-                    className={item.to_delete ? classes.itemToDelete : ''}
+                    // className={clsx([classes.item, item.to_delete && classes.itemToDelete])}
+                    className={item.to_delete ? classes.itemToDelete : classes.item}
                     onContextMenu={evt => handleRightClick(evt, item.id)}
                   >
                     <span className={classes.comment}>{item.comment ?? ''}</span>
