@@ -1,22 +1,27 @@
+import { clsx } from 'clsx'
 import { useEffect } from 'react'
 import { useIntersection } from '@mantine/hooks'
 import { useQueryParams } from '@/shared/hooks/useQueryParams'
 import { UseQuestionsQuery } from '@features/questions-list/use-questions-query/use-questions-query'
-// import { Header } from '@/widgets/header/header'
-// import { Filter } from '@/features/filters'
+import { IQuestion } from '@/entities/question/type'
 import { Loader } from '@/shared/ui/loader'
 import { Skeleton } from '@/shared/ui/skeleton'
 import { QuestionsList } from '@/features/questions-list'
-// import { FavoriteIcon } from '@/features/filters/ui/favorite-icon'
 import styles from './style.module.css'
 
-interface QuestionsLayoutProps {
+interface QuestionsPageLayoutProps {
+  setQuestion?: (item: IQuestion) => void
   isShowToDeleteItem?: boolean
-  children?: React.ReactNode
+  allowContextMenu?: boolean
   className?: string
 }
 
-export const QuestionsLayout: React.FC<QuestionsLayoutProps> = ({ isShowToDeleteItem }) => {
+export const QuestionsPageLayout: React.FC<QuestionsPageLayoutProps> = ({
+  setQuestion,
+  isShowToDeleteItem = true,
+  allowContextMenu,
+  className
+}) => {
   const { queryParams, setParams } = useQueryParams()
   const { ref, entry } = useIntersection({
     threshold: 1
@@ -38,12 +43,8 @@ export const QuestionsLayout: React.FC<QuestionsLayoutProps> = ({ isShowToDelete
   // }, [currentSearch])
 
   return (
-    <div className={styles.main}>
-      {/* <QuestionHeader actions={children} order={order}/> */}
-      {/* <Header title="Вопросы" actions={children}>
-        <Filter filters={filters} value={currentFilter} />
-      </Header> */}
-      <div className={styles['main-content']}>
+    <>
+      <div className={clsx([styles['main-content'], className])}>
         {isError ? (
           <div className={styles['error-message']}>
             Ошибка при загрузке данных: {error instanceof Error ? error.message : 'Неизвестная ошибка'}
@@ -52,7 +53,11 @@ export const QuestionsLayout: React.FC<QuestionsLayoutProps> = ({ isShowToDelete
           <Skeleton />
         ) : questions.length > 0 ? (
           <div className={styles['questions-list']}>
-            <QuestionsList questions={isShowToDeleteItem ? questions : questionsNotDelete} />
+            <QuestionsList
+              questions={isShowToDeleteItem ? questions : questionsNotDelete}
+              setQuestion={setQuestion}
+              allowContextMenu={allowContextMenu}
+            />
           </div>
         ) : (
           <span className={styles['no-data']}>По Вашему запросу нет данных. Измените параметры поиска</span>
@@ -61,6 +66,6 @@ export const QuestionsLayout: React.FC<QuestionsLayoutProps> = ({ isShowToDelete
       <div ref={ref} className={styles.loader_container}>
         {isFetchingNextPage && <Loader size="lg" />}
       </div>
-    </div>
+    </>
   )
 }

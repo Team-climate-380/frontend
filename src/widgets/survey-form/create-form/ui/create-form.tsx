@@ -1,5 +1,5 @@
 import { Input } from '@/shared/ui/input'
-import { FunctionComponent } from 'react'
+import { FunctionComponent, useEffect } from 'react'
 import classes from '../../styles/styles.module.scss'
 import { Flex, Grid, Group, Select } from '@mantine/core'
 import { MoreButton } from '@/shared/ui/more-button'
@@ -15,12 +15,19 @@ import { TQuestion } from '@/entities/question/model/types'
 import { useQuery } from '@tanstack/react-query'
 import { fetchParticipants } from '@entities/survey/api/api'
 import { useSurveyMutation } from '@/entities/survey/forms/lib/use-survey-mutation'
+import { IQuestion } from '@/entities/question/type'
 
 export interface CreateSurveyFormProps {
   onOpenButtons: () => void
+  selectQuestion: IQuestion
+  indexQuestion: string
 }
 
-const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({ onOpenButtons }) => {
+const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({
+  onOpenButtons,
+  selectQuestion,
+  indexQuestion
+}) => {
   const { data: departmentOptions, isLoading: areParticipantsLoading } = useQuery({
     queryKey: ['participants'],
     queryFn: fetchParticipants
@@ -40,6 +47,19 @@ const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({ onOpenButt
   const formData = useSurvey(initialFormValues)
 
   const { submitSurvey, isSubmitting, isError, isSuccess } = useSurveyMutation(formData)
+
+  useEffect(() => {
+    if (selectQuestion && indexQuestion === 0) {
+      let firstQuestion = formData.getValues().questions[0]
+      firstQuestion = selectQuestion
+      formData.setFieldValue('questions', [firstQuestion])
+    }
+
+    if (selectQuestion && indexQuestion > 0) {
+      formData.getValues().questions.splice(indexQuestion, 1, selectQuestion)
+      formData.setValues(prev => ({ ...prev, ...formData }))
+    }
+  }, [selectQuestion])
 
   return (
     <form onSubmit={formData.onSubmit(values => submitSurvey(values))}>
@@ -108,7 +128,10 @@ const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({ onOpenButt
               <QuestionCreate
                 key={question.id}
                 title={`${index + 1} Вопрос`}
-                onOpenButtons={() => onOpenButtons()}
+                onOpenButtons={() => {
+                  onOpenButtons(index)
+                  console.log(index)
+                }}
                 textInputProps={formData.getInputProps(`questions.${index}.text`)}
                 typeInputProps={formData.getInputProps(`questions.${index}.type`)}
               />

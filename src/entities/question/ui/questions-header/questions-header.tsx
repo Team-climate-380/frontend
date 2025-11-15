@@ -4,13 +4,12 @@ import { Filter } from '@/features/filters'
 import { FavoriteIcon } from '@/features/filters/ui/favorite-icon'
 
 interface QuestionsHeaderProps {
-  children?: React.ReactNode
+  actions?: React.ReactNode
   order?: number
-
-  className?: string
+  isDrawerHeader?: boolean
 }
 
-export const QuestionsHeader: React.FC<QuestionsHeaderProps> = ({ children, order }) => {
+export const QuestionsHeader: React.FC<QuestionsHeaderProps> = ({ actions, order, isDrawerHeader }) => {
   const { queryParams, setParams } = useQueryParams()
 
   const filters = [
@@ -32,7 +31,7 @@ export const QuestionsHeader: React.FC<QuestionsHeaderProps> = ({ children, orde
   const currentFilter = queryParams.filter ?? 'all'
 
   return (
-    <Header title="Вопросы" actions={children} order={order}>
+    <Header title="Вопросы" actions={actions} order={order} isDrawerHeader={isDrawerHeader}>
       <Filter filters={filters} value={currentFilter} />
     </Header>
   )

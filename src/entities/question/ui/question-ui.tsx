@@ -1,7 +1,7 @@
 import style from '../styles/question.module.scss'
 import { Text } from '@mantine/core'
 import { FavoriteIconFilled } from '@shared/ui/icons/favorite-icon-filled'
-import { FC, useState } from 'react'
+import { FC, useState, useCallback } from 'react'
 import { IQuestion } from '../type'
 import { ContextMenu } from '@/shared/ui/popup-menu/ui/context-menu'
 import { toggleFavorite } from '../utils/question-actions'
@@ -10,12 +10,13 @@ import { QuestionForm } from '@/features/question-form'
 import { QuestionTypeEnum, QuestionTypeEnum as QTE } from '../forms/use-create-edit-question-form'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-export const QuestionUI: FC<IQuestion & { allowContextMenu?: boolean }> = ({
+export const QuestionUI: FC<IQuestion & { allowContextMenu?: boolean; setQuestion?: (item: IQuestion) => void }> = ({
   id,
   is_favorite,
   text,
   question_type,
-  allowContextMenu
+  allowContextMenu,
+  setQuestion
 }) => {
   const QuestionTypeLabels: Record<QTE, string> = {
     [QuestionTypeEnum.ratingScale]: 'Плохо-Прекрасно',
@@ -53,10 +54,22 @@ export const QuestionUI: FC<IQuestion & { allowContextMenu?: boolean }> = ({
     setPosition({ x: posX, y: posY })
     setDropdownVisible(prev => !prev)
   }
-  const close = () => setDropdownVisible(false)
+  const close = () => {
+    setDropdownVisible(false)
+  }
+
+  const selectQuestion = useCallback(() => {
+    setQuestion({ id, text, question_type })
+    console.log(7, text)
+  }, [id, text, question_type, setQuestion])
+
   return (
     <>
-      <div className={style.question} onClick={close} onContextMenu={handleContextMenu}>
+      <div
+        className={style.question}
+        onClick={allowContextMenu ? close : selectQuestion}
+        onContextMenu={handleContextMenu}
+      >
         <span className={style.id}>{id}</span>
         <div className={style.isFavorite}>{isFavorite && <FavoriteIconFilled width={11} height={11} />}</div>
         <Text size="md" className={style.text}>

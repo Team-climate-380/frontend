@@ -2,7 +2,9 @@ import { FC } from 'react'
 import { QuestionUI } from '../ui/question-ui'
 import { IQuestion } from '../type'
 
-export const Question: FC<IQuestion & { allowContextMenu?: boolean }> = question => {
+export const Question: FC<
+  IQuestion & { allowContextMenu?: boolean; setQuestion?: (item: IQuestion) => void }
+> = question => {
   return (
     <QuestionUI
       id={question.id}
@@ -10,6 +12,7 @@ export const Question: FC<IQuestion & { allowContextMenu?: boolean }> = question
       text={question.text}
       question_type={question.question_type}
       allowContextMenu={question.allowContextMenu}
+      setQuestion={question.setQuestion}
     />
   )
 }

@@ -1,22 +1,10 @@
 import styles from '../css/styles.module.scss'
-// import { Header } from '@/widgets/header/header'
 import { Button } from '@/shared/ui/button'
-// import { Filter } from '@/features/filters'
-// import { FavoriteIcon } from '@/features/filters/ui/favorite-icon'
 import { SearchInput } from '@/widgets/search-input'
 import { useState } from 'react'
-// import { useQueryParams } from '@/shared/hooks/useQueryParams'
-// import { UseQuestionsQuery } from '@features/questions-list/use-questions-query/use-questions-query'
-// import { getQuestions } from '@/entities/question/api/get-questions'
-// import { useInfiniteQuery } from '@tanstack/react-query'
-// import { Loader } from '@/shared/ui/loader'
-// import { Skeleton } from '@/shared/ui/skeleton'
-// import { useIntersection } from '@mantine/hooks'
 import { QuestionForm } from '@/features/question-form'
-// import { QuestionsList } from '@/features/questions-list'
-// import { IQuestion } from '@/entities/question/type'
 import { QuestionsHeader } from '@entities/question/ui/questions-header/questions-header'
-import { QuestionsLayout } from '@widgets/questions-layout/index'
+import { QuestionsPageLayout } from '@widgets/questions-page-layout/index'
 
 const QuestionPage = () => {
   const [questionFormIsVisible, setQuestionFormIsVisible] = useState(false) //new question form visibility
@@ -84,30 +72,33 @@ const QuestionPage = () => {
   }
 
   return (
-    <>
-      <QuestionsHeader
-        actions={
-          <>
-            <SearchInput />
-            <Button onClick={setQuestionFormVisibility} variant="primary" size="md" disabled={questionFormIsVisible}>
-              Новый вопрос
-            </Button>
-          </>
-        }
-      />
-      <QuestionsLayout isShowToDeleteItem={true} />
-      {questionFormIsVisible && (
-        <div className={styles['question-form']}>
-          <QuestionForm
-            isOpen={questionFormIsVisible}
-            isCreateForm={true}
-            closeForm={() => {
-              setQuestionFormVisibility()
-            }}
-          />
-        </div>
-      )}
-    </>
+    <div className={styles.main}>
+      <>
+        <QuestionsHeader
+          actions={
+            <>
+              <SearchInput />
+              <Button onClick={setQuestionFormVisibility} variant="primary" size="md" disabled={questionFormIsVisible}>
+                Новый вопрос
+              </Button>
+            </>
+          }
+        />
+        <QuestionsPageLayout allowContextMenu={true} />
+
+        {questionFormIsVisible && (
+          <div className={styles['question-form']}>
+            <QuestionForm
+              isOpen={questionFormIsVisible}
+              isCreateForm={true}
+              closeForm={() => {
+                setQuestionFormVisibility()
+              }}
+            />
+          </div>
+        )}
+      </>
+    </div>
   )
 }
 
