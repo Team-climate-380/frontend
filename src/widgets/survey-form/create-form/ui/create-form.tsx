@@ -16,6 +16,8 @@ import { useQuery } from '@tanstack/react-query'
 import { fetchParticipants } from '@entities/survey/api/api'
 import { useSurveyMutation } from '@/entities/survey/forms/lib/use-survey-mutation'
 import { IQuestion } from '@/entities/question/type'
+import { useNavigate } from 'react-router-dom'
+import { routes } from '@/shared/configs/routs'
 
 export interface CreateSurveyFormProps {
   onOpenButtons: (index: number) => void
@@ -24,14 +26,10 @@ export interface CreateSurveyFormProps {
 }
 
 const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({
-  onOpenButtons,
+    onOpenButtons,
   selectQuestion,
   indexQuestion
 }) => {
-import { useNavigate } from 'react-router-dom'
-import { routes } from '@/shared/configs/routs'
-
-const CreateSurveyForm: FunctionComponent = () => {
   const navigate = useNavigate()
   const { data: departmentOptions, isLoading: areParticipantsLoading } = useQuery({
     queryKey: ['participants'],
