@@ -19,7 +19,7 @@ export const QuestionUI: FC<IQuestion & { allowContextMenu?: boolean; setQuestio
   text,
   question_type,
   allowContextMenu,
-  setQuestion
+  setQuestion,
   to_delete
 }) => {
   const QuestionTypeLabels: Record<QTE, string> = {
