@@ -7,10 +7,10 @@ import { ISurveysResponse, TSurveyUpdate } from '../types'
 const api = new ApiClient({})
 
 export const fetchParticipants = async (): Promise<string[]> => {
-  // TODO: сейчас department принимает объект, а не массив, также сервер не принимает список пользователей
   const departmentsRes = await api.get<DepartmentInfo[]>('/api/departments/')
   if ('data' in departmentsRes) {
-    const departmentOptions = departmentsRes.data.map(dep => dep.department_name)
+    const filteredDepartments = departmentsRes.data.filter(dep => !dep.to_delete)
+    const departmentOptions = filteredDepartments.map(dep => dep.department_name)
     return departmentOptions
   }
   return []
@@ -50,17 +50,18 @@ export const fetchSurveyById = async (id: number) => {
 export const getAllSurveys = async (
   pageParam: number,
   currentFilter: string,
-  currentDepartment: number | null | undefined,
+  currentDepartment: string,
   searchQuery: string
 ) => {
   // Строим параметры запроса явно, чтобы не терять фильтры
   const params = new URLSearchParams()
 
   params.set('page', String(pageParam))
-  if (currentFilter) params.set('filter', currentFilter)
 
-  if (typeof currentDepartment === 'number' && !Number.isNaN(currentDepartment)) {
-    params.set('department', String(currentDepartment))
+  if (currentFilter) params.set('status', currentFilter)
+
+  if (currentDepartment) {
+    params.set('department', currentDepartment)
   }
 
   const trimmedSearch = (searchQuery ?? '').trim()

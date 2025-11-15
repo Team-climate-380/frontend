@@ -1,4 +1,4 @@
-export { useCreateEditFormGroup } from './forms/use-create-edit-form-group'
+export { useCreateEditFormGroup, groupFormActions } from './forms/use-create-edit-form-group'
 export { GroupForm } from './forms/ui/group-form'
 export {
   getDepartments,

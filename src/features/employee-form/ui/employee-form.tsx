@@ -12,6 +12,7 @@ import { Dropdown } from '@shared/ui/dropdown'
 import classes from './employee-form.module.scss'
 import { addEmployee, changeEmployee } from '@/entities/employees/api/api-employees'
 import { UseFormReturnType } from '@mantine/form'
+import { useClickOutside } from '@mantine/hooks'
 
 export type EmployeeFormProps = ICreateEditFormProps & {
   employeeFormData?: TEmployeeForm
@@ -26,6 +27,12 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
   onSubmit
 }) => {
   const employeeForm = useCreateEmployeeEditForm(employeeFormData)
+  const formRef = useClickOutside(() => {
+    if (isOpen) {
+      closeForm()
+      employeeForm.reset()
+    }
+  })
 
   const getChangedFields = (
     form: UseFormReturnType<TEmployeeForm>,
@@ -44,12 +51,10 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
 
   const handleSubmit = async (data: TEmployeeForm) => {
     if (!employeeForm.isDirty()) {
-      console.log('Данные не изменились')
       closeForm()
       return
     }
     const changedData = { ...getChangedFields(employeeForm, data), email: data.email }
-    console.log(changedData)
     try {
       if (isCreateForm) {
         await addEmployee(data)
@@ -67,7 +72,11 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
   }
 
   return isOpen ? (
-    <form onSubmit={employeeForm.onSubmit(handleSubmit)} className={isCreateForm ? classes.formForNewEmployee : ''}>
+    <form
+      onSubmit={employeeForm.onSubmit(handleSubmit)}
+      className={isCreateForm ? classes.formForNewEmployee : ''}
+      ref={formRef}
+    >
       <Flex className={classes.container}>
         <Input
           variant={'secondary'}

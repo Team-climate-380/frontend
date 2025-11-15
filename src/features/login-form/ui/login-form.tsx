@@ -62,7 +62,7 @@ export const LoginForm: FC<LoginFormProps> = ({ onRestorePassword, initialValues
           <Button type="submit" disabled={!formData.isValid()} size="md">
             Войти
           </Button>
-          <Button onClick={onRestorePassword} variant="ghost" size="md">
+          <Button type="button" onClick={onRestorePassword} variant="ghost" size="md">
             Восстановить пароль
           </Button>
         </Group>

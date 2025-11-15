@@ -6,7 +6,6 @@ import { EmployeesItem } from '@/entities/employees/ui/employee-item'
 import { cancelDeleteEmployee, getEmployees } from '@/entities/employees/api/api-employees'
 import { useQueryParams } from '@/shared/hooks/useQueryParams'
 import { useQuery } from '@tanstack/react-query'
-import { Loader } from '@shared/ui/loader'
 import { useEffect, useMemo, useState } from 'react'
 import { SearchInput } from '@/widgets/search-input'
 import { EmployeeForm } from '@/features/employee-form'
@@ -15,6 +14,9 @@ import { Employee } from '@/entities/employees/type'
 import { getPopupMenuItems } from '../configs/employees-context-menu'
 import { useContextMenu } from '@/shared/hooks/use-context-menu'
 import { CancelDeleteButton } from '@/shared/ui/cancel-delete-button'
+import { Skeleton } from '@/shared/ui/skeleton'
+import { TextNotification } from '@/shared/ui/text-notification'
+
 const Employees: React.FC = () => {
   const [isVisibleAddEmployees, setIsVisibleAddEmployees] = useState(false)
   const [editingEmployeeId, setEditingEmployeeId] = useState<number | null>()
@@ -25,10 +27,12 @@ const Employees: React.FC = () => {
   const { getParam, setParams, getDecodedSearch } = useQueryParams()
 
   useEffect(() => {
-    setParams({ sort: 'edited_at' }, true)
+    setParams({ sort: 'edited_at', order: 'desc' }, true)
   }, [])
 
   const currentSort = getParam('sort') || 'edited_at'
+  const currentOrder = getParam('order')
+
   const filters = [
     {
       title: 'По алфавиту',
@@ -41,20 +45,26 @@ const Employees: React.FC = () => {
       title: 'По дате добавления',
       value: 'edited_at',
       setValue: () => {
-        setParams({ sort: 'edited_at' }, true)
+        setParams({ sort: 'edited_at', order: 'desc' }, true)
       }
     }
   ]
 
-  const handleMenuClose = () => {
-    handleContextMenuClose()
-    setMenuItems([])
-  }
+  const queryParams = useMemo(() => {
+    const paramsURL: Record<string, string> = {
+      sort: currentSort
+    }
+    if (currentOrder && currentOrder !== '') {
+      paramsURL.order = currentOrder
+    }
 
-  const paramURL = `?sort=${encodeURIComponent(currentSort)}`
+    return paramsURL
+  }, [currentSort, currentOrder])
+
+  const paramsURL = '?' + new URLSearchParams(queryParams).toString()
   const { data, isLoading, refetch, isError } = useQuery({
-    queryKey: ['employees', paramURL],
-    queryFn: async () => await getEmployees(paramURL)
+    queryKey: ['employees', paramsURL],
+    queryFn: async () => await getEmployees(paramsURL)
   })
 
   const searchQuery = getDecodedSearch()
@@ -71,6 +81,11 @@ const Employees: React.FC = () => {
     })
   }, [data, searchQuery])
 
+  const handleMenuClose = () => {
+    handleContextMenuClose()
+    setMenuItems([])
+  }
+
   const handleEmployeeUpdated = () => refetch()
 
   const handleAddEmployees = () => setIsVisibleAddEmployees(true)
@@ -86,7 +101,10 @@ const Employees: React.FC = () => {
     handleRightClick(e, employee.id)
     setMenuItems(getPopupMenuItems(employee, setEditingEmployeeId, handleMenuClose, handleEmployeeUpdated))
   }
-  const hasError = isError || data === null
+
+  const hasError = isError || (data === null && !isLoading)
+  const hasSearchQuery = Boolean(searchQuery.trim())
+  const isNoSearchResult = hasSearchQuery && searchEmployees.length === 0
 
   return (
     <div className={style.wrapper_employees}>
@@ -112,47 +130,50 @@ const Employees: React.FC = () => {
       />
 
       <div className={`${style.employees_list} ${isVisibleAddEmployees ? style.employees_list__with_form : ''} `}>
-        {searchEmployees &&
-          searchEmployees
-            .slice()
-            .reverse()
-            .map(employee => {
-              const isEditingEmployee = editingEmployeeId === employee.id
-              const isDeleted = employee.to_inactivate
-              if (isEditingEmployee) {
-                return (
-                  <EmployeeForm
-                    key={employee.id}
-                    isCreateForm={false}
-                    isOpen={true}
-                    employeeFormData={employee}
-                    closeForm={() => setEditingEmployeeId(null)}
-                    onSubmit={() => {
-                      handleEmployeeUpdated()
-                      setEditingEmployeeId(null)
-                    }}
-                  />
-                )
-              } else {
-                return (
-                  <div key={employee.id}>
-                    <EmployeesItem employee={employee} onContextMenu={handleContextMenu} isDeleted={isDeleted}>
-                      {isDeleted && (
-                        <CancelDeleteButton
-                          itemLabel="сотрудника"
-                          onClick={() => handleCancelDelete(employee.id)}
-                          styles={{
-                            root: {
-                              backgroundColor: 'inherit'
-                            }
-                          }}
-                        />
-                      )}
-                    </EmployeesItem>
-                  </div>
-                )
-              }
-            })}
+        {isLoading && <Skeleton />}
+
+        {hasError && <TextNotification variant="data_not_loaded" />}
+
+        {isNoSearchResult && <TextNotification variant="no_search_result" />}
+
+        {!isNoSearchResult &&
+          searchEmployees.map(employee => {
+            const isEditingEmployee = editingEmployeeId === employee.id
+            const isDeleted = employee.to_inactivate
+            if (isEditingEmployee) {
+              return (
+                <EmployeeForm
+                  key={employee.id}
+                  isCreateForm={false}
+                  isOpen={true}
+                  employeeFormData={employee}
+                  closeForm={() => setEditingEmployeeId(null)}
+                  onSubmit={() => {
+                    handleEmployeeUpdated()
+                    setEditingEmployeeId(null)
+                  }}
+                />
+              )
+            } else {
+              return (
+                <div key={employee.id}>
+                  <EmployeesItem employee={employee} onContextMenu={handleContextMenu} isDeleted={isDeleted}>
+                    {isDeleted && (
+                      <CancelDeleteButton
+                        itemLabel="сотрудника"
+                        onClick={() => handleCancelDelete(employee.id)}
+                        styles={{
+                          root: {
+                            backgroundColor: 'inherit'
+                          }
+                        }}
+                      />
+                    )}
+                  </EmployeesItem>
+                </div>
+              )
+            }
+          })}
 
         {contextMenu.isVisible && contextMenu.selectedId && menuItems.length > 0 && (
           <PopupMenu
@@ -162,13 +183,6 @@ const Employees: React.FC = () => {
             positionY={contextMenu.top}
             onClose={handleMenuClose}
           />
-        )}
-        {isLoading && <Loader />}
-        {hasError && !isLoading && (
-          <div className={style.error_message}>
-            <p>Произошла ошибка при загрузке сотрудников</p>
-            <Button onClick={handleEmployeeUpdated}>Попробовать снова</Button>
-          </div>
         )}
       </div>
     </div>

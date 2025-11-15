@@ -35,6 +35,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ contentSidebar
             position: 'relative',
             top: 0,
             minHeight: '100%',
+            minWidth: '201px',
             height: 'auto',
             overflow: 'hidden',
             background:
@@ -60,7 +61,13 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ contentSidebar
             {contentSidebar}
           </AppShell.Section>
           <AppShell.Section className={classes.logoutButton_container}>
-            <Button variant="ghost" onClick={logout} leftSection={<IconLogout />} className={classes.logoutButton}>
+            <Button
+              onClick={logout}
+              leftSection={<IconLogout />}
+              classNames={{
+                root: classes.logoutButton
+              }}
+            >
               Выход
             </Button>
           </AppShell.Section>

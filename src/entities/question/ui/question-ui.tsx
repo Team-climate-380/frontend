@@ -5,18 +5,23 @@ import { FC, useState, useCallback } from 'react'
 import { IQuestion } from '../type'
 import { ContextMenu } from '@/shared/ui/popup-menu/ui/context-menu'
 import { toggleFavorite } from '../utils/question-actions'
-import { deleteQuestion } from '../api/delete-question'
+import { cancelDeleteQuestion, deleteQuestion } from '../api/delete-question'
 import { QuestionForm } from '@/features/question-form'
 import { QuestionTypeEnum, QuestionTypeEnum as QTE } from '../forms/use-create-edit-question-form'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import clsx from 'clsx'
+import { CancelDeleteButton } from '@/shared/ui/cancel-delete-button'
 
 export const QuestionUI: FC<IQuestion & { allowContextMenu?: boolean; setQuestion?: (item: IQuestion) => void }> = ({
+export const QuestionUI: FC<IQuestion & { allowContextMenu?: boolean }> = (
+  numeration,
   id,
   is_favorite,
   text,
   question_type,
   allowContextMenu,
   setQuestion
+  to_delete
 }) => {
   const QuestionTypeLabels: Record<QTE, string> = {
     [QuestionTypeEnum.ratingScale]: 'Плохо-Прекрасно',
@@ -37,6 +42,15 @@ export const QuestionUI: FC<IQuestion & { allowContextMenu?: boolean; setQuestio
     },
     onError: error => {
       console.error(`Ошибка при удалении: ${error.message}`)
+    }
+  })
+  const cancelDeteleQuestionMutate = useMutation({
+    mutationFn: () => cancelDeleteQuestion(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['questions'] })
+    },
+    onError: error => {
+      console.error(`Ошибка при отмене удаления: ${error.message}`)
     }
   })
   const handleContextMenu = (e: React.MouseEvent) => {
@@ -71,10 +85,25 @@ export const QuestionUI: FC<IQuestion & { allowContextMenu?: boolean; setQuestio
         onContextMenu={handleContextMenu}
       >
         <span className={style.id}>{id}</span>
+        className={clsx(style.question, to_delete && style.to_delete)}
+        onClick={close}
+        onContextMenu={handleContextMenu}
+      >
+        <span className={style.id}>{numeration}</span>
         <div className={style.isFavorite}>{isFavorite && <FavoriteIconFilled width={11} height={11} />}</div>
         <Text size="md" className={style.text}>
           {text} <span className={style.question_type}> ({QuestionTypeLabels[question_type as QuestionTypeEnum]})</span>
         </Text>
+        <>
+          {to_delete && (
+            <CancelDeleteButton
+              onClick={() => cancelDeteleQuestionMutate.mutate()}
+              itemLabel="вопроса"
+              className={style.delete_button}
+            />
+          )}
+        </>
+
         {dropdownVisible && allowContextMenu && (
           <ContextMenu
             items={[

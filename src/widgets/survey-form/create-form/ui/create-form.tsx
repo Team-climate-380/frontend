@@ -28,6 +28,11 @@ const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({
   selectQuestion,
   indexQuestion
 }) => {
+import { useNavigate } from 'react-router-dom'
+import { routes } from '@/shared/configs/routs'
+
+const CreateSurveyForm: FunctionComponent = () => {
+  const navigate = useNavigate()
   const { data: departmentOptions, isLoading: areParticipantsLoading } = useQuery({
     queryKey: ['participants'],
     queryFn: fetchParticipants
@@ -46,7 +51,7 @@ const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({
 
   const formData = useSurvey(initialFormValues)
 
-  const { submitSurvey, isSubmitting, isError, isSuccess } = useSurveyMutation(formData)
+  const { submitSurvey, isSubmitting, isError, isSuccess } = useSurveyMutation(formData, { mode: 'create' })
 
   useEffect(() => {
     if (selectQuestion && indexQuestion === 0) {
@@ -69,8 +74,8 @@ const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({
         </Grid.Col>
         <Grid.Col span={1.5}>
           <Group align="center" justify="end" gap="32px">
-            <MoreButton />
-            <CloseButton />
+            <MoreButton type="button" />
+            <CloseButton type="button" onClick={() => navigate(routes.surveys())} />
           </Group>
         </Grid.Col>
         <Grid.Col span={10.5}>

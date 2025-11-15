@@ -14,37 +14,45 @@ interface RequestType {
 export class ApiClient {
   defaultHeaders: HeadersType
   baseUrl: string
+  private refreshPromise: Promise<boolean> | null = null
   constructor(headers?: HeadersType) {
     this.baseUrl = import.meta.env.VITE_API_DOMAIN || ''
-    this.defaultHeaders = {
-      'Content-Type': 'application/json',
-      ...(headers || {})
-    }
+    this.defaultHeaders = { ...(headers || {}) }
   }
 
   private async refreshTokens(): Promise<boolean> {
-    try {
-      const resp = await fetch(`${this.baseUrl}/api/auth/refresh`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: this.defaultHeaders
-      })
-      return resp.ok
-    } catch {
-      return false
+    if (!this.refreshPromise) {
+      this.refreshPromise = (async () => {
+        try {
+          const resp = await fetch(`${this.baseUrl}/api/auth/refresh`, {
+            method: 'POST',
+            credentials: 'include'
+          })
+          return resp.ok
+        } catch {
+          return false
+        } finally {
+          setTimeout(() => {
+            this.refreshPromise = null
+          }, 0)
+        }
+      })()
     }
+    return this.refreshPromise
   }
 
   private async doFetch(input: RequestType): Promise<Response> {
     const { url, headers, method, body } = input
+    const hasBody = body !== undefined
     return fetch(`${this.baseUrl}${url}`, {
       method,
       credentials: 'include',
       headers: {
+        ...(hasBody ? { 'Content-Type': 'application/json' } : {}),
         ...this.defaultHeaders,
         ...(headers || {})
       },
-      body: body !== undefined ? JSON.stringify(body) : undefined
+      body: hasBody ? JSON.stringify(body) : undefined
     })
   }
 
@@ -65,6 +73,12 @@ export class ApiClient {
           response = await this.doFetch({ url, headers, method, body })
         } else {
           useSessionState.getState().logout()
+          return {
+            status: 'error',
+            error: { message: 'Unauthorized' },
+            message: 'Unauthorized',
+            statusCode: 401
+          }
         }
       }
 

@@ -71,6 +71,17 @@ const QuestionPage = () => {
     setQuestionFormIsVisible(prev => !prev)
   }
 
+  useEffect(() => {
+    if (!questionFormIsVisible) return
+    function handleClickOutside(event: MouseEvent) {
+      if (formRef.current && !formRef.current.contains(event.target as Node)) {
+        setQuestionFormIsVisible(false)
+      }
+    }
+    document.addEventListener('click', handleClickOutside)
+    return () => document.removeEventListener('click', handleClickOutside)
+  }, [questionFormIsVisible])
+
   return (
     <div className={styles.main}>
       <>
@@ -87,7 +98,7 @@ const QuestionPage = () => {
         <QuestionsPageLayout allowContextMenu={true} />
 
         {questionFormIsVisible && (
-          <div className={styles['question-form']}>
+          <div className={styles['question-form']} ref={formRef} onClick={e => e.stopPropagation()}>
             <QuestionForm
               isOpen={questionFormIsVisible}
               isCreateForm={true}

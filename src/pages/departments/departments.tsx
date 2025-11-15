@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import styles from './styles/departments.module.scss'
 import { useContextMenu } from '@shared/hooks/use-context-menu'
 import { ValuesFormGroups } from '@/entities/groups/forms/use-create-edit-form-group'
-import { List, ScrollArea, Modal, Group } from '@mantine/core'
+import { List, ScrollArea } from '@mantine/core'
 import { Button } from '@/shared/ui/button'
 import { DepartmentInfo, GroupForm, useDepartmentMutations, useDepartmentQuery } from '@/entities/groups'
 import { Department } from '@/shared/ui/department'
@@ -11,26 +11,28 @@ import { PopupMenu } from '@/shared/ui/popup-menu'
 import { departmentsContextMenu } from './configs/departments-context-menu.config'
 import { SearchInput } from '@/widgets/search-input'
 import { useQueryParams } from '@/shared/hooks/useQueryParams'
-import { IconExclamationCircleFilled } from '@tabler/icons-react'
 import { Skeleton } from '@/shared/ui/skeleton'
+import { TextNotification } from '@/shared/ui/text-notification'
+import { useClickOutside } from '@mantine/hooks'
+import { NotificationModal } from '@/shared/ui/notification-modal'
 
 export const Departments: React.FC = () => {
   const [isCreateNewFormVisible, setIsCreateNewFormVisible] = useState(false)
   const [selectedForEdit, setSelectedForEdit] = useState<null | number>(null)
   const [isDeleteErrorVisible, setIsDeleteErrorVisible] = useState(false)
-  const [filteredDepartments, setFilteredDepartments] = useState<DepartmentInfo[]>()
+  const [filteredDepartments, setFilteredDepartments] = useState<DepartmentInfo[]>([])
 
-  const { contextMenu, setContextMenu, handleRightClick, handleContextMenuClose } = useContextMenu(
-    {
-      isVisible: false,
-      selectedId: null,
-      left: 0,
-      top: 0
-    },
-    0,
-    10,
-    true
-  )
+  const editFormRef = useClickOutside(() => {
+    setSelectedForEdit(null)
+  })
+  const createFormRef = useClickOutside(() => {
+    setIsCreateNewFormVisible(false)
+  })
+
+  const { contextMenu, setContextMenu, handleRightClick, handleContextMenuClose } = useContextMenu()
+
+  const { data, isPending, isError, isSuccess } = useDepartmentQuery()
+  const { createDepartmentMutation, editDepartmentMutation, deleteDepartmentMutation } = useDepartmentMutations()
 
   const menuItems = departmentsContextMenu({
     handleEdit: handleEditClick,
@@ -38,23 +40,20 @@ export const Departments: React.FC = () => {
     id: contextMenu.selectedId
   })
 
-  const { data, isPending, isError } = useDepartmentQuery()
-  const { createDepartmentMutation, editDepartmentMutation, deleteDepartmentMutation } = useDepartmentMutations()
-
   const { getDecodedSearch } = useQueryParams()
   const searchQuery = getDecodedSearch().trim().toLowerCase()
-  const searchDepartments = () => {
-    if (searchQuery && data) {
-      const filtered = data.filter(department => department.department_name.toLowerCase().includes(searchQuery))
+  const setDepartments = () => {
+    if (isSuccess) {
+      const filtered = searchQuery
+        ? data.filter(department => department.department_name.toLowerCase().includes(searchQuery))
+        : data
       setFilteredDepartments(filtered)
-      return
     }
-    setFilteredDepartments(data)
   }
 
   useEffect(() => {
     if (!data) return
-    searchDepartments()
+    setDepartments()
   }, [data, searchQuery])
 
   const handleSubmit = (values: Partial<ValuesFormGroups>) => {
@@ -62,16 +61,27 @@ export const Departments: React.FC = () => {
       return
     }
     if (selectedForEdit) {
-      editDepartmentMutation.mutate({ id: selectedForEdit, new_name: values.name })
-      setSelectedForEdit(null)
+      editDepartmentMutation.mutate({
+        id: selectedForEdit,
+        new_name: values.name,
+        onEditSuccess: () => setSelectedForEdit(null)
+      })
     } else {
-      createDepartmentMutation.mutate(values.name)
-      setIsCreateNewFormVisible(false)
+      createDepartmentMutation.mutate({
+        newGroupName: values.name,
+        onCreateSuccess: () => setIsCreateNewFormVisible(false)
+      })
     }
+  }
+
+  function handleCreateClick() {
+    setIsCreateNewFormVisible(true)
+    setSelectedForEdit(null)
   }
 
   function handleEditClick(id: number | null | undefined) {
     if (!id) return
+    setIsCreateNewFormVisible(false)
     setSelectedForEdit(id)
     setContextMenu({ ...contextMenu, isVisible: false, selectedId: null })
   }
@@ -94,7 +104,7 @@ export const Departments: React.FC = () => {
         actions={
           <>
             <SearchInput />
-            <Button className={styles.header_button} onClick={() => setIsCreateNewFormVisible(!isCreateNewFormVisible)}>
+            <Button className={styles.header_button} onClick={handleCreateClick} disabled={isCreateNewFormVisible}>
               Создать группу
             </Button>
           </>
@@ -102,30 +112,40 @@ export const Departments: React.FC = () => {
       ></Header>
       <div className={styles.main}>
         <ScrollArea type="scroll">
-          {isCreateNewFormVisible && <GroupForm onSubmit={handleSubmit} />}
-          <List listStyleType="none">
-            {isPending && <Skeleton />}
-            {!data &&
-              isError &&
-              `Не удалось загрузить данные о группах. Пожалуйста, обновите страницу или повторите попытку позже.`}
-            {filteredDepartments &&
-              filteredDepartments.map(department => {
-                return (
-                  <List.Item key={department.id}>
-                    <Department
-                      department={department}
-                      onContextMenu={e => {
-                        if (department.to_delete) return
-                        handleRightClick(e, department.id)
-                      }}
-                      isEdited={department.id === selectedForEdit ? true : false}
-                      onSubmit={handleSubmit}
-                      handleCancelDelete={() => handleCancelDelete(department.id)}
-                    />
-                  </List.Item>
-                )
-              })}
-          </List>
+          {isCreateNewFormVisible && (
+            <GroupForm
+              onSubmit={handleSubmit}
+              closeForm={() => setIsCreateNewFormVisible(false)}
+              formRef={createFormRef}
+            />
+          )}
+          {isPending && <Skeleton />}
+          {isError && <TextNotification variant="data_not_loaded" />}
+          {isSuccess &&
+            (searchQuery && filteredDepartments.length === 0 ? (
+              <TextNotification variant="no_search_result" />
+            ) : (
+              <List listStyleType="none" aria-label="Список групп">
+                {filteredDepartments.map(department => {
+                  return (
+                    <List.Item key={department.id}>
+                      <Department
+                        department={department}
+                        onContextMenu={e => {
+                          if (department.to_delete) return
+                          handleRightClick(e, department.id)
+                        }}
+                        isEdited={department.id === selectedForEdit ? true : false}
+                        onSubmit={handleSubmit}
+                        handleCancelDelete={() => handleCancelDelete(department.id)}
+                        closeGroupForm={() => setSelectedForEdit(null)}
+                        formRef={editFormRef}
+                      />
+                    </List.Item>
+                  )
+                })}
+              </List>
+            ))}
         </ScrollArea>
       </div>
       {contextMenu.isVisible && (
@@ -137,25 +157,15 @@ export const Departments: React.FC = () => {
           positionY={contextMenu.top}
         ></PopupMenu>
       )}
-      <Modal
+      <NotificationModal
+        type="error"
         opened={isDeleteErrorVisible}
-        withinPortal
         onClose={() => {
           setIsDeleteErrorVisible(false)
         }}
-        title={
-          <Group gap="xs" align="center">
-            <IconExclamationCircleFilled size={40} color="red" />
-            <h3 className={styles['error-modal_title']}>Невозможно удалить группу</h3>
-          </Group>
-        }
-        centered
-        closeButtonProps={{ 'aria-label': 'Закрыть уведомление' }}
-      >
-        <p className={styles['error-modal_text']}>
-          Похоже, в этой группе ещё есть люди. Удалите или переместите их, и тогда группу можно будет удалить.
-        </p>
-      </Modal>
+        title={'Невозможно удалить группу'}
+        text={'Похоже, в этой группе ещё есть люди. Удалите или переместите их, и тогда группу можно будет удалить.'}
+      />
     </div>
   )
 }
