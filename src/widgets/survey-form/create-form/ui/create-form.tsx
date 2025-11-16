@@ -1,5 +1,5 @@
 import { Input } from '@/shared/ui/input'
-import { FunctionComponent } from 'react'
+import { FunctionComponent, useEffect } from 'react'
 import classes from '../../styles/styles.module.scss'
 import { Flex, Grid, Group, Select } from '@mantine/core'
 import { MoreButton } from '@/shared/ui/more-button'
@@ -15,10 +15,21 @@ import { TQuestion } from '@/entities/question/model/types'
 import { useQuery } from '@tanstack/react-query'
 import { fetchParticipants } from '@entities/survey/api/api'
 import { useSurveyMutation } from '@/entities/survey/forms/lib/use-survey-mutation'
+import { IQuestion } from '@/entities/question/type'
 import { useNavigate } from 'react-router-dom'
 import { routes } from '@/shared/configs/routs'
 
-const CreateSurveyForm: FunctionComponent = () => {
+export interface CreateSurveyFormProps {
+  onOpenButtons: (index: number) => void
+  selectQuestion: IQuestion | undefined
+  indexQuestion: number | undefined
+}
+
+const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({
+  onOpenButtons,
+  selectQuestion,
+  indexQuestion
+}) => {
   const navigate = useNavigate()
   const { data: departmentOptions, isLoading: areParticipantsLoading } = useQuery({
     queryKey: ['participants'],
@@ -39,6 +50,16 @@ const CreateSurveyForm: FunctionComponent = () => {
   const formData = useSurvey(initialFormValues)
 
   const { submitSurvey, isSubmitting, isError, isSuccess } = useSurveyMutation(formData, { mode: 'create' })
+
+  useEffect(() => {
+    if (selectQuestion && typeof indexQuestion === 'number') {
+      const currentQuestions = formData.getValues().questions
+      const updatedQuestions = currentQuestions.map((question, index) =>
+        index === indexQuestion ? selectQuestion : question
+      )
+      formData.setFieldValue('questions', updatedQuestions)
+    }
+  }, [selectQuestion])
 
   return (
     <form onSubmit={formData.onSubmit(values => submitSurvey(values))}>
@@ -102,16 +123,14 @@ const CreateSurveyForm: FunctionComponent = () => {
       </Grid>
       <Flex direction="column" className={classes.questionsSection}>
         <Flex direction="column" gap={25}>
-          {formData.values.questions.map((question, index) => {
+          {formData.values.questions.map((question, index: number) => {
             return (
               <QuestionCreate
                 key={question.id}
                 title={`${index + 1} Вопрос`}
-                onOpenButtons={() => {
-                  console.log('Sidebar')
-                }}
+                onOpenButtons={() => onOpenButtons(index)}
                 textInputProps={formData.getInputProps(`questions.${index}.text`)}
-                typeInputProps={formData.getInputProps(`questions.${index}.type`)}
+                typeInputProps={formData.getInputProps(`questions.${index}.question_type`)}
               />
             )
           })}
