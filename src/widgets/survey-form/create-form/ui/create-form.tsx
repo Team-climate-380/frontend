@@ -137,11 +137,6 @@ const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({
         </Flex>
         <Group justify="space-between" className={classes.optionButtons}>
           <Button
-            styles={{
-              root: {
-                padding: '10px 20px'
-              }
-            }}
             className={classes.buttonGrey}
             variant="ghost"
             type="button"

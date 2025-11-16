@@ -26,7 +26,7 @@ export const CreatingSurvey: React.FC = () => {
         <RightPanel
           opened={opened}
           onClose={close}
-          header={<QuestionsHeader order={3} isDrawerHeader={true} onClick={close} />}
+          header={<QuestionsHeader order={3} isDrawerHeader={true} />}
           content={
             <QuestionsPageLayout
               className={classes.content}
