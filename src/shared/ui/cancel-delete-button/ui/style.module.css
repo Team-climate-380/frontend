@@ -1,0 +1,4 @@
+[class*='item']:has([aria-label*='Отменить удаление']),
+div:has([aria-label*='Отменить удаление']) {
+  cursor: auto;
+}

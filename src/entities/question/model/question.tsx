@@ -3,7 +3,7 @@ import { QuestionUI } from '../ui/question-ui'
 import { IQuestion } from '../type'
 
 export const Question: FC<
-  IQuestion & { allowContextMenu?: boolean; setQuestion?: (item: IQuestion) => void }
+  IQuestion & { allowContextMenu?: boolean; setQuestion?: (item: IQuestion | undefined) => void }
 > = question => {
   return (
     <QuestionUI

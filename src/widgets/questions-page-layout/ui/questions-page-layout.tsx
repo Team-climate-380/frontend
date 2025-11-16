@@ -10,7 +10,7 @@ import { QuestionsList } from '@/features/questions-list'
 import styles from './style.module.css'
 
 interface QuestionsPageLayoutProps {
-  setQuestion?: (item: IQuestion) => void
+  setQuestion?: (item: IQuestion | undefined) => void
   isShowToDeleteItem?: boolean
   allowContextMenu?: boolean
   className?: string
@@ -28,19 +28,14 @@ export const QuestionsPageLayout: React.FC<QuestionsPageLayoutProps> = ({
   })
 
   const { questions, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, error } = UseQuestionsQuery()
+
   useEffect(() => {
     if (entry?.isIntersecting && hasNextPage && !isFetchingNextPage) {
       fetchNextPage()
-      // const nextPage = currentPage + 1
-      // setParams({ ...queryParams, page: String(nextPage) }, false)
     }
   }, [fetchNextPage, queryParams, setParams, entry, hasNextPage, isFetchingNextPage])
 
   const questionsNotDelete = questions.filter(item => item.to_delete === false)
-
-  // useEffect(() => {
-  //   setParams({ ...queryParams, page: '1' }, true)
-  // }, [currentSearch])
 
   return (
     <>

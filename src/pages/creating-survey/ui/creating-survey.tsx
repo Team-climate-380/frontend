@@ -9,16 +9,13 @@ import classes from '../styles/styles.module.scss'
 
 export const CreatingSurvey: React.FC = () => {
   const [opened, { open, close }] = useDisclosure(false)
-  const [question, setQuestion] = useState<IQuestion>()
-  const [indexQuestion, setIndexQuestion] = useState<number>()
-
-  console.log('question', question)
+  const [question, setQuestion] = useState<IQuestion | undefined>()
+  const [indexQuestion, setIndexQuestion] = useState<number | undefined>()
 
   return (
     <div className={classes.creatingSurvey}>
       <CreateSurveyForm
         onOpenButtons={(index: number) => {
-          console.log(index, 'Данные не изменились')
           open()
           setIndexQuestion(index)
         }}

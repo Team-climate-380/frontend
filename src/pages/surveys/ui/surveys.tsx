@@ -176,6 +176,7 @@ const Surveys: React.FC = () => {
                       departmentName={item.department?.name}
                       className={clsx(classes.item, { [classes.itemToDelete]: item.to_delete })}
                       onContextMenu={evt => handleRightClick(evt, item.id)}
+                      isDelete={item.to_delete}
                     >
                       <span className={classes.comment}>{item.comment ?? ''}</span>
 
@@ -229,7 +230,7 @@ const Surveys: React.FC = () => {
               )}
             </List>
 
-            <div ref={ref}>{isFetchingNextPage && <Loader />}</div>
+            <div ref={ref}>{isFetchingNextPage && <Loader size="lg" />}</div>
           </>
         )}
       </div>

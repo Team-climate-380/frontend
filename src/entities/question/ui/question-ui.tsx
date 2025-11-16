@@ -1,7 +1,7 @@
 import style from '../styles/question.module.scss'
 import { Text } from '@mantine/core'
 import { FavoriteIconFilled } from '@shared/ui/icons/favorite-icon-filled'
-import { FC, useState, useCallback } from 'react'
+import { FC, useState } from 'react'
 import { IQuestion } from '../type'
 import { ContextMenu } from '@/shared/ui/popup-menu/ui/context-menu'
 import { toggleFavorite } from '../utils/question-actions'
@@ -12,16 +12,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import clsx from 'clsx'
 import { CancelDeleteButton } from '@/shared/ui/cancel-delete-button'
 
-export const QuestionUI: FC<IQuestion & { allowContextMenu?: boolean; setQuestion?: (item: IQuestion) => void }> = ({
-  numeration,
-  id,
-  is_favorite,
-  text,
-  question_type,
-  allowContextMenu,
-  setQuestion,
-  to_delete
-}) => {
+export const QuestionUI: FC<
+  IQuestion & { allowContextMenu?: boolean; setQuestion?: (item: IQuestion | undefined) => void }
+> = ({ numeration, id, is_favorite, text, question_type, allowContextMenu, setQuestion, to_delete }) => {
   const QuestionTypeLabels: Record<QTE, string> = {
     [QuestionTypeEnum.ratingScale]: 'Плохо-Прекрасно',
     [QuestionTypeEnum.score]: '1-9',
@@ -71,10 +64,9 @@ export const QuestionUI: FC<IQuestion & { allowContextMenu?: boolean; setQuestio
     setDropdownVisible(false)
   }
 
-  const selectQuestion = useCallback(() => {
-    setQuestion({ id, text, question_type, is_favorite })
-    console.log(7, text)
-  }, [id, text, question_type, setQuestion, is_favorite])
+  const selectQuestion = () => {
+    if (setQuestion) setQuestion({ id, text, question_type, is_favorite })
+  }
 
   return (
     <>

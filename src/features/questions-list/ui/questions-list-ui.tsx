@@ -5,7 +5,7 @@ import { FC } from 'react'
 interface IQuestionsListUIProps {
   questions: IQuestion[]
   allowContextMenu?: boolean
-  setQuestion?: (item: IQuestion) => void
+  setQuestion?: (item: IQuestion | undefined) => void
 }
 
 export const QuestionsListUI: FC<IQuestionsListUIProps> = ({ questions, allowContextMenu, setQuestion }) => {

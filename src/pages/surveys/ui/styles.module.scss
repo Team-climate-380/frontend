@@ -6,13 +6,12 @@
 }
 
 .item {
-  cursor: context-menu;
+  cursor: pointer;
 }
 
 .itemToDelete {
   text-decoration: line-through;
   color: #8e6b6b;
-  cursor: auto;
 }
 
 .comment {

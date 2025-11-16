@@ -21,7 +21,7 @@ import { routes } from '@/shared/configs/routs'
 
 export interface CreateSurveyFormProps {
   onOpenButtons: (index: number) => void
-  selectQuestion: (item: IQuestion) => void
+  selectQuestion: IQuestion | undefined
   indexQuestion: number | undefined
 }
 
@@ -52,15 +52,12 @@ const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({
   const { submitSurvey, isSubmitting, isError, isSuccess } = useSurveyMutation(formData, { mode: 'create' })
 
   useEffect(() => {
-    if (selectQuestion && indexQuestion === 0) {
-      let firstQuestion = formData.getValues().questions[0]
-      firstQuestion = selectQuestion
-      formData.setFieldValue('questions', [firstQuestion])
-    }
-
-    if (selectQuestion && indexQuestion > 0) {
-      formData.getValues().questions.splice(indexQuestion, 1, selectQuestion)
-      formData.setValues(prev => ({ ...prev, ...formData }))
+    if (selectQuestion && typeof indexQuestion === 'number') {
+      const currentQuestions = formData.getValues().questions
+      const updatedQuestions = currentQuestions.map((question, index) =>
+        index === indexQuestion ? selectQuestion : question
+      )
+      formData.setFieldValue('questions', updatedQuestions)
     }
   }, [selectQuestion])
 
@@ -131,7 +128,7 @@ const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({
               <QuestionCreate
                 key={question.id}
                 title={`${index + 1} Вопрос`}
-                onOpenButtons={() => onOpenButtons && onOpenButtons(index)}
+                onOpenButtons={() => onOpenButtons(index)}
                 textInputProps={formData.getInputProps(`questions.${index}.text`)}
                 typeInputProps={formData.getInputProps(`questions.${index}.question_type`)}
               />

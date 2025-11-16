@@ -5,7 +5,7 @@ import { IQuestion } from '@/entities/question/type'
 interface IQuestionsListProps {
   questions: IQuestion[]
   allowContextMenu?: boolean
-  setQuestion?: (item: IQuestion) => void
+  setQuestion?: (item: IQuestion | undefined) => void
 }
 
 export const QuestionsList: FC<IQuestionsListProps> = ({ questions, allowContextMenu = true, setQuestion }) => {
