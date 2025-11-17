@@ -25,7 +25,7 @@ export const useRestorePasswordData = (initialValues?: InitialRestorePassword) =
 }
 
 export const postRestorePassword = async (email: string) => {
-  const response = await apiClient.post('/password-recovery', { email })
+  const response = await apiClient.post('/api/password-recovery', { email })
   if (response.status === 'success') return response.status
   if (response.status === 'error' && 'message' in response) throw Error(response.message)
   throw Error('Произошла ошибка при сбросе пароля')
