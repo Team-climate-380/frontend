@@ -33,6 +33,7 @@ export type PopupMenuItem =
       type: 'action'
       label: string
       important?: boolean
+      disabled?: boolean
       action: (e?: React.MouseEvent<HTMLButtonElement>) => void
     }
   | {

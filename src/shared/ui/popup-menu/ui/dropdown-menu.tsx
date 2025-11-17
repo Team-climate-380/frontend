@@ -16,6 +16,7 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({ items, children, pos
                 <Menu.Item
                   onClick={item.action}
                   className={clsx(classes.button, { [classes.button_important]: item.important })}
+                  disabled={item.disabled}
                 >
                   {label}
                 </Menu.Item>

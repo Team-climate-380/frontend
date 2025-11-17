@@ -84,6 +84,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ items, onClose, positi
                     item.action(e)
                   }}
                   className={clsx(classes.button, { [classes.button_important]: item.important })}
+                  disabled={item.disabled}
                 >
                   {label}
                 </Button>
