@@ -90,6 +90,7 @@ const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({
         <Grid.Col span={5.5}>
           <Flex direction="row" gap={30}>
             <DatePickerInput
+              highlightToday
               clearable
               label="Начало"
               locale="ru"
@@ -103,6 +104,7 @@ const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({
               key={formData.key('startedAt')}
             />
             <DatePickerInput
+              highlightToday
               clearable
               label={'Завершение'}
               locale="ru"
