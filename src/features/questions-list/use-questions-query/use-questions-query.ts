@@ -24,7 +24,20 @@ export const UseQuestionsQuery = () => {
     getNextPageParam: lastPage => (lastPage?.has_next ? lastPage.page + 1 : undefined)
   })
 
-  const questions = data?.pages.flatMap(pageItem => pageItem?.data).filter((q): q is IQuestion => Boolean(q)) ?? []
+  const numList =
+    data?.pages
+      .flatMap(pageItem => pageItem?.data)
+      .filter((q): q is IQuestion => Boolean(q))
+      .reverse() ?? []
+
+  const totalLength = data?.pages[0]?.total ?? 0
+
+  const questions = numList.map((question, index) => {
+    return {
+      ...question,
+      numeration: totalLength - index
+    }
+  })
 
   return { questions, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, error }
 }
