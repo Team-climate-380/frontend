@@ -30,8 +30,6 @@ export const UseQuestionsQuery = () => {
       .filter((q): q is IQuestion => Boolean(q))
       .reverse() ?? []
 
-  console.log('questions', numList)
-
   const totalLength = data?.pages[0]?.total ?? 0
 
   const questions = numList.map((question, index) => {
