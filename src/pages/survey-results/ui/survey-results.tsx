@@ -43,13 +43,18 @@ const SurveyResults: React.FC<SurveyResultsProps> = ({ fullResults = true, withD
     })
   }
 
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const startDateExpired = data ? new Date(data.started_at) < today : true
+
   const itemsDraft: PopupMenuItem[] = [
     {
       type: 'action',
       label: 'Запустить опрос',
       action: () => {
         editSurvey.mutate({ id: surveyId, surveyChange: { status: 'active' } })
-      }
+      },
+      disabled: startDateExpired
     },
     {
       type: 'action',
