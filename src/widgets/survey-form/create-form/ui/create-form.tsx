@@ -58,6 +58,7 @@ const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({
         index === indexQuestion ? selectQuestion : question
       )
       formData.setFieldValue('questions', updatedQuestions)
+      formData.validateField(`questions.${indexQuestion}.text`)
     }
   }, [selectQuestion])
 

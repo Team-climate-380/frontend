@@ -77,7 +77,7 @@ export const useSurvey = (initialValues: IInitialValues) => {
       },
       questions: {
         text: (value, values, path) => {
-          const allTextValues = values.questions.map(v => v.text)
+          const allTextValues = values.questions.map(v => v.text.trim())
           const trimmed = value.trim()
           if (trimmed === '') return 'Введите текст вопроса'
           if (allTextValues.filter(text => text.trim() === trimmed).length > 1) {
