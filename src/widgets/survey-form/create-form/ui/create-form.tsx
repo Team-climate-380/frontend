@@ -126,7 +126,7 @@ const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({
       </Grid>
       <Flex direction="column" className={classes.questionsSection}>
         <Flex direction="column" gap={25}>
-          {formData.values.questions.map((question, index: number) => {
+          {formData.values.questions.map((_, index: number) => {
             return (
               <QuestionCreate
                 key={index}
