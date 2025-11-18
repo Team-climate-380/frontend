@@ -36,7 +36,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ isOpen, isCreateForm
     mutationFn: (data: IQuestionForm) =>
       createNewQuestion({
         text: data.text,
-        question_type: QuestionTypeData(data.question_type)
+        question_type: data.question_type
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['questions'] })
@@ -63,7 +63,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ isOpen, isCreateForm
       try {
         createQuestionMutation.mutate({
           ...data,
-          question_type: questionForm.values.question_type
+          question_type: questionForm.getValues().question_type as QuestionTypeEnum
         })
       } catch (error) {
         console.error(error)
