@@ -9,6 +9,7 @@ import { useSessionState } from '@/features/session'
 import { useNavigate } from 'react-router'
 import { routes } from '@/shared/configs/routs'
 import { apiClient } from '@/shared/lib/api-client'
+import { saveAuthMode } from '../model/remember-me-storage'
 
 export interface InitialFormData {
   email: string
@@ -33,9 +34,8 @@ export const LoginForm: FC<LoginFormProps> = ({ onRestorePassword, initialValues
       await apiClient.post<{ ok: boolean }>('/api/auth/login', {
         email: formData.values.email,
         password: formData.values.password
-        // TODO: не реализовано на бекенде
-        // rememberMe: formData.values.rememberMy
       })
+      saveAuthMode(formData.values.rememberMy)
 
       sessionState.login(formData.values.email)
       navigate(routes.home())
