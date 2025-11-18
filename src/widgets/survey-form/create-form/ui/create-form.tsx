@@ -58,6 +58,7 @@ const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({
         index === indexQuestion ? selectQuestion : question
       )
       formData.setFieldValue('questions', updatedQuestions)
+      formData.validateField(`questions.${indexQuestion}.text`)
     }
   }, [selectQuestion])
 
@@ -125,10 +126,10 @@ const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({
       </Grid>
       <Flex direction="column" className={classes.questionsSection}>
         <Flex direction="column" gap={25}>
-          {formData.values.questions.map((question, index: number) => {
+          {formData.values.questions.map((_, index: number) => {
             return (
               <QuestionCreate
-                key={question.id}
+                key={index}
                 title={`${index + 1} Вопрос`}
                 onOpenButtons={() => onOpenButtons(index)}
                 textInputProps={formData.getInputProps(`questions.${index}.text`)}
