@@ -129,7 +129,7 @@ const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({
           {formData.values.questions.map((question, index: number) => {
             return (
               <QuestionCreate
-                key={question.id}
+                key={index}
                 title={`${index + 1} Вопрос`}
                 onOpenButtons={() => onOpenButtons(index)}
                 textInputProps={formData.getInputProps(`questions.${index}.text`)}
