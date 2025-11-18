@@ -5,6 +5,10 @@
   border-radius: 0 0 10px 10px;
 }
 
+.item {
+  cursor: pointer;
+}
+
 .itemToDelete {
   text-decoration: line-through;
   color: #8e6b6b;

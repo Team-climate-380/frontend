@@ -5,9 +5,10 @@ import { FC } from 'react'
 interface IQuestionsListUIProps {
   questions: IQuestion[]
   allowContextMenu?: boolean
+  setQuestion?: (item: IQuestion | undefined) => void
 }
 
-export const QuestionsListUI: FC<IQuestionsListUIProps> = ({ questions, allowContextMenu }) => {
+export const QuestionsListUI: FC<IQuestionsListUIProps> = ({ questions, allowContextMenu, setQuestion }) => {
   return (
     <>
       {questions
@@ -15,12 +16,14 @@ export const QuestionsListUI: FC<IQuestionsListUIProps> = ({ questions, allowCon
             return (
               <div key={question.id}>
                 <Question
+                  numeration={question.numeration}
                   id={question.id}
                   text={question.text}
                   is_favorite={question.is_favorite}
                   surveys={question.surveys}
                   question_type={question.question_type}
                   allowContextMenu={allowContextMenu}
+                  setQuestion={setQuestion}
                   to_delete={question.to_delete}
                 />
               </div>

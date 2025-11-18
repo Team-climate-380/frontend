@@ -19,7 +19,10 @@ export const SurveyCancelDelete: React.FC<SurveyCancelDeleteProps> = ({ isAddedT
             }
           }}
           itemLabel={'опроса'}
-          onClick={handleClick}
+          onClick={(e: SyntheticEvent) => {
+            e.stopPropagation()
+            handleClick(e)
+          }}
         />
       </>
     )

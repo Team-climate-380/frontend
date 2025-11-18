@@ -2,7 +2,6 @@ import { Input } from '@/shared/ui/input'
 import { FunctionComponent, useEffect } from 'react'
 import classes from '../../styles/styles.module.scss'
 import { Flex, Grid, Group, Select } from '@mantine/core'
-import { MoreButton } from '@/shared/ui/more-button'
 import { CloseButton } from '@/shared/ui/close-button'
 import { useSurvey } from '@/entities/survey/forms/lib/use-survey'
 import { DatePickerInput } from '@mantine/dates'
@@ -14,9 +13,10 @@ import { TQuestion } from '@/entities/question/model/types'
 import { useQuery } from '@tanstack/react-query'
 import { fetchParticipants, fetchSurveyById } from '@/entities/survey/api/api'
 import { useSurveyMutation } from '@/entities/survey/forms/lib/use-survey-mutation'
-import { useSearchParams } from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { SurveyResults } from '@/entities/survey-results/results-model'
 import { IInitialValues } from '@/entities/survey/forms/lib/use-survey'
+import { routes } from '@/shared/configs/routs'
 
 const fromApi = (api: SurveyResults): IInitialValues => ({
   name: api.name,
@@ -28,12 +28,14 @@ const fromApi = (api: SurveyResults): IInitialValues => ({
   questions: api.questions.map(q => ({
     id: q.id,
     text: q.text,
-    type: q.type,
+    question_type: q.type, // изменила, тк в вопросах используется такой тип
     is_favorite: false
   }))
 })
 
 const EditSurveyForm: FunctionComponent = () => {
+  const navigate = useNavigate()
+  const location = useLocation()
   const [searchParams] = useSearchParams()
   const surveyIdStr = searchParams.get('surveyId')
   const idSurvey = surveyIdStr ? Number(surveyIdStr) : undefined
@@ -73,6 +75,14 @@ const EditSurveyForm: FunctionComponent = () => {
     isEdit ? { mode: 'edit', id: idSurvey! } : { mode: 'create' }
   )
 
+  function navigateBack() {
+    if (location.key !== 'default') {
+      navigate(-1)
+    } else {
+      navigate(routes.surveys())
+    }
+  }
+
   return (
     <form onSubmit={formData.onSubmit(values => submitSurvey(values))}>
       <Grid className={classes.surveyForm} gutter={19}>
@@ -81,8 +91,7 @@ const EditSurveyForm: FunctionComponent = () => {
         </Grid.Col>
         <Grid.Col span={1.5}>
           <Group align="center" justify="end" gap="32px">
-            <MoreButton />
-            <CloseButton />
+            <CloseButton type="button" onClick={navigateBack} />
           </Group>
         </Grid.Col>
         <Grid.Col span={10.5}>

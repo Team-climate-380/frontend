@@ -2,6 +2,7 @@
   background-color: var(--mantine-color-black-0);
   border-radius: 6px;
   min-height: 120vh;
+  overflow-y: auto;
 }
 
 .employees_list {
@@ -18,9 +19,4 @@
 
 .loader {
   align-self: center;
-}
-
-.error_message {
-  text-align: center;
-  margin: 0 auto;
 }

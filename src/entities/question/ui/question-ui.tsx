@@ -12,14 +12,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import clsx from 'clsx'
 import { CancelDeleteButton } from '@/shared/ui/cancel-delete-button'
 
-export const QuestionUI: FC<IQuestion & { allowContextMenu?: boolean }> = ({
-  id,
-  is_favorite,
-  text,
-  question_type,
-  allowContextMenu,
-  to_delete
-}) => {
+export const QuestionUI: FC<
+  IQuestion & { allowContextMenu?: boolean; setQuestion?: (item: IQuestion | undefined) => void }
+> = ({ numeration, id, is_favorite, text, question_type, allowContextMenu, setQuestion, to_delete }) => {
   const QuestionTypeLabels: Record<QTE, string> = {
     [QuestionTypeEnum.ratingScale]: 'Плохо-Прекрасно',
     [QuestionTypeEnum.score]: '1-9',
@@ -65,15 +60,22 @@ export const QuestionUI: FC<IQuestion & { allowContextMenu?: boolean }> = ({
     setPosition({ x: posX, y: posY })
     setDropdownVisible(prev => !prev)
   }
-  const close = () => setDropdownVisible(false)
+  const close = () => {
+    setDropdownVisible(false)
+  }
+
+  const selectQuestion = () => {
+    if (setQuestion) setQuestion({ id, text, question_type, is_favorite })
+  }
+
   return (
     <>
       <div
         className={clsx(style.question, to_delete && style.to_delete)}
-        onClick={close}
+        onClick={allowContextMenu ? close : selectQuestion}
         onContextMenu={handleContextMenu}
       >
-        <span className={style.id}>{id}</span>
+        <span className={style.id}>{numeration}</span>
         <div className={style.isFavorite}>{isFavorite && <FavoriteIconFilled width={11} height={11} />}</div>
         <Text size="md" className={style.text}>
           {text} <span className={style.question_type}> ({QuestionTypeLabels[question_type as QuestionTypeEnum]})</span>

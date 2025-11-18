@@ -1,5 +1,5 @@
 import { Input } from '@/shared/ui/input'
-import { FunctionComponent } from 'react'
+import { FunctionComponent, useEffect } from 'react'
 import classes from '../../styles/styles.module.scss'
 import { Flex, Grid, Group, Select } from '@mantine/core'
 import { MoreButton } from '@/shared/ui/more-button'
@@ -15,8 +15,22 @@ import { TQuestion } from '@/entities/question/model/types'
 import { useQuery } from '@tanstack/react-query'
 import { fetchParticipants } from '@entities/survey/api/api'
 import { useSurveyMutation } from '@/entities/survey/forms/lib/use-survey-mutation'
+import { IQuestion } from '@/entities/question/type'
+import { useNavigate } from 'react-router-dom'
+import { routes } from '@/shared/configs/routs'
 
-const CreateSurveyForm: FunctionComponent = () => {
+export interface CreateSurveyFormProps {
+  onOpenButtons: (index: number) => void
+  selectQuestion: IQuestion | undefined
+  indexQuestion: number | undefined
+}
+
+const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({
+  onOpenButtons,
+  selectQuestion,
+  indexQuestion
+}) => {
+  const navigate = useNavigate()
   const { data: departmentOptions, isLoading: areParticipantsLoading } = useQuery({
     queryKey: ['participants'],
     queryFn: fetchParticipants
@@ -35,7 +49,17 @@ const CreateSurveyForm: FunctionComponent = () => {
 
   const formData = useSurvey(initialFormValues)
 
-  const { submitSurvey, isSubmitting, isError, isSuccess } = useSurveyMutation(formData)
+  const { submitSurvey, isSubmitting, isError, isSuccess } = useSurveyMutation(formData, { mode: 'create' })
+
+  useEffect(() => {
+    if (selectQuestion && typeof indexQuestion === 'number') {
+      const currentQuestions = formData.getValues().questions
+      const updatedQuestions = currentQuestions.map((question, index) =>
+        index === indexQuestion ? selectQuestion : question
+      )
+      formData.setFieldValue('questions', updatedQuestions)
+    }
+  }, [selectQuestion])
 
   return (
     <form onSubmit={formData.onSubmit(values => submitSurvey(values))}>
@@ -45,8 +69,8 @@ const CreateSurveyForm: FunctionComponent = () => {
         </Grid.Col>
         <Grid.Col span={1.5}>
           <Group align="center" justify="end" gap="32px">
-            <MoreButton />
-            <CloseButton />
+            <MoreButton type="button" />
+            <CloseButton type="button" onClick={() => navigate(routes.surveys())} />
           </Group>
         </Grid.Col>
         <Grid.Col span={10.5}>
@@ -66,6 +90,7 @@ const CreateSurveyForm: FunctionComponent = () => {
         <Grid.Col span={5.5}>
           <Flex direction="row" gap={30}>
             <DatePickerInput
+              highlightToday
               clearable
               label="Начало"
               locale="ru"
@@ -79,6 +104,7 @@ const CreateSurveyForm: FunctionComponent = () => {
               key={formData.key('startedAt')}
             />
             <DatePickerInput
+              highlightToday
               clearable
               label={'Завершение'}
               locale="ru"
@@ -99,22 +125,25 @@ const CreateSurveyForm: FunctionComponent = () => {
       </Grid>
       <Flex direction="column" className={classes.questionsSection}>
         <Flex direction="column" gap={25}>
-          {formData.values.questions.map((question, index) => {
+          {formData.values.questions.map((question, index: number) => {
             return (
               <QuestionCreate
                 key={question.id}
                 title={`${index + 1} Вопрос`}
-                onOpenButtons={() => {
-                  console.log('Sidebar')
-                }}
+                onOpenButtons={() => onOpenButtons(index)}
                 textInputProps={formData.getInputProps(`questions.${index}.text`)}
-                typeInputProps={formData.getInputProps(`questions.${index}.type`)}
+                typeInputProps={formData.getInputProps(`questions.${index}.question_type`)}
               />
             )
           })}
         </Flex>
         <Group justify="space-between" className={classes.optionButtons}>
           <Button
+            styles={{
+              root: {
+                padding: '10px 20px'
+              }
+            }}
             className={classes.buttonGrey}
             variant="ghost"
             type="button"

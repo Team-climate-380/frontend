@@ -9,22 +9,16 @@
   justify-content: space-between;
 
   .main-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
     padding: 40px 98px 41px 31px;
-    background-color: rgb(255, 255, 255);
-    border-bottom-right-radius: 6px;
-    border-bottom-left-radius: 6px;
   }
 
   .question-form {
-    background-color: rgb(252, 252, 252);
     min-height: 134px;
+    width: 10%;
   }
 
   .no-data {
-    color: rgb(25, 74, 133);
+    color: rgb(44, 44, 44);
     font-size: 20px;
     font-weight: 400;
   }

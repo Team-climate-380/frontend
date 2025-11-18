@@ -67,7 +67,12 @@ export const QuestionCreate: FC<IQuestionCreateProps> = ({ title, textInputProps
               <Combobox.Options>{options}</Combobox.Options>
             </Combobox.Dropdown>
           </Combobox>
-          <MoreButton onClick={onOpenButtons} />
+          <MoreButton
+            onClick={e => {
+              e.preventDefault()
+              onOpenButtons()
+            }}
+          />
         </Flex>
       </Grid.Col>
       <Grid.Col span={8.5}>

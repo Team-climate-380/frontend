@@ -12,6 +12,8 @@ import { Dropdown } from '@shared/ui/dropdown'
 import classes from './employee-form.module.scss'
 import { addEmployee, changeEmployee } from '@/entities/employees/api/api-employees'
 import { UseFormReturnType } from '@mantine/form'
+import { useClickOutside } from '@mantine/hooks'
+import { useState } from 'react'
 
 export type EmployeeFormProps = ICreateEditFormProps & {
   employeeFormData?: TEmployeeForm
@@ -25,7 +27,19 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
   employeeFormData,
   onSubmit
 }) => {
+  const [form, setForm] = useState<HTMLFormElement | null>(null)
+  const [dropdown, setDropdown] = useState<HTMLDivElement | null>(null)
   const employeeForm = useCreateEmployeeEditForm(employeeFormData)
+  useClickOutside(
+    () => {
+      if (isOpen) {
+        closeForm()
+        employeeForm.reset()
+      }
+    },
+    null,
+    [form, dropdown]
+  )
 
   const getChangedFields = (
     form: UseFormReturnType<TEmployeeForm>,
@@ -44,12 +58,10 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
 
   const handleSubmit = async (data: TEmployeeForm) => {
     if (!employeeForm.isDirty()) {
-      console.log('Данные не изменились')
       closeForm()
       return
     }
     const changedData = { ...getChangedFields(employeeForm, data), email: data.email }
-    console.log(changedData)
     try {
       if (isCreateForm) {
         await addEmployee(data)
@@ -67,7 +79,11 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
   }
 
   return isOpen ? (
-    <form onSubmit={employeeForm.onSubmit(handleSubmit)} className={isCreateForm ? classes.formForNewEmployee : ''}>
+    <form
+      onSubmit={employeeForm.onSubmit(handleSubmit)}
+      className={isCreateForm ? classes.formForNewEmployee : ''}
+      ref={setForm}
+    >
       <Flex className={classes.container}>
         <Input
           variant={'secondary'}
@@ -79,16 +95,19 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
           key={employeeForm.key('full_name')}
           {...employeeForm.getInputProps('full_name')}
         />
-        <Dropdown
-          styles={{
-            root: { '--mantine-scale': '0.945' },
-            input: { backgroundColor: 'var(--mantine-color-black-1)', border: 'var(--mantine-color-black-1)' }
-          }}
-          aria-label="Отдел"
-          data={departmentsNames}
-          key={employeeForm.key('department_name')}
-          {...employeeForm.getInputProps('department_name')}
-        />
+        <div ref={setDropdown}>
+          <Dropdown
+            comboboxProps={{ withinPortal: false }}
+            styles={{
+              root: { '--mantine-scale': '0.945' },
+              input: { backgroundColor: 'var(--mantine-color-black-1)', border: 'var(--mantine-color-black-1)' }
+            }}
+            aria-label="Отдел"
+            data={departmentsNames}
+            key={employeeForm.key('department_name')}
+            {...employeeForm.getInputProps('department_name')}
+          />
+        </div>
         <Input
           variant={'secondary'}
           styles={{

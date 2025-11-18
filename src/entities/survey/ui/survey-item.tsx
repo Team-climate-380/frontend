@@ -16,6 +16,7 @@ export interface SurveyItemProps {
   className: string
   onContextMenu: (e: SyntheticEvent, id?: number) => void
   children: React.ReactNode
+  isDelete: boolean
 }
 
 export const SurveyItem: React.FC<SurveyItemProps> = ({
@@ -28,7 +29,8 @@ export const SurveyItem: React.FC<SurveyItemProps> = ({
   departmentName,
   className,
   onContextMenu,
-  children
+  children,
+  isDelete
 }) => {
   const navigate = useNavigate()
   return (
@@ -36,7 +38,7 @@ export const SurveyItem: React.FC<SurveyItemProps> = ({
       <ListItem
         className={className}
         onContextMenu={onContextMenu}
-        onClick={() => navigate(`/results-survey?surveyId=${surveyId}`)}
+        onClick={() => !isDelete && navigate(`/results-survey?surveyId=${surveyId}`)}
         icon={
           isFavorite ? (
             <>
@@ -47,6 +49,11 @@ export const SurveyItem: React.FC<SurveyItemProps> = ({
             <SurveyStatusIcon status={status} finishedCount={finishedCount} allCount={allCount} />
           )
         }
+        style={{
+          overflowWrap: 'break-word',
+          wordWrap: 'break-word',
+          wordBreak: 'break-word'
+        }}
       >
         {`${name} (${departmentName})`}
         {children}

@@ -1,6 +1,8 @@
+import { clsx } from 'clsx'
 import { SyntheticEvent } from 'react'
 import { ActionIcon, Tooltip, ActionIconProps } from '@mantine/core'
 import { CancelDeleteIcon } from '../images/cancel-delete-icon'
+import style from './style.module.css'
 
 export interface CancelDeleteButtonProps {
   itemLabel: string
@@ -15,8 +17,11 @@ export const CancelDeleteButton: React.FC<CancelDeleteButtonProps> = ({ classNam
       <Tooltip label={`Отменить удаление ${itemLabel}`}>
         <ActionIcon
           aria-label={`Отменить удаление ${itemLabel}`}
-          onClick={onClick}
-          className={className}
+          onClick={(e: SyntheticEvent) => {
+            e.stopPropagation()
+            onClick(e)
+          }}
+          className={clsx([className, style])}
           styles={styles}
         >
           <CancelDeleteIcon />

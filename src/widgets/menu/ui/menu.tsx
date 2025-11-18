@@ -11,7 +11,7 @@ export const Menu: React.FC = () => {
     id: department.id.toString(),
     name: department.department_name,
     queryKey: 'department',
-    queryValue: department.id.toString()
+    queryValue: department.department_name
   }))
 
   const links: TMenuLink[] = [

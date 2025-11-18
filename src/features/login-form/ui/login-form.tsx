@@ -1,11 +1,11 @@
 import { Button } from '@/shared/ui/button'
-import { Flex, Group } from '@mantine/core'
+import { Alert, Flex, Group } from '@mantine/core'
 import { FC } from 'react'
 import { Input } from '@/shared/ui/input'
 import { Checkbox } from '@/shared/ui/checkbox'
 import { PasswordInput } from '@/shared/ui/password-input'
 import { useFormData } from '../model/use-login-form'
-import { useSessionState } from '@/features/session'
+import { loginUser, useSessionState } from '@/features/session'
 import { useNavigate } from 'react-router'
 import { routes } from '@/shared/configs/routs'
 import { apiClient } from '@/shared/lib/api-client'
@@ -31,19 +31,26 @@ export const LoginForm: FC<LoginFormProps> = ({ onRestorePassword, initialValues
     e.preventDefault()
 
     if (formData.isValid()) {
-      await apiClient.post<{ ok: boolean }>('/api/auth/login', {
-        email: formData.values.email,
-        password: formData.values.password
-      })
-      saveAuthMode(formData.values.rememberMy)
-
-      sessionState.login(formData.values.email)
-      navigate(routes.home())
+      await loginUser({ email: formData.values.email, password: formData.values.password })
+        .then(() => {
+          sessionState.login(formData.values.email)
+          saveAuthMode(formData.values.rememberMy)
+          navigate(routes.home())
+        })
+        .catch((error: Error) => {
+          if (error.message.includes('Invalid credentials')) formData.setErrors({ form: 'Неверная почта или пароль' })
+          else formData.setErrors({ form: 'Ошибка авторизации, попробуйте еще один раз' })
+        })
     }
   }
 
   return (
     <form onSubmit={handleSubmit}>
+      {formData.errors.form && (
+        <Alert color="red" mb={10}>
+          {formData.errors.form}
+        </Alert>
+      )}
       <Flex direction="column" gap="36px" w="258px">
         <Flex direction="column" gap="26px">
           <Flex direction="column" gap="20px">
