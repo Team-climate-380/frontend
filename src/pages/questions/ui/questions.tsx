@@ -5,8 +5,11 @@ import { useState, useRef, useEffect } from 'react'
 import { QuestionForm } from '@/features/question-form'
 import { QuestionsHeader } from '@entities/question/ui/questions-header/questions-header'
 import { QuestionsPageLayout } from '@widgets/questions-page-layout/index'
+import { UseQuestionsQuery } from '@features/questions-list/use-questions-query/use-questions-query'
 
 const QuestionPage = () => {
+  const { currentFilter } = UseQuestionsQuery()
+
   const [questionFormIsVisible, setQuestionFormIsVisible] = useState(false) //new question form visibility
   const formRef = useRef<HTMLDivElement>(null)
 
@@ -37,7 +40,7 @@ const QuestionPage = () => {
                   e.stopPropagation()
                   setQuestionFormIsVisible(true)
                 }}
-                disabled={questionFormIsVisible}
+                disabled={questionFormIsVisible || currentFilter === 'favorite'}
               >
                 Новый вопрос
               </Button>
