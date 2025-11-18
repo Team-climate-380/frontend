@@ -27,8 +27,10 @@ type TPayload = {
 }
 
 export const QuestionForm: React.FC<QuestionFormProps> = ({ isOpen, isCreateForm, closeForm, formData }) => {
+  // alert(`formdata.qt is  ${formData?.question_type}`)
   const [isLoading, setLoading] = useState(false)
   const questionForm = useCreateEditQuestionForm(formData)
+  // alert(`questionform.qt is  ${questionForm.values.question_type}`)
   const queryClient = useQueryClient()
   const createQuestionMutation = useMutation({
     mutationFn: (data: IQuestionForm) =>
@@ -55,7 +57,6 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ isOpen, isCreateForm
       console.error(`Ошибка обновления: ${error.message}`)
     }
   })
-
   const handleSubmit = async (data: IQuestionForm) => {
     if (isCreateForm) {
       setLoading(true)
@@ -77,7 +78,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ isOpen, isCreateForm
           id: formData!.id,
           body: {
             ...data,
-            question_type: QuestionTypeData(questionForm.getValues().question_type)
+            question_type: questionForm.getValues().question_type as QuestionTypeEnum
           }
         })
       } catch (error) {
@@ -89,7 +90,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ isOpen, isCreateForm
     }
   }
   const defaultTypeValue = () => {
-    return QuestionTypeDisplay(QuestionTypeData(questionForm.getValues().question_type))
+    return QuestionTypeDisplay(questionForm.getValues().question_type as QuestionTypeEnum)
   }
   return isOpen ? (
     <form
@@ -113,7 +114,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ isOpen, isCreateForm
           defaultValue={defaultTypeValue()}
           onChange={value => {
             if (value) {
-              questionForm.setFieldValue('question_type', value)
+              questionForm.setFieldValue('question_type', QuestionTypeData(value))
             }
           }}
         />
