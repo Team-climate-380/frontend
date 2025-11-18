@@ -1,6 +1,7 @@
 export type EmployeeInfo = {
   id: string
   full_name: string
+  to_inactivate: boolean
 }
 
 export type DepartmentInfo = {

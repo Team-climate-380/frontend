@@ -35,7 +35,11 @@ export const DepartmentListItem: React.FC<
                 return (
                   <List.Item
                     key={employee.id}
-                    className={clsx(styles['employees-list-item'], styles[`to-delete_${to_delete}`])}
+                    className={clsx(
+                      styles['employees-list-item'],
+                      styles[`to-delete_${to_delete}`],
+                      styles[`to-delete_${employee.to_inactivate}`]
+                    )}
                   >
                     {employee.full_name}
                   </List.Item>
