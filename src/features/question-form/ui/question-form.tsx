@@ -13,9 +13,8 @@ import { useState } from 'react'
 import { Loader } from '@/shared/ui/loader'
 import { updateQuestion } from '@/entities/question/api/update-question'
 import { QuestionTypeData, QuestionTypeDisplay } from '@/entities/question/utils/question-actions'
-import { useMutation, useQueryClient, InfiniteData } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { IQuestion } from '@/entities/question/type'
-import { useQueryParams } from '@/shared/hooks/useQueryParams'
 
 const questionTypeDataUI = Object.values(QuestionTypeEnum).map(key => QuestionTypeDisplay(key))
 export type QuestionFormProps = ICreateEditFormProps & {
@@ -27,55 +26,20 @@ type TPayload = {
   body: Partial<IQuestion>
 }
 
-type QuestionsPage = {
-  data: IQuestion[]
-  has_next: boolean
-  has_previous: boolean
-  num_pages: number
-  page: number
-  per_page: number
-  total: number
-}
-
-type QuestionsInfiniteData = InfiniteData<QuestionsPage>
-
 export const QuestionForm: React.FC<QuestionFormProps> = ({ isOpen, isCreateForm, closeForm, formData }) => {
+  // alert(`formdata.qt is  ${formData?.question_type}`)
   const [isLoading, setLoading] = useState(false)
   const questionForm = useCreateEditQuestionForm(formData)
+  // alert(`questionform.qt is  ${questionForm.values.question_type}`)
   const queryClient = useQueryClient()
-
-  const { queryParams } = useQueryParams()
-  const currentFilter = queryParams.filter ?? 'all'
-  const currentPerPage = Number(queryParams.per_page ?? '20')
-  const currentSearch = queryParams.search ?? ''
-
   const createQuestionMutation = useMutation({
     mutationFn: (data: IQuestionForm) =>
       createNewQuestion({
         text: data.text,
-        question_type: QuestionTypeData(data.question_type)
+        question_type: data.question_type
       }),
-    //if qn was created - to show it in the top of the list
-    onSuccess: newQuestion => {
-      queryClient.setQueryData(
-        ['questions', currentFilter, currentPerPage, currentSearch],
-        (oldData: QuestionsInfiniteData | undefined) => {
-          if (!oldData) return oldData
-
-          const firstPage = oldData.pages[0]
-          const newFirstPage = {
-            ...firstPage,
-            data: [newQuestion, ...firstPage.data],
-            total: firstPage.total + 1
-          }
-
-          return {
-            ...oldData,
-            pages: [newFirstPage, ...oldData.pages.slice(1)],
-            pageParams: oldData.pageParams
-          }
-        }
-      )
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['questions'] })
     },
     onError: error => {
       console.error(`Ошибка обновления: ${error.message}`)
@@ -93,12 +57,14 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ isOpen, isCreateForm
       console.error(`Ошибка обновления: ${error.message}`)
     }
   })
-
   const handleSubmit = async (data: IQuestionForm) => {
     if (isCreateForm) {
       setLoading(true)
       try {
-        createQuestionMutation.mutate(data)
+        createQuestionMutation.mutate({
+          ...data,
+          question_type: questionForm.getValues().question_type as QuestionTypeEnum
+        })
       } catch (error) {
         console.error(error)
       } finally {
@@ -112,7 +78,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ isOpen, isCreateForm
           id: formData!.id,
           body: {
             ...data,
-            question_type: QuestionTypeData(questionForm.getValues().question_type)
+            question_type: questionForm.getValues().question_type as QuestionTypeEnum
           }
         })
       } catch (error) {
@@ -123,7 +89,9 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ isOpen, isCreateForm
       }
     }
   }
-
+  const defaultTypeValue = () => {
+    return QuestionTypeDisplay(questionForm.getValues().question_type as QuestionTypeEnum)
+  }
   return isOpen ? (
     <form
       onSubmit={questionForm.onSubmit(handleSubmit)}
@@ -143,11 +111,12 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({ isOpen, isCreateForm
           aria-label="Тип вопроса"
           data={questionTypeDataUI}
           key={questionForm.key('question_type')}
-          defaultValue={
-            isCreateForm
-              ? QuestionTypeDisplay(QuestionTypeEnum.consentGiven)
-              : QuestionTypeDisplay(questionForm.getValues().question_type as QuestionTypeEnum)
-          }
+          defaultValue={defaultTypeValue()}
+          onChange={value => {
+            if (value) {
+              questionForm.setFieldValue('question_type', QuestionTypeData(value))
+            }
+          }}
         />
         <Textarea
           styles={{

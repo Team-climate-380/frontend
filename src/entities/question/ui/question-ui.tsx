@@ -129,7 +129,7 @@ export const QuestionUI: FC<
           isOpen
           isCreateForm={false}
           closeForm={() => setIsEditing(false)}
-          formData={{ text, id, question_type }}
+          formData={{ text, id, question_type: question_type }}
         />
       )}
     </>
