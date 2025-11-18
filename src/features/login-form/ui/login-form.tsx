@@ -8,6 +8,7 @@ import { useFormData } from '../model/use-login-form'
 import { loginUser, useSessionState } from '@/features/session'
 import { useNavigate } from 'react-router'
 import { routes } from '@/shared/configs/routs'
+import { saveAuthMode } from '../model/remember-me-storage'
 
 export interface InitialFormData {
   email: string
@@ -29,10 +30,10 @@ export const LoginForm: FC<LoginFormProps> = ({ onRestorePassword, initialValues
     e.preventDefault()
 
     if (formData.isValid()) {
-      // TODO: не реализовано rememberMe: formData.values.rememberMy
       await loginUser({ email: formData.values.email, password: formData.values.password })
         .then(() => {
           sessionState.login(formData.values.email)
+          saveAuthMode(formData.values.rememberMy)
           navigate(routes.home())
         })
         .catch((error: Error) => {
