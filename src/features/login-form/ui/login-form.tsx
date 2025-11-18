@@ -8,7 +8,6 @@ import { useFormData } from '../model/use-login-form'
 import { loginUser, useSessionState } from '@/features/session'
 import { useNavigate } from 'react-router'
 import { routes } from '@/shared/configs/routs'
-import { apiClient } from '@/shared/lib/api-client'
 import { saveAuthMode } from '../model/remember-me-storage'
 
 export interface InitialFormData {
