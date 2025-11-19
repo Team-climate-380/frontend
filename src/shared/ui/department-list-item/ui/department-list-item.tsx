@@ -10,7 +10,14 @@ export const DepartmentListItem: React.FC<
 > = ({ id, department_name, to_delete, employees_count, employees, onContextMenu, handleCancelDelete }) => {
   const hasEmployees = employees_count > 0
   return (
-    <Accordion key={id} multiple chevronSize="0" className={styles.container}>
+    <Accordion
+      key={id}
+      multiple
+      chevronPosition="left"
+      className={styles.container}
+      chevronIconSize={to_delete || employees_count === 0 ? 0 : 16}
+      chevronSize={16}
+    >
       <Accordion.Item value={department_name} style={{ border: 'none' }}>
         <Accordion.Control
           onContextMenu={e => onContextMenu(e, id)}
@@ -57,7 +64,9 @@ export const DepartmentListItem: React.FC<
           itemLabel="группы"
           styles={{
             root: {
-              backgroundColor: 'inherit'
+              backgroundColor: 'inherit',
+              alignSelf: 'center',
+              marginInlineStart: '6px'
             }
           }}
         />
