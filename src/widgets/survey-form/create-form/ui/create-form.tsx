@@ -2,7 +2,6 @@ import { Input } from '@/shared/ui/input'
 import { FunctionComponent, useEffect } from 'react'
 import classes from '../../styles/styles.module.scss'
 import { Flex, Grid, Group, Select } from '@mantine/core'
-import { MoreButton } from '@/shared/ui/more-button'
 import { CloseButton } from '@/shared/ui/close-button'
 import { useSurvey } from '@/entities/survey/forms/lib/use-survey'
 import { DatePickerInput } from '@mantine/dates'
@@ -70,7 +69,6 @@ const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({
         </Grid.Col>
         <Grid.Col span={1.5}>
           <Group align="center" justify="end" gap="32px">
-            <MoreButton type="button" />
             <CloseButton type="button" onClick={() => navigate(routes.surveys())} />
           </Group>
         </Grid.Col>
