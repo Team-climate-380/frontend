@@ -25,6 +25,10 @@ export const useSurveyMutation = (form: UseFormReturnType<IInitialValues>, mode?
         is_favorite: values.isFavorite,
         started_at: values.startedAt ? dayjs(values.startedAt).format('YYYY-MM-DD') : '',
         finished_at: values.finishedAt ? dayjs(values.finishedAt).format('YYYY-MM-DD') : '',
+        //TODO: заменить на вариант только с id после правок бэкенда
+        // questions: values.questions.map((question: TQuestion) => {
+        //   return {id: question.id}
+        // })
         questions: values.questions.map((question: TQuestion) => {
           const newQuestion = question
           delete newQuestion.id
@@ -37,10 +41,8 @@ export const useSurveyMutation = (form: UseFormReturnType<IInitialValues>, mode?
       return createSurvey(payload)
     },
     onSuccess: () => {
-      if (mode?.mode === 'create') {
-        form.reset()
-        navigate(routes.surveys())
-      }
+      form.reset()
+      navigate(routes.surveys())
     },
     onError: error => {
       console.error('Ошибка:', error)

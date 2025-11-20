@@ -1,6 +1,6 @@
 .creatingSurvey {
   background-color: #ffffff;
-  height: 100vh;
+  height: calc(100vh - 18px);
   border-radius: 6px;
   overflow-y: auto;
 }

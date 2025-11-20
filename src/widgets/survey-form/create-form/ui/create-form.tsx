@@ -8,7 +8,6 @@ import { useSurvey } from '@/entities/survey/forms/lib/use-survey'
 import { DatePickerInput } from '@mantine/dates'
 import 'dayjs/locale/ru'
 import '@mantine/dates/styles.css'
-import dayjs from 'dayjs'
 import { Button } from '@/shared/ui/button'
 import { QuestionCreate } from '@/entities/question/ui/question-create'
 import { TQuestion } from '@/entities/question/model/types'
@@ -23,12 +22,16 @@ export interface CreateSurveyFormProps {
   onOpenButtons: (index: number) => void
   selectQuestion: IQuestion | undefined
   indexQuestion: number | undefined
+  scroll: () => void
+  targetRef: React.RefObject<HTMLDivElement | null>
 }
 
 const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({
   onOpenButtons,
   selectQuestion,
-  indexQuestion
+  indexQuestion,
+  scroll,
+  targetRef
 }) => {
   const navigate = useNavigate()
   const { data: departmentOptions, isLoading: areParticipantsLoading } = useQuery({
@@ -36,9 +39,8 @@ const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({
     queryFn: fetchParticipants
   })
 
-  const today = dayjs().locale('ru').format('DD MMMM YYYY')
   const initialFormValues = {
-    name: `Новый опрос ${today}`,
+    name: `Новый опрос`,
     department: '',
     startedAt: null,
     finishedAt: null,
@@ -126,12 +128,15 @@ const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({
       </Grid>
       <Flex direction="column" className={classes.questionsSection}>
         <Flex direction="column" gap={25}>
-          {formData.values.questions.map((_, index: number) => {
+          {formData.values.questions.map((question, index: number) => {
             return (
               <QuestionCreate
-                key={index}
+                key={question.id}
                 title={`${index + 1} Вопрос`}
-                onOpenButtons={() => onOpenButtons(index)}
+                onOpenButtons={() => {
+                  onOpenButtons(index)
+                }}
+                onDelete={() => formData.removeListItem('questions', index)}
                 textInputProps={formData.getInputProps(`questions.${index}.text`)}
                 typeInputProps={formData.getInputProps(`questions.${index}.question_type`)}
               />
@@ -142,17 +147,20 @@ const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({
           <Button
             styles={{
               root: {
-                padding: '10px 20px'
+                padding: '10px 20px',
+                '--bg-color': '#f6f8fa'
               }
             }}
             className={classes.buttonGrey}
             variant="ghost"
             type="button"
             onClick={() => {
+              onOpenButtons(formData.getValues().questions.length)
               formData.setFieldValue('questions', [
                 ...formData.values.questions,
                 { id: `question-${Date.now()}`, text: '', is_favorite: false }
               ])
+              scroll()
             }}
           >
             Ещё вопрос
@@ -162,8 +170,9 @@ const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({
           </Button>
         </Group>
         {isSuccess && <p className={classes.success}>Опрос успешно создан</p>}
-        {isError && <p className={classes.error}>Ошибка при создании</p>}
+        {isError && <p className={classes.error}>Ошибка при создании опроса, попробуйте еще один раз</p>}
       </Flex>
+      <div ref={targetRef}></div>
     </form>
   )
 }

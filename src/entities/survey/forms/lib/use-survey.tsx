@@ -79,15 +79,14 @@ export const useSurvey = (initialValues: IInitialValues) => {
         text: (value, values, path) => {
           const allTextValues = values.questions.map(v => v.text.trim())
           const trimmed = value.trim()
-          if (trimmed === '') return 'Введите текст вопроса'
+          if (trimmed === '') return 'Выберите или удалите вопрос'
           if (allTextValues.filter(text => text.trim() === trimmed).length > 1) {
             const currentIndex = Number(path.split('.')[1])
             const firstIndex = allTextValues.indexOf(trimmed)
-            return currentIndex === firstIndex ? null : 'Такой вопрос уже есть, введите другой текст вопроса'
+            return currentIndex === firstIndex ? null : 'Такой вопрос уже есть, выберите другой'
           }
           return null
-        },
-        question_type: value => (value ? null : 'Выберите тип вопроса')
+        }
       }
     }
   })

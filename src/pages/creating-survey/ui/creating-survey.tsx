@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useDisclosure } from '@mantine/hooks'
+import { useDisclosure, useScrollIntoView } from '@mantine/hooks'
 import CreateSurveyForm from '@/widgets/survey-form/create-form/ui/create-form'
 import { IQuestion } from '@entities/question/type'
 import { RightPanel } from '@shared/ui/drawer/index'
@@ -11,9 +11,10 @@ export const CreatingSurvey: React.FC = () => {
   const [opened, { open, close }] = useDisclosure(false)
   const [question, setQuestion] = useState<IQuestion | undefined>()
   const [indexQuestion, setIndexQuestion] = useState<number | undefined>()
+  const { scrollIntoView, targetRef, scrollableRef } = useScrollIntoView()
 
   return (
-    <div className={classes.creatingSurvey}>
+    <div className={classes.creatingSurvey} ref={scrollableRef}>
       <CreateSurveyForm
         onOpenButtons={(index: number) => {
           open()
@@ -21,6 +22,8 @@ export const CreatingSurvey: React.FC = () => {
         }}
         indexQuestion={indexQuestion}
         selectQuestion={question}
+        scroll={scrollIntoView}
+        targetRef={targetRef}
       />
       {opened && (
         <RightPanel
