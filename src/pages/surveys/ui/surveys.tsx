@@ -157,7 +157,7 @@ const Surveys: React.FC = () => {
               {allSurveys.length === 0 ? (
                 <TextNotification variant={'no_search_result'} />
               ) : (
-                allSurveys?.map((item: SurveyResults) => {
+                allSurveys?.map((item: SurveyResults, index) => {
                   const departmentName = departmentData?.find(dep => dep.department_name === item.department?.name)
                   let employeeCount: number = 0
                   if (departmentName) {
@@ -165,7 +165,7 @@ const Surveys: React.FC = () => {
                   }
                   return (
                     <SurveyItem
-                      key={item.id}
+                      key={`${item.id}-${index}`}
                       surveyId={item.id}
                       name={item.name}
                       status={item.status}
