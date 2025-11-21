@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { DepartmentInfo } from '@/entities/groups'
+import { TGetDepartmentsResponse } from '@/entities/groups'
 import { SurveyResults } from '@/entities/survey-results/results-model'
 import { ApiClient } from '@/shared/lib/api-client'
 import { ISurveysResponse, TSurveyUpdate } from '../types'
@@ -7,9 +7,9 @@ import { ISurveysResponse, TSurveyUpdate } from '../types'
 const api = new ApiClient({})
 
 export const fetchParticipants = async (): Promise<string[]> => {
-  const departmentsRes = await api.get<DepartmentInfo[]>('/api/departments/')
+  const departmentsRes = await api.get<TGetDepartmentsResponse>('/api/departments/')
   if ('data' in departmentsRes) {
-    const filteredDepartments = departmentsRes.data.filter(dep => !dep.to_delete)
+    const filteredDepartments = departmentsRes.data.data.filter(dep => !dep.to_delete)
     const departmentOptions = filteredDepartments.map(dep => dep.department_name)
     return departmentOptions
   }
