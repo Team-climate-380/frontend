@@ -1,4 +1,4 @@
-import { DepartmentInfo } from '@/entities/groups/types/department-types'
+import { DepartmentInfo, TGetDepartmentsResponse } from '@/entities/groups/types/department-types'
 import { ApiClient } from '@/shared/lib/api-client'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { groupFormActions } from '../forms/use-create-edit-form-group'
@@ -6,8 +6,8 @@ import { groupFormActions } from '../forms/use-create-edit-form-group'
 const apiClient = new ApiClient()
 
 export const getDepartments = async () => {
-  const response = await apiClient.get<DepartmentInfo[]>(`/api/departments/`)
-  if (response.status === 'success' && 'data' in response) return response.data
+  const response = await apiClient.get<TGetDepartmentsResponse>(`/api/departments/`)
+  if (response.status === 'success' && 'data' in response) return response.data.data
   if (response.status === 'error' && 'message' in response) throw new Error(response.message)
   throw new Error('Ошибка получения данных о группах')
 }
