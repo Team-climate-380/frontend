@@ -35,7 +35,7 @@ const SurveyResults: React.FC<SurveyResultsProps> = ({ fullResults = true, withD
     questions: data?.questions.map((question: QuestionResultProps) => {
       return {
         text: question.text,
-        type: question.type,
+        type: question.question_type,
         answers: question.answer_options.map(answer => {
           return { text: answer.text, is_correct: answer.is_correct }
         })

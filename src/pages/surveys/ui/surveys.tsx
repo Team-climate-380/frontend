@@ -23,6 +23,7 @@ import { Skeleton } from '@shared/ui/skeleton'
 import { Button } from '@shared/ui/button'
 import { SurveyResults } from '@entities/survey-results/results-model'
 import classes from './styles.module.scss'
+import dayjs from 'dayjs'
 
 const Surveys: React.FC = () => {
   const navigate = useNavigate()
@@ -163,6 +164,8 @@ const Surveys: React.FC = () => {
                   if (departmentName) {
                     employeeCount = departmentName.employees_count
                   }
+                  const startDate = dayjs(item.started_at).format('DD.MM.YYYY')
+                  const finishDate = dayjs(item.finished_at).format('DD.MM.YYYY')
                   return (
                     <SurveyItem
                       key={`${item.id}-${index}`}
@@ -178,7 +181,9 @@ const Surveys: React.FC = () => {
                       onContextMenu={evt => handleRightClick(evt, item.id)}
                       isDelete={item.to_delete}
                     >
-                      <span className={classes.comment}>{item.comment ?? ''}</span>
+                      <span className={classes.comment}>
+                        {item.comment ?? ''} {`(${startDate} - ${finishDate})`}
+                      </span>
 
                       {contextMenu.isVisible && contextMenu.selectedId === item.id && !item.to_delete && (
                         <PopupMenu
@@ -187,7 +192,8 @@ const Surveys: React.FC = () => {
                             {
                               type: 'action',
                               label: 'Редактировать',
-                              action: () => navigate(routes.edit_survey(item.id))
+                              action: () => navigate(routes.edit_survey(item.id)),
+                              disabled: ['completed', 'archived'].includes(item.status)
                             },
                             {
                               type: 'action',

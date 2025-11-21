@@ -19,3 +19,15 @@
   font-size: 18px;
   font-weight: 900;
 }
+
+.icon-button {
+  background-color: var(--hover-bg);
+
+  &:hover {
+    background-color: var(--hover-bg);
+  }
+
+  &:disabled {
+    background-color: transparent;
+  }
+}

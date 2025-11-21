@@ -30,6 +30,10 @@ div .button {
   & span {
     justify-content: flex-start;
   }
+
+  &:disabled span {
+    color: var(--mantine-color-disabled-color);
+  }
 }
 
 .button_important,
