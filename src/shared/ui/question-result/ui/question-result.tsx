@@ -4,7 +4,7 @@ import classes from '../styles/styles.module.scss'
 export interface QuestionResultProps {
   id: number
   text: string
-  type: string
+  question_type: string
   to_delete: boolean
   user_answers: {
     id: number

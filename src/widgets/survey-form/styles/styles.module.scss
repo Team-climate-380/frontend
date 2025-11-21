@@ -39,7 +39,7 @@
 .buttonGrey {
   background-color: #f6f8fa !important;
   &:hover {
-    color: #06121e
+    color: #06121e;
   }
   &:disabled {
     background-color: var(--mantine-color-disabled);

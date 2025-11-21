@@ -30,7 +30,7 @@ const fromApi = (api: SurveyResults): IInitialValues => ({
   questions: api.questions.map(q => ({
     id: q.id,
     text: q.text,
-    question_type: q.type, // изменила, тк в вопросах используется такой тип
+    question_type: q.question_type, //поменяла обратно на question_type, так как с бэка так приходит
     is_favorite: false
   }))
 })
