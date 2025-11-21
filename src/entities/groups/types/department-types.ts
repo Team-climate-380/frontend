@@ -11,3 +11,13 @@ export type DepartmentInfo = {
   employees_count: number
   employees?: EmployeeInfo[]
 }
+
+export type TGetDepartmentsResponse = {
+  data: DepartmentInfo[]
+  page: number
+  per_page: number
+  total: number
+  num_pages: number
+  has_next: boolean
+  has_previous: boolean
+}
