@@ -8,4 +8,4 @@ export {
   useDepartmentQuery,
   useDepartmentMutations
 } from './api/departments-api'
-export { type DepartmentInfo, type EmployeeInfo, type TGetDepartmentsResponse } from './types/department-types'
+export { type DepartmentInfo, type EmployeeInfo, type TDepartmentsPerPage } from './types/department-types'

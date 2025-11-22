@@ -12,7 +12,7 @@ export type DepartmentInfo = {
   employees?: EmployeeInfo[]
 }
 
-export type TGetDepartmentsPerPageResponse = {
+export type TDepartmentsPerPage = {
   data: DepartmentInfo[]
   page: number
   per_page: number
