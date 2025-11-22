@@ -24,7 +24,7 @@ export const QuestionsPageLayout: React.FC<QuestionsPageLayoutProps> = ({
 }) => {
   const { queryParams, setParams } = useQueryParams()
   const { ref, entry } = useIntersection({
-    threshold: 1
+    threshold: 0.9
   })
 
   const { questions, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, error } = UseQuestionsQuery()
