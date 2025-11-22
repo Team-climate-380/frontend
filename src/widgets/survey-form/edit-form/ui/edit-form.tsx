@@ -19,6 +19,8 @@ import { IInitialValues } from '@/entities/survey/forms/lib/use-survey'
 import { routes } from '@/shared/configs/routs'
 import { QuestionCreate } from '@/entities/question/ui/question-create'
 import { IQuestion } from '@/entities/question/type'
+import { TextNotification } from '@/shared/ui/text-notification'
+import { Skeleton } from '@/shared/ui/skeleton'
 
 const fromApi = (api: SurveyResults): IInitialValues => ({
   name: api.name,
@@ -34,6 +36,54 @@ const fromApi = (api: SurveyResults): IInitialValues => ({
     is_favorite: false
   }))
 })
+
+const IS_EDIT_ALLOWED = {
+  draft: {
+    name: true,
+    department: true,
+    startedAt: true,
+    finishedAt: true,
+    comment: true,
+    questions: true,
+    submit: true
+  },
+  active: {
+    name: true,
+    department: false,
+    startedAt: false,
+    finishedAt: true,
+    comment: true,
+    questions: false,
+    submit: true
+  },
+  completed: {
+    name: false,
+    department: false,
+    startedAt: false,
+    finishedAt: false,
+    comment: false,
+    questions: false,
+    submit: false
+  },
+  archived: {
+    name: false,
+    department: false,
+    startedAt: false,
+    finishedAt: false,
+    comment: false,
+    questions: false,
+    submit: false
+  },
+  data_not_loaded: {
+    name: false,
+    department: false,
+    startedAt: false,
+    finishedAt: false,
+    comment: false,
+    questions: false,
+    submit: false
+  }
+}
 
 export interface EditSurveyFormProps {
   onOpenButtons: (index: number) => void
@@ -71,22 +121,25 @@ const EditSurveyForm: FunctionComponent<EditSurveyFormProps> = ({
     isFavorite: false,
     questions: [] as TQuestion[]
   }
-
-  const formData = useSurvey(initialFormValues)
   const querySurvey = useQuery({
     queryKey: ['survey', idSurvey] as const,
     enabled: isEdit,
     queryFn: () => fetchSurveyById(idSurvey!),
     staleTime: 5 * 60 * 1000
   })
-  const editNotAllowed = ['completed', 'archived'].includes(querySurvey?.data?.status ?? '')
+
   const isToDelete = querySurvey?.data?.to_delete
+  const surveyStatus: keyof typeof IS_EDIT_ALLOWED = querySurvey?.data?.status ?? 'data_not_loaded'
+  const formData = useSurvey(initialFormValues, surveyStatus)
 
   useEffect(() => {
     if (querySurvey.data) {
       formData.setValues(fromApi(querySurvey.data))
     }
-  }, [querySurvey.data])
+    if (querySurvey.error?.message === '404') {
+      navigate('/404')
+    }
+  }, [querySurvey.data, querySurvey.error])
 
   const { submitSurvey, isSubmitting, isError, isSuccess } = useSurveyMutation(
     formData,
@@ -113,124 +166,139 @@ const EditSurveyForm: FunctionComponent<EditSurveyFormProps> = ({
   }, [selectQuestion])
 
   return (
-    <form onSubmit={formData.onSubmit(values => submitSurvey(values))}>
-      <Grid className={classes.surveyForm} gutter={19}>
-        <Grid.Col span={10.5}>
-          <Input
-            className={classes.lgTextInput}
-            key={formData.key('name')}
-            {...formData.getInputProps('name')}
-            disabled={editNotAllowed || isToDelete}
-          />
-        </Grid.Col>
-        <Grid.Col span={1.5}>
-          <Group align="center" justify="end" gap="32px">
-            <CloseButton type="button" onClick={navigateBack} />
-          </Group>
-        </Grid.Col>
-        <Grid.Col span={10.5}>
-          <Select
-            label={'Кто участвует'}
-            data={departmentOptions}
-            nothingFoundMessage={areParticipantsLoading ? 'Загрузка...' : 'Ничего не найдено'}
-            key={formData.key('department')}
-            {...formData.getInputProps('department')}
-            classNames={{
-              input: classes.input,
-              label: classes.label,
-              root: classes.root
-            }}
-            disabled={editNotAllowed || isToDelete}
-          />
-        </Grid.Col>
-        <Grid.Col span={5.5}>
-          <Flex direction="row" gap={30}>
-            <DatePickerInput
-              clearable
-              label="Начало"
-              locale="ru"
-              valueFormat="DD.MM.YYYY"
-              classNames={{
-                input: classes.input,
-                label: classes.label,
-                root: classes.root
-              }}
-              {...formData.getInputProps('startedAt')}
-              key={formData.key('startedAt')}
-              disabled={editNotAllowed || isToDelete}
-            />
-            <DatePickerInput
-              clearable
-              label={'Завершение'}
-              locale="ru"
-              valueFormat="DD.MM.YYYY"
-              classNames={{
-                input: classes.input,
-                label: classes.label,
-                root: classes.root
-              }}
-              {...formData.getInputProps('finishedAt')}
-              key={formData.key('finishedAt')}
-              disabled={editNotAllowed || isToDelete}
-            />
-          </Flex>
-        </Grid.Col>
-        <Grid.Col span={10.5}>
-          <Input
-            label={'Комментарий'}
-            key={formData.key('comment')}
-            {...formData.getInputProps('comment')}
-            disabled={editNotAllowed || isToDelete}
-          />
-        </Grid.Col>
-      </Grid>
-      <Flex direction="column" className={classes.questionsSection}>
-        <Flex direction="column" gap={25}>
-          {formData.values.questions.map((question, index: number) => {
-            return (
-              <QuestionCreate
-                key={question.id}
-                title={`${index + 1} Вопрос`}
-                onOpenButtons={() => onOpenButtons(index)}
-                onDelete={() => formData.removeListItem('questions', index)}
-                textInputProps={formData.getInputProps(`questions.${index}.text`)}
-                typeInputProps={formData.getInputProps(`questions.${index}.question_type`)}
-                editNotAllowed={editNotAllowed || isToDelete}
-              />
-            )
-          })}
-        </Flex>
-        <Group justify="space-between" className={classes.optionButtons}>
-          <Button
-            styles={{
-              root: {
-                padding: '10px 20px'
-              }
-            }}
-            className={classes.buttonGrey}
-            variant="ghost"
-            type="button"
-            onClick={() => {
-              onOpenButtons(formData.getValues().questions.length)
-              formData.setFieldValue('questions', [
-                ...formData.values.questions,
-                { id: `question-${Date.now()}`, text: '', is_favorite: false }
-              ])
-              scroll()
-            }}
-            disabled={editNotAllowed || isToDelete}
-          >
-            Ещё вопрос
-          </Button>
-          <Button type="submit" disabled={isSubmitting || editNotAllowed || isToDelete}>
-            {isSubmitting ? 'Сохраняется...' : 'Сохранить'}
-          </Button>
+    <>
+      {querySurvey.isLoading && (
+        <div style={{ margin: '40px' }}>
+          <Skeleton />
+        </div>
+      )}
+      {querySurvey.isError && (
+        <Group align="center" justify="space-between" gap="32px" m={40}>
+          <TextNotification variant="data_not_loaded" />
+          <CloseButton type="button" onClick={navigateBack} />
         </Group>
-        {isSuccess && <p className={classes.success}>Опрос успешно обновлен</p>}
-        {isError && <p className={classes.error}>Ошибка при обновлении опроса, попробуйте еще один раз</p>}
-      </Flex>
-      <div ref={targetRef}></div>
-    </form>
+      )}
+      {querySurvey.data && (
+        <form onSubmit={formData.onSubmit(values => submitSurvey(values))}>
+          <Grid className={classes.surveyForm} gutter={19}>
+            <Grid.Col span={10.5}>
+              <Input
+                className={classes.lgTextInput}
+                key={formData.key('name')}
+                {...formData.getInputProps('name')}
+                disabled={!IS_EDIT_ALLOWED[surveyStatus].name || isToDelete}
+              />
+            </Grid.Col>
+            <Grid.Col span={1.5}>
+              <Group align="center" justify="end" gap="32px">
+                <CloseButton type="button" onClick={navigateBack} />
+              </Group>
+            </Grid.Col>
+            <Grid.Col span={10.5}>
+              <Select
+                label={'Кто участвует'}
+                data={departmentOptions}
+                nothingFoundMessage={areParticipantsLoading ? 'Загрузка...' : 'Ничего не найдено'}
+                key={formData.key('department')}
+                {...formData.getInputProps('department')}
+                classNames={{
+                  input: classes.input,
+                  label: classes.label,
+                  root: classes.root
+                }}
+                disabled={!IS_EDIT_ALLOWED[surveyStatus].department || isToDelete}
+              />
+            </Grid.Col>
+            <Grid.Col span={5.5}>
+              <Flex direction="row" gap={30}>
+                <DatePickerInput
+                  clearable
+                  label="Начало"
+                  locale="ru"
+                  valueFormat="DD.MM.YYYY"
+                  classNames={{
+                    input: classes.input,
+                    label: classes.label,
+                    root: classes.root
+                  }}
+                  {...formData.getInputProps('startedAt')}
+                  key={formData.key('startedAt')}
+                  disabled={!IS_EDIT_ALLOWED[surveyStatus].startedAt || isToDelete}
+                />
+                <DatePickerInput
+                  clearable
+                  label={'Завершение'}
+                  locale="ru"
+                  valueFormat="DD.MM.YYYY"
+                  classNames={{
+                    input: classes.input,
+                    label: classes.label,
+                    root: classes.root
+                  }}
+                  {...formData.getInputProps('finishedAt')}
+                  key={formData.key('finishedAt')}
+                  disabled={!IS_EDIT_ALLOWED[surveyStatus].finishedAt || isToDelete}
+                />
+              </Flex>
+            </Grid.Col>
+            <Grid.Col span={10.5}>
+              <Input
+                label={'Комментарий'}
+                key={formData.key('comment')}
+                {...formData.getInputProps('comment')}
+                disabled={!IS_EDIT_ALLOWED[surveyStatus].comment || isToDelete}
+              />
+            </Grid.Col>
+          </Grid>
+          <Flex direction="column" className={classes.questionsSection}>
+            <Flex direction="column" gap={25}>
+              {formData.values.questions.map((question, index: number) => {
+                return (
+                  <QuestionCreate
+                    key={question.id}
+                    title={`${index + 1} Вопрос`}
+                    onOpenButtons={() => onOpenButtons(index)}
+                    onDelete={() => formData.removeListItem('questions', index)}
+                    textInputProps={formData.getInputProps(`questions.${index}.text`)}
+                    typeInputProps={formData.getInputProps(`questions.${index}.question_type`)}
+                    editNotAllowed={!IS_EDIT_ALLOWED[surveyStatus].questions || isToDelete}
+                  />
+                )
+              })}
+            </Flex>
+            <Group justify="space-between" className={classes.optionButtons}>
+              <Button
+                styles={{
+                  root: {
+                    padding: '10px 20px'
+                  }
+                }}
+                className={classes.buttonGrey}
+                variant="ghost"
+                type="button"
+                onClick={() => {
+                  onOpenButtons(formData.getValues().questions.length)
+                  formData.setFieldValue('questions', [
+                    ...formData.values.questions,
+                    { id: `question-${Date.now()}`, text: '', is_favorite: false }
+                  ])
+                  scroll()
+                }}
+                disabled={!IS_EDIT_ALLOWED[surveyStatus].questions || isToDelete}
+              >
+                Ещё вопрос
+              </Button>
+              <Button type="submit" disabled={isSubmitting || !IS_EDIT_ALLOWED[surveyStatus].submit || isToDelete}>
+                {isSubmitting ? 'Сохраняется...' : 'Сохранить'}
+              </Button>
+            </Group>
+            {isSuccess && <p className={classes.success}>Опрос успешно обновлен</p>}
+            {isError && <p className={classes.error}>Ошибка при обновлении опроса, попробуйте еще один раз</p>}
+          </Flex>
+          <div ref={targetRef}></div>
+        </form>
+      )}
+    </>
   )
 }
 

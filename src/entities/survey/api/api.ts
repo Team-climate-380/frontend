@@ -44,6 +44,11 @@ export const updateSurvey = async (surveyPayload: Partial<TSurveyUpdate>, id: nu
 export const fetchSurveyById = async (id: number) => {
   const response = await api.get<SurveyResults>(`/api/surveys/${id}/`)
   if (response.status === 'success' && 'data' in response) return response.data
+  if ('error' in response) {
+    if (response.statusCode === 404) {
+      throw new Error('404')
+    }
+  }
   throw new Error('Не удалось получить данные опроса')
 }
 

@@ -15,7 +15,7 @@ export interface IInitialValues {
   isFavorite?: boolean
 }
 
-export const useSurvey = (initialValues: IInitialValues) => {
+export const useSurvey = (initialValues: IInitialValues, surveyStatus?: string) => {
   const formSurveyData = useForm({
     initialValues,
     validateInputOnChange: true,
@@ -37,6 +37,7 @@ export const useSurvey = (initialValues: IInitialValues) => {
       },
       startedAt: (value, values) => {
         if (!value) return 'Выберите дату начала опроса'
+        if (surveyStatus && ['active', 'draft'].includes(surveyStatus)) return null
         const selectedDate = new Date(value)
         const today = new Date()
         today.setHours(0, 0, 0, 0)
