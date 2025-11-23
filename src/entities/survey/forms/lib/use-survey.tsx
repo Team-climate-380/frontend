@@ -31,13 +31,13 @@ export const useSurvey = (initialValues: IInitialValues, surveyStatus?: string) 
       // },
       department: value => {
         if (!value) {
-          return 'Необходимо выбрать департамент'
+          return 'Необходимо выбрать группу'
         }
         return null
       },
       startedAt: (value, values) => {
         if (!value) return 'Выберите дату начала опроса'
-        if (surveyStatus && ['active', 'draft'].includes(surveyStatus)) return null
+        if (surveyStatus && ['active'].includes(surveyStatus)) return null
         const selectedDate = new Date(value)
         const today = new Date()
         today.setHours(0, 0, 0, 0)
