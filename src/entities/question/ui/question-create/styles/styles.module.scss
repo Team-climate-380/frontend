@@ -15,6 +15,14 @@
   min-height: 100px;
 }
 
+.input:disabled, .textarea:disabled {
+  color: black
+}
+
+.not-for-edit-true:disabled {
+  color: var(--input-disabled-color)
+}
+
 .title {
   font-size: 18px;
   font-weight: 900;

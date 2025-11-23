@@ -3,6 +3,7 @@ import { FC, ReactNode } from 'react'
 import angle from './images/angle.svg'
 import classes from './styles/styles.module.scss'
 import { IconPencil, IconTrashXFilled } from '@tabler/icons-react'
+import clsx from 'clsx'
 
 const types = [
   { text: '1-9', value: 'score' },
@@ -60,7 +61,7 @@ export const QuestionCreate: FC<IQuestionCreateProps> = ({
           >
             <Combobox.Target>
               <InputBase
-                classNames={{ input: classes.input }}
+                classNames={{ input: clsx(classes.input, classes[`not-for-edit-${editNotAllowed}`]) }}
                 component="button"
                 type="button"
                 pointer
@@ -106,7 +107,12 @@ export const QuestionCreate: FC<IQuestionCreateProps> = ({
         </Flex>
       </Grid.Col>
       <Grid.Col span={8.5}>
-        <Textarea autosize classNames={{ input: classes.textarea }} {...textInputProps} disabled />
+        <Textarea
+          autosize
+          classNames={{ input: clsx(classes.textarea, classes[`not-for-edit-${editNotAllowed}`]) }}
+          {...textInputProps}
+          disabled
+        />
       </Grid.Col>
     </Grid>
   )
