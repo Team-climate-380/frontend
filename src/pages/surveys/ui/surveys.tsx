@@ -227,7 +227,7 @@ const Surveys: React.FC = () => {
                         handleClick={e => {
                           e.preventDefault()
 
-                          cancelDeleteSurveyMutate({ ...item, to_delete: !item.to_delete })
+                          cancelDeleteSurveyMutate(item.id)
                         }}
                       />
                     </SurveyItem>

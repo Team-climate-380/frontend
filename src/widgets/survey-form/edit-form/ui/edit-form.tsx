@@ -13,7 +13,7 @@ import { TQuestion } from '@/entities/question/model/types'
 import { useQuery } from '@tanstack/react-query'
 import { fetchParticipants, fetchSurveyById } from '@/entities/survey/api/api'
 import { useSurveyMutation } from '@/entities/survey/forms/lib/use-survey-mutation'
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { SurveyResults } from '@/entities/survey-results/results-model'
 import { IInitialValues } from '@/entities/survey/forms/lib/use-survey'
 import { routes } from '@/shared/configs/routs'
@@ -136,14 +136,11 @@ const EditSurveyForm: FunctionComponent<EditSurveyFormProps> = ({
     if (querySurvey.data) {
       formData.setValues(fromApi(querySurvey.data))
     }
-    if (querySurvey.error?.message === '404') {
-      navigate('/404')
-    }
-  }, [querySurvey.data, querySurvey.error])
+  }, [querySurvey.data])
 
   const { submitSurvey, isSubmitting, isError, isSuccess } = useSurveyMutation(
     formData,
-    isEdit ? { mode: 'edit', id: idSurvey! } : { mode: 'create' }
+    isEdit ? { mode: 'edit', id: idSurvey!, status: querySurvey.data?.status } : { mode: 'create' }
   )
 
   function navigateBack() {
@@ -172,13 +169,15 @@ const EditSurveyForm: FunctionComponent<EditSurveyFormProps> = ({
           <Skeleton />
         </div>
       )}
-      {querySurvey.isError && (
+      {querySurvey.isError && querySurvey.error.message !== '404' && (
         <Group align="center" justify="space-between" gap="32px" m={40}>
           <TextNotification variant="data_not_loaded" />
           <CloseButton type="button" onClick={navigateBack} />
         </Group>
       )}
-      {querySurvey.data && (
+      {querySurvey.isError && querySurvey.error.message === '404' && <Navigate to="/404" replace />}
+      {querySurvey.data && querySurvey.data.to_delete === true && <Navigate to="/404" replace />}
+      {querySurvey.data && querySurvey.data.to_delete === false && (
         <form onSubmit={formData.onSubmit(values => submitSurvey(values))}>
           <Grid className={classes.surveyForm} gutter={19}>
             <Grid.Col span={10.5}>

@@ -15,12 +15,13 @@
   min-height: 100px;
 }
 
-.input:disabled, .textarea:disabled {
-  color: black
+.input:disabled,
+.textarea:disabled {
+  color: black;
 }
 
 .not-for-edit-true:disabled {
-  color: var(--input-disabled-color)
+  color: var(--input-disabled-color);
 }
 
 .title {

@@ -6,8 +6,9 @@ import { TQuestion } from '@/entities/question/model/types'
 import { IInitialValues } from './use-survey'
 import { useLocation, useNavigate } from 'react-router'
 import { routes } from '@/shared/configs/routs'
+import { StatusEnum } from '@/entities/survey-results/results-model'
 
-type Mode = { mode: 'create' } | { mode: 'edit'; id: number }
+type Mode = { mode: 'create' } | { mode: 'edit'; id: number; status?: StatusEnum }
 
 export const useSurveyMutation = (form: UseFormReturnType<IInitialValues>, mode?: Mode) => {
   const navigate = useNavigate()
@@ -19,6 +20,11 @@ export const useSurveyMutation = (form: UseFormReturnType<IInitialValues>, mode?
     isSuccess
   } = useMutation({
     mutationFn: (values: IInitialValues) => {
+      const editActivePayload = {
+        name: values.name,
+        comment: values.comment,
+        finished_at: values.finishedAt ? dayjs(values.finishedAt).format('YYYY-MM-DD') : ''
+      }
       const payload = {
         name: values.name,
         comment: values.comment,
@@ -31,6 +37,9 @@ export const useSurveyMutation = (form: UseFormReturnType<IInitialValues>, mode?
         })
       }
       if (mode?.mode === 'edit') {
+        if (mode.status === 'active') {
+          return updateSurvey(editActivePayload, mode.id)
+        }
         return updateSurvey(payload, mode.id)
       }
       return createSurvey(payload)

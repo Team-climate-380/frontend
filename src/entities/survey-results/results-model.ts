@@ -14,7 +14,7 @@ export enum StatusEnum {
 export interface SurveyResults {
   id: number
   name: string
-  status: 'active' | 'draft' | 'completed' | 'archived'
+  status: StatusEnum
   comment: string
   started_at: string
   finished_at: string

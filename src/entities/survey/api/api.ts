@@ -111,8 +111,8 @@ export const useToggleSurveyMutation = () => {
   })
 
   const { mutate: cancelDeleteSurveyMutate } = useMutation({
-    mutationFn: (updatedSurvey: SurveyResults) => {
-      return updateSurvey(updatedSurvey, updatedSurvey.id)
+    mutationFn: (id: number) => {
+      return updateSurvey({ to_delete: false }, id)
     },
     onSuccess: getOnSuccess,
     onError: getOnError
