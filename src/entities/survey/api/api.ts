@@ -26,7 +26,7 @@ export const fetchParticipants = async (): Promise<string[]> => {
 }
 
 export const createSurvey = async (surveyPayload: Record<string, unknown>) => {
-  const response = await api.post('/api/surveys/', surveyPayload, {})
+  const response = await api.post<SurveyResults>('/api/surveys/', surveyPayload, {})
   if ('data' in response) {
     return response.data
   }

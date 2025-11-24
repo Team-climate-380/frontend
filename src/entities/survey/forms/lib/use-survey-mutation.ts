@@ -4,7 +4,7 @@ import { createSurvey, updateSurvey } from '@entities/survey/api/api'
 import { UseFormReturnType } from '@mantine/form'
 import { TQuestion } from '@/entities/question/model/types'
 import { IInitialValues } from './use-survey'
-import { useLocation, useNavigate } from 'react-router'
+import { useNavigate } from 'react-router'
 import { routes } from '@/shared/configs/routs'
 import { StatusEnum } from '@/entities/survey-results/results-model'
 
@@ -12,7 +12,6 @@ type Mode = { mode: 'create' } | { mode: 'edit'; id: number; status?: StatusEnum
 
 export const useSurveyMutation = (form: UseFormReturnType<IInitialValues>, mode?: Mode) => {
   const navigate = useNavigate()
-  const location = useLocation()
   const {
     mutate: submitSurvey,
     isPending: isSubmitting,
@@ -44,15 +43,9 @@ export const useSurveyMutation = (form: UseFormReturnType<IInitialValues>, mode?
       }
       return createSurvey(payload)
     },
-    onSuccess: () => {
+    onSuccess: data => {
       form.reset()
-      if (mode?.mode !== 'edit') {
-        navigate(routes.surveys())
-      } else if (location.key !== 'default') {
-        navigate(-1)
-      } else {
-        navigate(routes.surveys())
-      }
+      navigate(routes.results_survey(data.id))
     },
     onError: error => {
       console.error('Ошибка:', error)
