@@ -26,10 +26,12 @@ export const UseQuestionsQuery = () => {
 
   const numList = data?.pages.flatMap(pageItem => pageItem?.data).filter((q): q is IQuestion => Boolean(q)) ?? []
 
+  const total = data?.pages[0]?.total ?? 0
+
   const questions = numList.map((question, index) => {
     return {
       ...question,
-      numeration: index + 1
+      numeration: total - index
     }
   })
 
