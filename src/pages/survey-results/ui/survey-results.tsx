@@ -9,7 +9,7 @@ import { PopupMenu } from '@/shared/ui/popup-menu'
 import { PopupMenuItem } from '@/shared/ui/popup-menu/types/types'
 import { Skeleton } from '@/shared/ui/skeleton'
 import { createSurvey, useToggleSurveyMutation } from '@/entities/survey/api/api'
-import { useNavigate } from 'react-router'
+import { Navigate, useNavigate } from 'react-router'
 import { QuestionResultProps } from '@/shared/ui/question-result/ui/question-result'
 
 interface SurveyResultsProps {
@@ -34,11 +34,7 @@ const SurveyResults: React.FC<SurveyResultsProps> = ({ fullResults = true, withD
     finished_at: data?.finished_at,
     questions: data?.questions.map((question: QuestionResultProps) => {
       return {
-        text: question.text,
-        type: question.question_type,
-        answers: question.answer_options.map(answer => {
-          return { text: answer.text, is_correct: answer.is_correct }
-        })
+        id: question.id
       }
     })
   }
@@ -207,7 +203,8 @@ const SurveyResults: React.FC<SurveyResultsProps> = ({ fullResults = true, withD
         </div>
       )}
       {!data && isError && 'Ошибка при загрузке результатов...'}
-      {data && (
+      {data && data.to_delete === true && <Navigate to="/404" replace />}
+      {data && data.to_delete === false && (
         <>
           <div className={classes.header}>
             {withDropDownMenu ? (
