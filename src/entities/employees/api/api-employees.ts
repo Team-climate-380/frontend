@@ -4,6 +4,27 @@ import { TEmployeeForm } from '../forms/use-create-employee-edit-form'
 
 const apiClient = new ApiClient()
 
+const handleUserAlreadyExistsError = (response: {
+  status: string
+  error: unknown
+  message: string
+  statusCode?: number | undefined
+}) => {
+  if (response.statusCode === 400 && typeof response.error === 'object' && response.error !== null) {
+    let errormessage = ''
+    if ('email' in response.error && Array.isArray(response.error.email)) {
+      errormessage += response.error.email[0]
+    }
+    if ('tg_username' in response.error && Array.isArray(response.error.tg_username)) {
+      errormessage += ` ${response.error.tg_username[0]}`
+    }
+    if (errormessage !== '') {
+      throw new Error(errormessage.trim())
+    }
+    throw new Error('Ошибка при добавлении сотрудника или Ошибка при изменении данных сотрудника')
+  }
+}
+
 export const getEmployees = async (params: string): Promise<Employee[] | null> => {
   const response = await apiClient.get<Employee[]>(`/api/employees${params}`)
   if (response.status === 'success' && 'data' in response) {
@@ -20,6 +41,8 @@ export const addEmployee = async (employee: TEmployeeForm): Promise<Employee | n
     return response.data
   } else if ('message' in response) {
     console.error('Ошибка при добавлении сотрудника', response.message)
+    handleUserAlreadyExistsError(response)
+    throw new Error('Ошибка при добавлении сотрудника')
   }
   return null
 }
@@ -33,6 +56,8 @@ export const changeEmployee = async (
     return response.data
   } else if ('message' in response) {
     console.error('Ошибка при изменении данных сотрудника', response.message)
+    handleUserAlreadyExistsError(response)
+    throw new Error('Ошибка при изменении данных сотрудника')
   }
   return null
 }
