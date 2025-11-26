@@ -13,8 +13,23 @@ import clsx from 'clsx'
 import { CancelDeleteButton } from '@/shared/ui/cancel-delete-button'
 
 export const QuestionUI: FC<
-  IQuestion & { allowContextMenu?: boolean; setQuestion?: (item: IQuestion | undefined) => void }
-> = ({ numeration, id, is_favorite, text, question_type, allowContextMenu, setQuestion, to_delete }) => {
+  IQuestion & {
+    allowContextMenu?: boolean
+    setQuestion?: (item: IQuestion | undefined) => void
+    openDeleteErrorModal?: () => void
+  }
+> = ({
+  numeration,
+  id,
+  is_favorite,
+  text,
+  question_type,
+  allowContextMenu,
+  setQuestion,
+  to_delete,
+  surveys,
+  openDeleteErrorModal
+}) => {
   const QuestionTypeLabels: Record<QTE, string> = {
     [QuestionTypeEnum.ratingScale]: 'Плохо-Прекрасно',
     [QuestionTypeEnum.score]: '1-9',
@@ -33,6 +48,10 @@ export const QuestionUI: FC<
       queryClient.invalidateQueries({ queryKey: ['questions'] })
     },
     onError: error => {
+      if (error.message === '400 Bad request') {
+        openDeleteErrorModal?.()
+        return
+      }
       console.error(`Ошибка при удалении: ${error.message}`)
     }
   })
@@ -47,6 +66,7 @@ export const QuestionUI: FC<
   })
   const handleContextMenu = (e: React.MouseEvent) => {
     if (!allowContextMenu) return
+    if (to_delete) return
     e.preventDefault()
     const { innerWidth: w, innerHeight: h } = window
     let posX = e.clientX
@@ -98,6 +118,7 @@ export const QuestionUI: FC<
                 label: `${isEditing ? 'Отменить редактирование' : 'Редактировать'}`,
                 action: () => {
                   setIsEditing(prev => !prev)
+                  close()
                 }
               },
               {
@@ -106,15 +127,23 @@ export const QuestionUI: FC<
                 action: async () => {
                   const resp = await toggleFavorite(id, isFavorite)
                   setIsFavorite(prev => (resp ? resp.is_favorite : prev))
+                  close()
                 }
               },
               { type: 'divider' },
               {
                 type: 'action',
                 label: 'Удалить',
-                action: async () => {
-                  deleteQuestionMutate.mutate()
-                },
+                action:
+                  surveys && surveys.length > 0
+                    ? () => {
+                        openDeleteErrorModal?.()
+                        close()
+                      }
+                    : async () => {
+                        deleteQuestionMutate.mutate()
+                        close()
+                      },
                 important: true
               }
             ]}

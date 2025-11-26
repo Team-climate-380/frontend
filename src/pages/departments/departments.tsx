@@ -15,11 +15,15 @@ import { Skeleton } from '@/shared/ui/skeleton'
 import { TextNotification } from '@/shared/ui/text-notification'
 import { useClickOutside } from '@mantine/hooks'
 import { NotificationModal } from '@/shared/ui/notification-modal'
+import { getAllSurveys } from '@/entities/survey/api/api'
 
 export const Departments: React.FC = () => {
   const [isCreateNewFormVisible, setIsCreateNewFormVisible] = useState(false)
   const [selectedForEdit, setSelectedForEdit] = useState<null | number>(null)
-  const [isDeleteErrorVisible, setIsDeleteErrorVisible] = useState(false)
+  const [deleteErrorModal, setDeleteErrorModal] = useState<{
+    isVisible: boolean
+    variant: 'has-employees' | 'has-surveys' | 'has-both' | 'empty'
+  }>({ isVisible: false, variant: 'empty' })
   const [filteredDepartments, setFilteredDepartments] = useState<DepartmentInfo[]>([])
 
   const editFormRef = useClickOutside(() => {
@@ -86,9 +90,26 @@ export const Departments: React.FC = () => {
     setContextMenu({ ...contextMenu, isVisible: false, selectedId: null })
   }
 
-  function handleDeleteClick(id: number | null | undefined) {
+  async function handleDeleteClick(id: number | null | undefined) {
     if (!id) return
-    deleteDepartmentMutation.mutate({ id, onFullDepartmentError: () => setIsDeleteErrorVisible(true) })
+    const employeesCount = data?.find(dep => dep.id === id)?.employees_count
+    const department = data?.find(dep => dep.id === id)?.department_name
+    if (!department || employeesCount === undefined) return
+    if (employeesCount > 0) {
+      setDeleteErrorModal({ isVisible: true, variant: 'has-employees' })
+      setContextMenu({ ...contextMenu, isVisible: false, selectedId: null })
+      return
+    }
+    await getAllSurveys(1, 'all', department, '').then(res => {
+      if (res.total === 0) {
+        deleteDepartmentMutation.mutate({
+          id,
+          onFullDepartmentError: () => setDeleteErrorModal({ isVisible: true, variant: 'has-both' })
+        })
+      } else {
+        setDeleteErrorModal({ isVisible: true, variant: 'has-surveys' })
+      }
+    })
     setContextMenu({ ...contextMenu, isVisible: false, selectedId: null })
   }
 
@@ -159,12 +180,18 @@ export const Departments: React.FC = () => {
       )}
       <NotificationModal
         type="error"
-        opened={isDeleteErrorVisible}
+        opened={deleteErrorModal.isVisible}
         onClose={() => {
-          setIsDeleteErrorVisible(false)
+          setDeleteErrorModal({ isVisible: false, variant: 'empty' })
         }}
         title={'Невозможно удалить группу'}
-        text={'Похоже, в этой группе ещё есть люди. Удалите или переместите их, и тогда группу можно будет удалить.'}
+        text={
+          deleteErrorModal.variant === 'has-employees'
+            ? 'Похоже, в этой группе ещё есть люди. Удалите или переместите их, и тогда группу можно будет удалить.'
+            : deleteErrorModal.variant === 'has-surveys'
+              ? 'Похоже, в этой группе есть созданные опросы. Удалите их, и тогда группу можно будет удалить.'
+              : 'Похоже, в этой группе еще есть сотрудники или опросы. Удалите их, и тогда группу можно будет удалить.'
+        }
       />
     </div>
   )

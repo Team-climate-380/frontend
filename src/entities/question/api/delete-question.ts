@@ -8,6 +8,9 @@ export const deleteQuestion = async (id: number) => {
   if (response.status === 'success' && 'data' in response) {
     return response.data
   } else if ('message' in response) {
+    if (response.statusCode === 400) {
+      throw new Error('400 Bad request')
+    }
     console.error('Ошибка при удалении вопроса:', response.message)
   }
   return null
