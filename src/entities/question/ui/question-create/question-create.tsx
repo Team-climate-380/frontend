@@ -1,8 +1,9 @@
-import { MoreButton } from '@/shared/ui/more-button'
-import { Flex, Textarea, Input, InputBase, Combobox, useCombobox, Grid, TextareaProps } from '@mantine/core'
+import { Flex, Textarea, Input, InputBase, Combobox, useCombobox, Grid, TextareaProps, ActionIcon } from '@mantine/core'
 import { FC, ReactNode } from 'react'
 import angle from './images/angle.svg'
 import classes from './styles/styles.module.scss'
+import { IconPencil, IconTrashXFilled } from '@tabler/icons-react'
+import clsx from 'clsx'
 
 const types = [
   { text: '1-9', value: 'score' },
@@ -21,9 +22,18 @@ export interface IQuestionCreateProps {
   textInputProps: TextareaProps
   typeInputProps: TypeInputProps
   onOpenButtons: () => void
+  onDelete: () => void
+  editNotAllowed?: boolean
 }
 
-export const QuestionCreate: FC<IQuestionCreateProps> = ({ title, textInputProps, typeInputProps, onOpenButtons }) => {
+export const QuestionCreate: FC<IQuestionCreateProps> = ({
+  title,
+  textInputProps,
+  typeInputProps,
+  onOpenButtons,
+  onDelete,
+  editNotAllowed
+}) => {
   const combobox = useCombobox()
 
   const selectedOption = typeInputProps.value ? types.find(item => item.value === typeInputProps.value) : undefined
@@ -40,7 +50,7 @@ export const QuestionCreate: FC<IQuestionCreateProps> = ({ title, textInputProps
         <span className={classes.title}>{title}</span>
       </Grid.Col>
       <Grid.Col span={12}>
-        <Flex direction={'row'} gap={'18px'} align="center">
+        <Flex direction={'row'} gap={'5px'} align="center">
           <Combobox
             width={200}
             store={combobox}
@@ -51,7 +61,7 @@ export const QuestionCreate: FC<IQuestionCreateProps> = ({ title, textInputProps
           >
             <Combobox.Target>
               <InputBase
-                classNames={{ input: classes.input }}
+                classNames={{ input: clsx(classes.input, classes[`not-for-edit-${editNotAllowed}`]) }}
                 component="button"
                 type="button"
                 pointer
@@ -59,19 +69,50 @@ export const QuestionCreate: FC<IQuestionCreateProps> = ({ title, textInputProps
                 rightSectionPointerEvents="none"
                 onClick={() => combobox.toggleDropdown()}
                 error={typeInputProps.error}
+                disabled
+                mr={'13px'}
               >
-                {selectedOption ? selectedOption.text : <Input.Placeholder>Выберите тип</Input.Placeholder>}
+                {selectedOption ? selectedOption.text : <Input.Placeholder>Тип вопроса</Input.Placeholder>}
               </InputBase>
             </Combobox.Target>
             <Combobox.Dropdown>
               <Combobox.Options>{options}</Combobox.Options>
             </Combobox.Dropdown>
           </Combobox>
-          <MoreButton onClick={onOpenButtons} />
+          <ActionIcon
+            onClick={e => {
+              e.preventDefault()
+              onOpenButtons()
+            }}
+            aria-label="Выбарть вопрос"
+            style={{
+              '--hover-bg': 'transparent'
+            }}
+            className={classes['icon-button']}
+            disabled={editNotAllowed}
+          >
+            <IconPencil color={editNotAllowed ? 'gray' : '#06121E'} size={20} />
+          </ActionIcon>
+          <ActionIcon
+            onClick={onDelete}
+            aria-label="Удалить вопрос"
+            style={{
+              '--hover-bg': 'transparent'
+            }}
+            className={classes['icon-button']}
+            disabled={editNotAllowed}
+          >
+            <IconTrashXFilled color={editNotAllowed ? 'gray' : '#06121E'} size={20} />
+          </ActionIcon>
         </Flex>
       </Grid.Col>
       <Grid.Col span={8.5}>
-        <Textarea autosize classNames={{ input: classes.textarea }} {...textInputProps} />
+        <Textarea
+          autosize
+          classNames={{ input: clsx(classes.textarea, classes[`not-for-edit-${editNotAllowed}`]) }}
+          {...textInputProps}
+          disabled
+        />
       </Grid.Col>
     </Grid>
   )

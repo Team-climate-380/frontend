@@ -1,12 +1,16 @@
 import React from 'react'
 import { QuestionsResult } from '@/widgets/questions-result/ui/questions-result'
 import classes from '../styles/styles.module.scss'
-import { useResultsQuery } from '@/entities/survey-results/results-model'
+import { useResultsQuery, useSurveyResultMutations } from '@/entities/survey-results/results-model'
 import { useQueryParams } from '@/shared/hooks/useQueryParams'
-import { CloseButton, Loader } from '@mantine/core'
+import { CloseButton } from '@mantine/core'
 import { MoreButton } from '@/shared/ui/more-button'
 import { PopupMenu } from '@/shared/ui/popup-menu'
 import { PopupMenuItem } from '@/shared/ui/popup-menu/types/types'
+import { Skeleton } from '@/shared/ui/skeleton'
+import { createSurvey, useToggleSurveyMutation } from '@/entities/survey/api/api'
+import { Navigate, useNavigate } from 'react-router'
+import { QuestionResultProps } from '@/shared/ui/question-result/ui/question-result'
 
 interface SurveyResultsProps {
   fullResults?: boolean
@@ -15,27 +19,172 @@ interface SurveyResultsProps {
 
 const SurveyResults: React.FC<SurveyResultsProps> = ({ fullResults = true, withDropDownMenu = true }) => {
   const { getParam } = useQueryParams()
+  const { deleteSurveyMutate } = useToggleSurveyMutation()
   const surveyId = Number(getParam('surveyId'))
   const { data, isPending, isError } = useResultsQuery(surveyId)
+  const { editSurvey } = useSurveyResultMutations()
+  const navigate = useNavigate()
+
+  const payload = {
+    name: data?.name,
+    comment: data?.comment,
+    department_name: data?.department.name,
+    is_favorite: data?.is_favorite,
+    started_at: data?.started_at,
+    finished_at: data?.finished_at,
+    questions: data?.questions.map((question: QuestionResultProps) => {
+      return {
+        id: question.id
+      }
+    })
+  }
+
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const startDateExpired = data ? new Date(data.started_at) < today : true
+
+  const itemsDraft: PopupMenuItem[] = [
+    {
+      type: 'action',
+      label: 'Запустить опрос',
+      action: () => {
+        editSurvey.mutate({ id: surveyId, surveyChange: { status: 'active' } })
+      },
+      disabled: startDateExpired
+    },
+    {
+      type: 'action',
+      label: 'Дублировать',
+      action: () => {
+        createSurvey(payload)
+        navigate('/surveys')
+      }
+    },
+    {
+      type: 'action',
+      label: 'В архив',
+      action: () => {
+        editSurvey.mutate({ id: surveyId, surveyChange: { status: 'archived' } })
+      }
+    },
+    { type: 'divider' },
+    {
+      type: 'action',
+      label: 'Удалить',
+      action: () => {
+        deleteSurveyMutate(surveyId)
+        navigate('/surveys')
+      },
+      important: true
+    }
+  ]
+
+  const itemsArchived: PopupMenuItem[] = [
+    {
+      type: 'action',
+      label: 'Дублировать',
+      action: () => {
+        createSurvey(payload)
+        navigate('/surveys')
+      }
+    },
+    { type: 'link', label: 'Полные результаты', url: `/full-results?surveyId=${surveyId}` },
+    { type: 'link', label: 'Агрегированные результаты', url: `/short-results?surveyId=${surveyId}` },
+    { type: 'divider' },
+    {
+      type: 'action',
+      label: 'Удалить',
+      action: () => {
+        deleteSurveyMutate(surveyId)
+        navigate('/surveys')
+      },
+      important: true
+    }
+  ]
 
   const itemsActive: PopupMenuItem[] = [
-    { type: 'action', label: 'Остановить опрос', action: () => {} },
-    { type: 'action', label: 'Дублировать', action: () => {} },
+    {
+      type: 'action',
+      label: 'Остановить опрос',
+      action: () => {
+        editSurvey.mutate({ id: surveyId, surveyChange: { status: 'completed' } })
+      }
+    },
+    {
+      type: 'action',
+      label: 'Дублировать',
+      action: () => {
+        createSurvey(payload)
+        navigate('/surveys')
+      }
+    },
     { type: 'link', label: 'Полные результаты', url: `/full-results?surveyId=${surveyId}` },
     { type: 'link', label: 'Агрегированные результаты', url: `/short-results?surveyId=${surveyId}` },
-    { type: 'action', label: 'В архив', action: () => {} },
+    {
+      type: 'action',
+      label: 'В архив',
+      action: () => {
+        editSurvey.mutate({ id: surveyId, surveyChange: { status: 'archived' } })
+      }
+    },
     { type: 'divider' },
-    { type: 'action', label: 'Удалить', action: () => {}, important: true }
+    {
+      type: 'action',
+      label: 'Удалить',
+      action: () => {
+        deleteSurveyMutate(surveyId)
+        navigate('/surveys')
+      },
+      important: true
+    }
   ]
 
-  const itemsComplited: PopupMenuItem[] = [
-    { type: 'action', label: 'Дублировать', action: () => {} },
+  const itemsCompleted: PopupMenuItem[] = [
+    {
+      type: 'action',
+      label: 'Дублировать',
+      action: () => {
+        createSurvey(payload)
+        navigate('/surveys')
+      }
+    },
+
     { type: 'link', label: 'Полные результаты', url: `/full-results?surveyId=${surveyId}` },
     { type: 'link', label: 'Агрегированные результаты', url: `/short-results?surveyId=${surveyId}` },
-    { type: 'action', label: 'В архив', action: () => {} },
+    {
+      type: 'action',
+      label: 'В архив',
+      action: () => {
+        editSurvey.mutate({ id: surveyId, surveyChange: { status: 'archived' } })
+      }
+    },
     { type: 'divider' },
-    { type: 'action', label: 'Удалить', action: () => {}, important: true }
+    {
+      type: 'action',
+      label: 'Удалить',
+      action: () => {
+        deleteSurveyMutate(surveyId)
+        navigate('/surveys')
+      },
+      important: true
+    }
   ]
+
+  const statusLabels: Record<string, string> = {
+    draft: 'Черновик',
+    active: 'Активный',
+    completed: 'Завершён',
+    archived: 'Архив'
+  }
+
+  const itemsByStatus: Record<string, PopupMenuItem[]> = {
+    active: itemsActive,
+    completed: itemsCompleted,
+    draft: itemsDraft,
+    archived: itemsArchived
+  }
+
+  const currentItems = data?.status ? itemsByStatus[data.status] : []
 
   function formatDate(dateString: string) {
     const date = new Date(dateString)
@@ -48,27 +197,24 @@ const SurveyResults: React.FC<SurveyResultsProps> = ({ fullResults = true, withD
 
   return (
     <div className={classes.wrapper}>
-      {isPending && <Loader />}
+      {isPending && (
+        <div className={classes.skeleton}>
+          <Skeleton />
+        </div>
+      )}
       {!data && isError && 'Ошибка при загрузке результатов...'}
-      {data && (
+      {data && data.to_delete === true && <Navigate to="/404" replace />}
+      {data && data.to_delete === false && (
         <>
           <div className={classes.header}>
             {withDropDownMenu ? (
               <div className={classes.buttons}>
-                {data.status === 'active' ? (
-                  <PopupMenu type="dropdown" items={itemsActive} position="bottom-end">
-                    <div className={classes.moreButton}>
-                      <MoreButton />
-                    </div>
-                  </PopupMenu>
-                ) : (
-                  <PopupMenu type="dropdown" items={itemsComplited} position="bottom-end">
-                    <div className={classes.moreButton}>
-                      <MoreButton />
-                    </div>
-                  </PopupMenu>
-                )}
-                <CloseButton />
+                <PopupMenu type="dropdown" items={currentItems} position="bottom-end">
+                  <div className={classes.moreButton}>
+                    <MoreButton />
+                  </div>
+                </PopupMenu>
+                <CloseButton onClick={() => navigate('/surveys')} />
               </div>
             ) : (
               <></>
@@ -79,7 +225,7 @@ const SurveyResults: React.FC<SurveyResultsProps> = ({ fullResults = true, withD
               <div className={classes.date}>
                 {formatDate(data.started_at)} - {formatDate(data.finished_at)}
               </div>
-              {data.status === 'active' ? <div>Активный</div> : <div>Завершен</div>}
+              <div>{statusLabels[data.status]}</div>
             </div>
             {fullResults ? (
               <>

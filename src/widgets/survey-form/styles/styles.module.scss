@@ -38,6 +38,14 @@
 
 .buttonGrey {
   background-color: #f6f8fa !important;
+  &:hover {
+    color: #06121e;
+  }
+  &:disabled {
+    background-color: var(--mantine-color-disabled);
+    color: var(--mantine-color-disabled-color);
+    pointer-events: none;
+  }
 }
 
 .questionsSection {
@@ -45,6 +53,20 @@
   padding-inline: 28px;
 }
 
+.buttonWithStatus {
+  padding-block: 24px;
+  padding-inline: 28px;
+}
+
 .optionButtons {
   margin-top: 20px;
+}
+.error {
+  font-size: 16px;
+  color: #da2b10;
+}
+
+.success {
+  font-size: 16px;
+  color: #75da10;
 }

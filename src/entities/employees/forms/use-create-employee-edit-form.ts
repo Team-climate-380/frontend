@@ -11,7 +11,9 @@ export type TEmployeeForm = {
 
 export const departmentsData = await getDepartments()
 
-export const departmentsNames = departmentsData?.map(item => item.department_name)
+export const departmentsNames = departmentsData
+  ?.filter(item => item.to_delete === false)
+  ?.map(item => item.department_name)
 
 export const useCreateEmployeeEditForm = (initialValues?: TEmployeeForm) => {
   const formEmployeeData = useForm({
@@ -36,10 +38,13 @@ export const useCreateEmployeeEditForm = (initialValues?: TEmployeeForm) => {
         if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
           return 'Почта в формате mail@mail.ru'
         }
+        if (value.length > 256) {
+          return 'Максимум 256 символов.'
+        }
         return null
       },
       tg_username: value => {
-        if (value[0] !== '@') {
+        if (value && value[0] !== '@') {
           return 'Введите имя в формате @telegram'
         }
         if (value && !/^@[A-Za-z0-9][A-Za-z0-9_]+$/.test(value)) {

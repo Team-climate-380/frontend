@@ -1,7 +1,11 @@
 .question {
   display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: flex-start;
   padding-block-end: 12px;
-  cursor: pointer;
+  cursor: context-menu;
 }
 
 .id {
@@ -16,8 +20,29 @@
   color: #ffd014;
 }
 
+.text {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
 .question_type {
   font-style: italic;
   color: #1e1e1e;
   opacity: 0.6;
+}
+
+.to_delete {
+  text-decoration: line-through;
+  color: #8e6b6b;
+}
+
+.delete_button {
+  margin-inline-start: 10px;
+  border: none;
+  background-color: transparent;
+
+  &:hover {
+    background-color: transparent;
+  }
 }

@@ -1,36 +1,56 @@
 import { useMutation } from '@tanstack/react-query'
 import dayjs from 'dayjs'
-import { createSurvey } from '../api'
+import { createSurvey, updateSurvey } from '@entities/survey/api/api'
 import { UseFormReturnType } from '@mantine/form'
 import { TQuestion } from '@/entities/question/model/types'
-import { IInitialValues } from './use-create-survey'
+import { IInitialValues } from './use-survey'
+import { useNavigate } from 'react-router'
+import { routes } from '@/shared/configs/routs'
+import { StatusEnum } from '@/entities/survey-results/results-model'
 
-export const useSurveyMutation = (form: UseFormReturnType<IInitialValues>) => {
-  const { mutate: submitSurvey, isPending: isSubmitting } = useMutation({
+type Mode = { mode: 'create' } | { mode: 'edit'; id: number; status?: StatusEnum }
+
+export const useSurveyMutation = (form: UseFormReturnType<IInitialValues>, mode?: Mode) => {
+  const navigate = useNavigate()
+  const {
+    mutate: submitSurvey,
+    isPending: isSubmitting,
+    isError,
+    isSuccess
+  } = useMutation({
     mutationFn: (values: IInitialValues) => {
+      const editActivePayload = {
+        name: values.name,
+        comment: values.comment,
+        finished_at: values.finishedAt ? dayjs(values.finishedAt).format('YYYY-MM-DD') : ''
+      }
       const payload = {
         name: values.name,
         comment: values.comment,
-        department: values.department ? { department_name: values.department[0] } : null,
+        department_name: values.department?.trim(),
         is_favorite: values.isFavorite,
-        started_at: values.startedAt ? dayjs(values.startedAt).format('YYYY-MM-DD') : null,
-        finished_at: values.finishedAt ? dayjs(values.finishedAt).format('YYYY-MM-DD') : null,
+        started_at: values.startedAt ? dayjs(values.startedAt).format('YYYY-MM-DD') : '',
+        finished_at: values.finishedAt ? dayjs(values.finishedAt).format('YYYY-MM-DD') : '',
         questions: values.questions.map((question: TQuestion) => {
-          const newQuestion = question
-          delete newQuestion.id
-          return newQuestion
+          return { id: question.id }
         })
+      }
+      if (mode?.mode === 'edit') {
+        if (mode.status === 'active') {
+          return updateSurvey(editActivePayload, mode.id)
+        }
+        return updateSurvey(payload, mode.id)
       }
       return createSurvey(payload)
     },
-    onSuccess: () => {
-      console.log('Опрос успешно создан!')
+    onSuccess: data => {
       form.reset()
+      navigate(routes.results_survey(data.id))
     },
     onError: error => {
-      console.error('Ошибка при создании опроса:', error)
+      console.error('Ошибка:', error)
     }
   })
 
-  return { submitSurvey, isSubmitting }
+  return { submitSurvey, isSubmitting, isError, isSuccess }
 }

@@ -7,12 +7,21 @@ import { routes } from '@shared/configs/routs'
 import { Logo } from '@shared/ui/logo/index'
 import SidebarImage from '../images/SidebarImage.svg'
 import classes from './dashboard-layout.module.css'
+import { Button } from '@/shared/ui/button'
+import { logoutUser, useSessionState } from '@/features/session'
+import { IconLogout } from '@tabler/icons-react'
 
 interface DashboardLayoutProps {
   contentSidebar: ReactNode
 }
 
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ contentSidebar }) => {
+  const session = useSessionState()
+  const logout = async () => {
+    await logoutUser()
+    session.logout()
+  }
+
   return (
     <>
       <AppShell
@@ -26,6 +35,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ contentSidebar
             position: 'relative',
             top: 0,
             minHeight: '100%',
+            minWidth: '201px',
             height: 'auto',
             overflow: 'hidden',
             background:
@@ -50,11 +60,22 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ contentSidebar
           <AppShell.Section className={classes.contentSidebar} grow>
             {contentSidebar}
           </AppShell.Section>
+          <AppShell.Section className={classes.logoutButton_container}>
+            <Button
+              onClick={logout}
+              leftSection={<IconLogout />}
+              classNames={{
+                root: classes.logoutButton
+              }}
+            >
+              Выход
+            </Button>
+          </AppShell.Section>
           <img src={SidebarImage} aria-hidden="true" className={classes.sidebarImage} />
         </AppShell.Navbar>
 
         <AppShell.Main>
-          <Suspense fallback={<Loader />}>
+          <Suspense fallback={<Loader color={'var(--mantine-color-black-0)'} size={'xl'} />}>
             <Outlet />
           </Suspense>
         </AppShell.Main>

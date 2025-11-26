@@ -1,0 +1,22 @@
+.container {
+  background-color: var(--mantine-color-black-0);
+  min-height: 895px;
+  padding: 36px 44px 39px;
+  border-radius: 0 0 10px 10px;
+}
+
+.item {
+  cursor: pointer;
+}
+
+.itemToDelete {
+  text-decoration: line-through;
+  color: #8e6b6b;
+}
+
+.comment {
+  grid-column: 1 / 1;
+  color: #898989;
+  font-size: 12px;
+  text-align: left;
+}

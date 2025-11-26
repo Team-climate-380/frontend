@@ -8,7 +8,7 @@ type ButtonProps = { variant?: 'ghost' | 'primary'; size?: 'md' | 'lg' } & Manti
 export const Button: React.FC<ButtonProps> = props => {
   const { className, children, variant = 'primary', size = 'lg', ...otherProps } = props
   return (
-    <MantineButton className={clsx(classes.button, classes[variant], classes[size], className)} {...otherProps}>
+    <MantineButton data-variant={variant} data-size={size} className={clsx(classes.root, className)} {...otherProps}>
       {children}
     </MantineButton>
   )

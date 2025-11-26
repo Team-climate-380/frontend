@@ -4,13 +4,15 @@ import classes from '../styles/styles.module.scss'
 export interface QuestionResultProps {
   id: number
   text: string
-  type: string
+  question_type: string
+  to_delete: boolean
   user_answers: {
     id: number
-    result: string
+    result: string | string[] | number
     employer: Employer
   }[]
   answer_options: { id: number; text: string; is_correct: boolean }[]
+  surveys: number[]
 }
 
 export interface employeesProps {
@@ -27,7 +29,7 @@ interface Employer {
 interface Props {
   question: QuestionResultProps
   fullResults: boolean
-  employees: employeesProps[]
+  employees: employeesProps[] | undefined
 }
 
 export const QuestionResult: React.FC<Props> = ({ question, fullResults, employees }) => {
@@ -49,23 +51,36 @@ export const QuestionResult: React.FC<Props> = ({ question, fullResults, employe
     return parts.join(' ')
   }
 
-  const counts: Record<string, number> = {}
-
-  question.answer_options.forEach(answer => {
-    counts[answer.text] = 0
-  })
-
   const time: Record<number, number> = {}
 
-  employees.forEach(employee => {
-    if (employee.survey_sec > 0) {
-      time[employee.employee] = employee.survey_sec
-    }
-  })
+  if (employees) {
+    employees.forEach(employee => {
+      if (employee.survey_sec > 0) {
+        time[employee.employee] = employee.survey_sec
+      }
+    })
+  }
+
+  const counts: Record<string, number> = {}
 
   question.user_answers.forEach(answer => {
-    if (typeof answer.result === 'string' && Object.prototype.hasOwnProperty.call(counts, answer.result)) {
-      counts[answer.result]++
+    const incrementCount = (key: string) => {
+      if (Object.prototype.hasOwnProperty.call(counts, key)) {
+        counts[key]++
+      } else {
+        counts[key] = 1
+      }
+    }
+
+    if (typeof answer.result === 'string') {
+      incrementCount(answer.result)
+    } else if (Array.isArray(answer.result)) {
+      answer.result.forEach(item => {
+        incrementCount(item)
+      })
+    } else if (typeof answer.result === 'number') {
+      const resultStr = String(answer.result)
+      incrementCount(resultStr)
     }
   })
 
@@ -73,46 +88,67 @@ export const QuestionResult: React.FC<Props> = ({ question, fullResults, employe
 
   const groupedAnswers: Record<string, Array<Employer>> = {}
 
-  question.answer_options.forEach(option => {
-    groupedAnswers[option.text] = []
-  })
-
   question.user_answers.forEach(answer => {
     const result = answer.result
+    const employer = answer.employer
 
-    if (typeof result === 'string' && groupedAnswers[result]) {
-      groupedAnswers[result].push(answer.employer)
+    const ensureArray = (key: string) => {
+      if (!groupedAnswers[key]) {
+        groupedAnswers[key] = []
+      }
+    }
+
+    if (typeof result === 'string') {
+      ensureArray(result)
+      groupedAnswers[result].push(employer)
+    } else if (Array.isArray(result)) {
+      result.forEach(item => {
+        ensureArray(item)
+        groupedAnswers[item].push(employer)
+      })
+    } else if (typeof result === 'number') {
+      const resStr = String(result)
+      ensureArray(resStr)
+      groupedAnswers[resStr].push(employer)
     }
   })
 
   return (
     <div className={classes.wrapper}>
       <h2 className={classes.title}>{question.text}</h2>
-      <ul className={classes.results__list}>
-        {sortedCounts.map(([answerText, count]) => (
-          <li key={answerText} className={classes.results__element}>
-            {answerText} — {count}
-          </li>
-        ))}
-      </ul>
-      {fullResults ? (
-        <div>
-          {sortedCounts.map(([answerText]) => {
-            if (counts[answerText] !== 0) {
-              const employees = groupedAnswers[answerText] || []
-              return (
-                <div className={classes.user__list}>
-                  {employees.map(employer => (
-                    <div>
-                      {employer.full_name} - {answerText}
-                      {time[employer.id] ? <>({formatTime(time[employer.id])})</> : <></>}
+      {sortedCounts && sortedCounts.length > 0 ? (
+        <>
+          <ul className={classes.results__list}>
+            {sortedCounts.map(([answerText, count], index) =>
+              count ? (
+                <li key={index} className={classes.results__element}>
+                  {answerText} — {count}
+                </li>
+              ) : null
+            )}
+          </ul>
+          {fullResults ? (
+            <div>
+              {sortedCounts.map(([answerText], index) => {
+                if (counts[answerText] !== 0) {
+                  const employees = groupedAnswers[answerText] || []
+                  return (
+                    <div className={classes.user__list} key={index}>
+                      {employees.map((employer, index) => (
+                        <div key={index}>
+                          {employer.full_name} - {answerText}
+                          {time[employer.id] ? <>({formatTime(time[employer.id])})</> : <></>}
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              )
-            }
-          })}
-        </div>
+                  )
+                }
+              })}
+            </div>
+          ) : (
+            <></>
+          )}
+        </>
       ) : (
         <></>
       )}

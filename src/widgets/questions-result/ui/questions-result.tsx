@@ -6,7 +6,7 @@ import { employeesProps, QuestionResultProps } from '@/shared/ui/question-result
 interface QuestionsResultProps {
   questions: QuestionResultProps[]
   fullResults: boolean
-  employees: employeesProps[]
+  employees: employeesProps[] | undefined
 }
 
 export const QuestionsResult: React.FC<QuestionsResultProps> = props => {

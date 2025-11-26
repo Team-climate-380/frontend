@@ -1,4 +1,4 @@
-import { Flex } from '@mantine/core'
+import { Text, Flex } from '@mantine/core'
 import { clsx } from 'clsx'
 import { ICreateEditFormProps } from '@entities/create-edit-form-types.ts'
 import { Input } from '@shared/ui/input/index.ts'
@@ -12,6 +12,8 @@ import { Dropdown } from '@shared/ui/dropdown'
 import classes from './employee-form.module.scss'
 import { addEmployee, changeEmployee } from '@/entities/employees/api/api-employees'
 import { UseFormReturnType } from '@mantine/form'
+import { useClickOutside } from '@mantine/hooks'
+import { useState } from 'react'
 
 export type EmployeeFormProps = ICreateEditFormProps & {
   employeeFormData?: TEmployeeForm
@@ -25,7 +27,19 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
   employeeFormData,
   onSubmit
 }) => {
+  const [form, setForm] = useState<HTMLFormElement | null>(null)
+  const [dropdown, setDropdown] = useState<HTMLDivElement | null>(null)
   const employeeForm = useCreateEmployeeEditForm(employeeFormData)
+  useClickOutside(
+    () => {
+      if (isOpen) {
+        closeForm()
+        employeeForm.reset()
+      }
+    },
+    null,
+    [form, dropdown]
+  )
 
   const getChangedFields = (
     form: UseFormReturnType<TEmployeeForm>,
@@ -42,24 +56,46 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
     return changedData
   }
 
+  const setSubmitError = ({ e, formErrorText }: { e: Error; formErrorText: string }) => {
+    if (e.message.includes('This email already exists')) {
+      employeeForm.setFieldError('email', 'Такая почта уже занята')
+    }
+    if (e.message.includes('Telegram username уже существует')) {
+      employeeForm.setFieldError('tg_username', 'Такой username уже занят')
+    }
+    if (!e.message.includes('This email already exists') && !e.message.includes('Telegram username уже существует')) {
+      employeeForm.setErrors({ form: formErrorText })
+    }
+  }
+
   const handleSubmit = async (data: TEmployeeForm) => {
     if (!employeeForm.isDirty()) {
-      console.log('Данные не изменились')
       closeForm()
       return
     }
     const changedData = { ...getChangedFields(employeeForm, data), email: data.email }
-    console.log(changedData)
     try {
       if (isCreateForm) {
         await addEmployee(data)
+          .then(() => {
+            closeForm()
+            employeeForm.reset()
+            onSubmit?.()
+          })
+          .catch((e: Error) => {
+            setSubmitError({ e, formErrorText: 'Ошибка при добавлении сотрудника, попробуйте еще один раз' })
+          })
       } else if (data.id) {
         await changeEmployee(changedData, Number(data.id))
+          .then(() => {
+            closeForm()
+            employeeForm.reset()
+            onSubmit?.()
+          })
+          .catch((e: Error) => {
+            setSubmitError({ e, formErrorText: 'Ошибка при изменении данных сотрудника, попробуйте еще один раз' })
+          })
       }
-
-      closeForm()
-      employeeForm.reset()
-      onSubmit?.()
     } catch (error) {
       const action = isCreateForm ? 'добавлении' : 'изменении данных'
       console.error(`Ошибка при ${action} сотрудника:`, error)
@@ -67,7 +103,11 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
   }
 
   return isOpen ? (
-    <form onSubmit={employeeForm.onSubmit(handleSubmit)} className={isCreateForm ? classes.formForNewEmployee : ''}>
+    <form
+      onSubmit={employeeForm.onSubmit(handleSubmit)}
+      className={isCreateForm ? classes.formForNewEmployee : ''}
+      ref={setForm}
+    >
       <Flex className={classes.container}>
         <Input
           variant={'secondary'}
@@ -79,16 +119,19 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
           key={employeeForm.key('full_name')}
           {...employeeForm.getInputProps('full_name')}
         />
-        <Dropdown
-          styles={{
-            root: { '--mantine-scale': '0.945' },
-            input: { backgroundColor: 'var(--mantine-color-black-1)', border: 'var(--mantine-color-black-1)' }
-          }}
-          aria-label="Отдел"
-          data={departmentsNames}
-          key={employeeForm.key('department_name')}
-          {...employeeForm.getInputProps('department_name')}
-        />
+        <div ref={setDropdown}>
+          <Dropdown
+            comboboxProps={{ withinPortal: false }}
+            styles={{
+              root: { '--mantine-scale': '0.945' },
+              input: { backgroundColor: 'var(--mantine-color-black-1)', border: 'var(--mantine-color-black-1)' }
+            }}
+            aria-label="Отдел"
+            data={departmentsNames}
+            key={employeeForm.key('department_name')}
+            {...employeeForm.getInputProps('department_name')}
+          />
+        </div>
         <Input
           variant={'secondary'}
           styles={{
@@ -115,6 +158,11 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
         />
         <SubmitButton />
       </Flex>
+      {employeeForm.errors.form && (
+        <Text c="red" mb={10} mt={10} ml={5} size="14px">
+          {employeeForm.errors.form}
+        </Text>
+      )}
     </form>
   ) : null
 }

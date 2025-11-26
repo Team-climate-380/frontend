@@ -10,12 +10,26 @@
 }
 
 .logo {
-  margin-block: 14px 37px;
+  margin-block: 14px 32px;
   margin-inline-start: 18px;
 }
 
 .contentSidebar {
   margin-inline-start: 23px;
+}
+
+.logoutButton_container {
+  margin-inline-start: 23px;
+}
+
+.logoutButton[data-variant='primary'] {
+  margin: 20px 0;
+  padding-inline-start: 0;
+  background-color: transparent;
+
+  &:hover {
+    background-color: transparent;
+  }
 }
 
 .sidebarImage {

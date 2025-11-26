@@ -1,3 +1,8 @@
+.container {
+  display: flex;
+  margin-bottom: 12px;
+}
+
 .group-button {
   color: inherit;
   background-color: transparent;
@@ -16,26 +21,40 @@
 .group-button .group-name {
   font-size: 16px;
   font-weight: 500;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+
+  &_to-delete_true {
+    text-decoration: line-through;
+    color: rgba(142, 107, 107, 0.8);
+  }
 }
 
 .group-button[aria-expanded='true'] .group-name {
   font-weight: 700;
 }
 
+.group-button[aria-expanded='true'] .group-name_has-employees_false {
+  font-weight: 500;
+}
+
 span:has(.group-name) {
   padding-top: 0;
+  padding-bottom: 0;
 }
 
 .group-count {
+  font-size: 13px;
   margin-left: 13px;
   margin-right: 17px;
   color: #75899c;
 }
 
 .group-content {
-  padding-left: 30px;
+  padding-left: 70px;
   padding-top: 0;
-  margin-bottom: 28px;
+  margin-bottom: 10px;
 }
 
 .group-content div {
@@ -44,8 +63,18 @@ span:has(.group-name) {
 
 .employees-list {
   list-style: none;
+  margin-top: 10px;
 }
 
 .employees-list-item {
   margin-bottom: 10px;
+}
+
+.to-delete_true {
+  text-decoration: line-through;
+  color: rgba(142, 107, 107, 0.8);
+
+  & div {
+    text-decoration: inherit;
+  }
 }

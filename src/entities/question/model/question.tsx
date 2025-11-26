@@ -1,28 +1,26 @@
-import { FC, useState } from 'react'
+import { FC } from 'react'
 import { QuestionUI } from '../ui/question-ui'
-import { ApiClient } from '@/shared/lib/api-client'
 import { IQuestion } from '../type'
 
-export const Question: FC<IQuestion> = questions => {
-  // Здесь код для работы с данными вопроса.
-
-  // START TEST ACTION
-  const api = new ApiClient({}) // create api&use
-  const [isFavorite, setIsFavorite] = useState(false)
-  const action = (id: number) => {
-    setIsFavorite(prev => !prev)
-    api.patch(`${id}`)
+export const Question: FC<
+  IQuestion & {
+    allowContextMenu?: boolean
+    setQuestion?: (item: IQuestion | undefined) => void
+    openDeleteErrorModal?: () => void
   }
-  // ENDN TEST ACTION
-  // const question_type =
-
+> = question => {
   return (
     <QuestionUI
-      id={questions.id}
-      is_favorite={isFavorite}
-      text={questions.text}
-      question_type={questions.question_type}
-      action={action}
+      numeration={question.numeration}
+      id={question.id}
+      is_favorite={question.is_favorite}
+      text={question.text}
+      question_type={question.question_type}
+      allowContextMenu={question.allowContextMenu}
+      setQuestion={question.setQuestion}
+      to_delete={question.to_delete}
+      surveys={question.surveys}
+      openDeleteErrorModal={question.openDeleteErrorModal}
     />
   )
 }

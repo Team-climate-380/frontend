@@ -1,3 +1,5 @@
+import { useSessionState } from '@/features/session'
+
 type HeadersType = Record<string, string>
 
 type MethodType = 'PUT' | 'PATCH' | 'DELETE' | 'POST' | 'GET'
@@ -12,37 +14,45 @@ interface RequestType {
 export class ApiClient {
   defaultHeaders: HeadersType
   baseUrl: string
+  private refreshPromise: Promise<boolean> | null = null
   constructor(headers?: HeadersType) {
     this.baseUrl = import.meta.env.VITE_API_DOMAIN || ''
-    this.defaultHeaders = {
-      'Content-Type': 'application/json',
-      ...(headers || {})
-    }
+    this.defaultHeaders = { ...(headers || {}) }
   }
 
   private async refreshTokens(): Promise<boolean> {
-    try {
-      const resp = await fetch(`${this.baseUrl}/api/auth/refresh`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: this.defaultHeaders
-      })
-      return resp.ok
-    } catch {
-      return false
+    if (!this.refreshPromise) {
+      this.refreshPromise = (async () => {
+        try {
+          const resp = await fetch(`${this.baseUrl}/api/auth/refresh`, {
+            method: 'POST',
+            credentials: 'include'
+          })
+          return resp.ok
+        } catch {
+          return false
+        } finally {
+          setTimeout(() => {
+            this.refreshPromise = null
+          }, 0)
+        }
+      })()
     }
+    return this.refreshPromise
   }
 
   private async doFetch(input: RequestType): Promise<Response> {
     const { url, headers, method, body } = input
+    const hasBody = body !== undefined
     return fetch(`${this.baseUrl}${url}`, {
       method,
       credentials: 'include',
       headers: {
+        ...(hasBody ? { 'Content-Type': 'application/json' } : {}),
         ...this.defaultHeaders,
         ...(headers || {})
       },
-      body: body !== undefined ? JSON.stringify(body) : undefined
+      body: hasBody ? JSON.stringify(body) : undefined
     })
   }
 
@@ -51,7 +61,9 @@ export class ApiClient {
     headers,
     method,
     body
-  }: RequestType): Promise<{ status: string; error: unknown; message: string } | { status: string; data: T }> {
+  }: RequestType): Promise<
+    { status: string; error: unknown; message: string; statusCode?: number } | { status: string; data: T }
+  > {
     try {
       let response = await this.doFetch({ url, headers, method, body })
 
@@ -59,11 +71,36 @@ export class ApiClient {
         const refreshed = await this.refreshTokens()
         if (refreshed) {
           response = await this.doFetch({ url, headers, method, body })
+        } else {
+          useSessionState.getState().logout()
+          return {
+            status: 'error',
+            error: { message: 'Unauthorized' },
+            message: 'Unauthorized',
+            statusCode: 401
+          }
         }
       }
-      const data = await response.json()
+
+      const contentType = response.headers.get('content-type') || ''
+
+      let data
+      if (response.status === 204 || response.headers.get('content-length') === '0') {
+        data = {} as T
+      } else if (contentType.includes('application/json')) {
+        data = await response.json().catch(() => ({}))
+      } else {
+        const text = await response.text().catch(() => '')
+        data = text.trim() === '' ? {} : { message: text.trim() }
+      }
+
       if (!response.ok) {
-        return { status: 'error', error: data, message: data?.message || 'Unexpected error' }
+        return {
+          status: 'error',
+          error: data,
+          message: data?.message || response.statusText || 'Unexpected error',
+          statusCode: response.status
+        }
       }
 
       return { status: 'success', data }

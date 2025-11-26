@@ -7,6 +7,10 @@
   border-radius: 10px;
 }
 
+.skeleton {
+  padding: 24px 28px 34px;
+}
+
 .header {
   position: sticky;
   box-sizing: border-box;
@@ -57,6 +61,7 @@
   background-color: white;
   max-width: 768px;
   width: 100%;
+  overflow-wrap: break-word;
 }
 
 .buttons {

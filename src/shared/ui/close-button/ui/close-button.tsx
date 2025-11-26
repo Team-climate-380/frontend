@@ -1,10 +1,15 @@
+import clsx from 'clsx'
 import { ButtonHTMLAttributes, FC } from 'react'
 import close from '../images/close.svg'
 import classes from '../styles/styles.module.scss'
 
-export const CloseButton: FC<ButtonHTMLAttributes<HTMLButtonElement>> = props => {
+export interface CloseButtonProps {
+  className?: string
+}
+
+export const CloseButton: FC<ButtonHTMLAttributes<HTMLButtonElement> & CloseButtonProps> = props => {
   return (
-    <button className={classes.closeButton} {...props}>
+    <button className={clsx([classes.closeButton, props.className])} {...props}>
       <img src={close} aria-hidden="true" />
     </button>
   )

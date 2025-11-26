@@ -1,34 +1,46 @@
 import { Input } from '@/shared/ui/input'
-import { FunctionComponent } from 'react'
-import classes from './styles/styles.module.scss'
-import { Flex, Grid, Group } from '@mantine/core'
-import { MoreButton } from '@/shared/ui/more-button'
+import { FunctionComponent, useEffect } from 'react'
+import classes from '../../styles/styles.module.scss'
+import { Flex, Grid, Group, Select } from '@mantine/core'
 import { CloseButton } from '@/shared/ui/close-button'
-import { MultySelect } from '@/shared/ui/multy-select'
-import { useCreateSurvey } from '@/entities/survey/forms'
+import { useSurvey } from '@/entities/survey/forms/lib/use-survey'
 import { DatePickerInput } from '@mantine/dates'
 import 'dayjs/locale/ru'
 import '@mantine/dates/styles.css'
-import dayjs from 'dayjs'
 import { Button } from '@/shared/ui/button'
 import { QuestionCreate } from '@/entities/question/ui/question-create'
 import { TQuestion } from '@/entities/question/model/types'
 import { useQuery } from '@tanstack/react-query'
-import { fetchParticipants } from '@/entities/survey/forms/api'
+import { fetchParticipants } from '@entities/survey/api/api'
 import { useSurveyMutation } from '@/entities/survey/forms/lib/use-survey-mutation'
+import { IQuestion } from '@/entities/question/type'
+import { useNavigate } from 'react-router-dom'
+import { routes } from '@/shared/configs/routs'
 
-const SurveyForm: FunctionComponent = () => {
-  const { isLoading: areParticipantsLoading } = useQuery({
+export interface CreateSurveyFormProps {
+  onOpenButtons: (index: number) => void
+  selectQuestion: IQuestion | undefined
+  indexQuestion: number | undefined
+  scroll: () => void
+  targetRef: React.RefObject<HTMLDivElement | null>
+}
+
+const CreateSurveyForm: FunctionComponent<CreateSurveyFormProps> = ({
+  onOpenButtons,
+  selectQuestion,
+  indexQuestion,
+  scroll,
+  targetRef
+}) => {
+  const navigate = useNavigate()
+  const { data: departmentOptions, isLoading: areParticipantsLoading } = useQuery({
     queryKey: ['participants'],
     queryFn: fetchParticipants
   })
 
-  const today = dayjs().locale('ru').format('DD MMMM YYYY')
-  const surveyTitle = `Новый опрос ${today}`
-
   const initialFormValues = {
-    name: surveyTitle,
-    department: [] as string[],
+    name: `Новый опрос`,
+    department: '',
     startedAt: null,
     finishedAt: null,
     comment: '',
@@ -36,9 +48,20 @@ const SurveyForm: FunctionComponent = () => {
     questions: [] as TQuestion[]
   }
 
-  const formData = useCreateSurvey(initialFormValues)
+  const formData = useSurvey(initialFormValues)
 
-  const { submitSurvey, isSubmitting } = useSurveyMutation(formData)
+  const { submitSurvey, isSubmitting, isError, isSuccess } = useSurveyMutation(formData, { mode: 'create' })
+
+  useEffect(() => {
+    if (selectQuestion && typeof indexQuestion === 'number') {
+      const currentQuestions = formData.getValues().questions
+      const updatedQuestions = currentQuestions.map((question, index) =>
+        index === indexQuestion ? selectQuestion : question
+      )
+      formData.setFieldValue('questions', updatedQuestions)
+      formData.validateField(`questions.${indexQuestion}.text`)
+    }
+  }, [selectQuestion])
 
   return (
     <form onSubmit={formData.onSubmit(values => submitSurvey(values))}>
@@ -48,22 +71,27 @@ const SurveyForm: FunctionComponent = () => {
         </Grid.Col>
         <Grid.Col span={1.5}>
           <Group align="center" justify="end" gap="32px">
-            <MoreButton />
-            <CloseButton />
+            <CloseButton type="button" onClick={() => navigate(routes.surveys())} />
           </Group>
         </Grid.Col>
         <Grid.Col span={10.5}>
-          <MultySelect
+          <Select
             label={'Кто участвует'}
-            data={['Test1', 'Test2', 'Test3']}
+            data={departmentOptions}
             nothingFoundMessage={areParticipantsLoading ? 'Загрузка...' : 'Ничего не найдено'}
             key={formData.key('department')}
             {...formData.getInputProps('department')}
+            classNames={{
+              input: classes.input,
+              label: classes.label,
+              root: classes.root
+            }}
           />
         </Grid.Col>
         <Grid.Col span={5.5}>
           <Flex direction="row" gap={30}>
             <DatePickerInput
+              highlightToday
               clearable
               label="Начало"
               locale="ru"
@@ -77,6 +105,7 @@ const SurveyForm: FunctionComponent = () => {
               key={formData.key('startedAt')}
             />
             <DatePickerInput
+              highlightToday
               clearable
               label={'Завершение'}
               locale="ru"
@@ -97,30 +126,39 @@ const SurveyForm: FunctionComponent = () => {
       </Grid>
       <Flex direction="column" className={classes.questionsSection}>
         <Flex direction="column" gap={25}>
-          {formData.values.questions.map((question, index) => {
+          {formData.values.questions.map((question, index: number) => {
             return (
               <QuestionCreate
                 key={question.id}
                 title={`${index + 1} Вопрос`}
                 onOpenButtons={() => {
-                  console.log('Sidebar')
+                  onOpenButtons(index)
                 }}
+                onDelete={() => formData.removeListItem('questions', index)}
                 textInputProps={formData.getInputProps(`questions.${index}.text`)}
-                typeInputProps={formData.getInputProps(`questions.${index}.type`)}
+                typeInputProps={formData.getInputProps(`questions.${index}.question_type`)}
               />
             )
           })}
         </Flex>
         <Group justify="space-between" className={classes.optionButtons}>
           <Button
+            styles={{
+              root: {
+                padding: '10px 20px',
+                '--bg-color': '#f6f8fa'
+              }
+            }}
             className={classes.buttonGrey}
             variant="ghost"
             type="button"
             onClick={() => {
+              onOpenButtons(formData.getValues().questions.length)
               formData.setFieldValue('questions', [
                 ...formData.values.questions,
                 { id: `question-${Date.now()}`, text: '', is_favorite: false }
               ])
+              scroll()
             }}
           >
             Ещё вопрос
@@ -129,9 +167,12 @@ const SurveyForm: FunctionComponent = () => {
             {isSubmitting ? 'Сохраняется...' : 'Сохранить'}
           </Button>
         </Group>
+        {isSuccess && <p className={classes.success}>Опрос успешно создан</p>}
+        {isError && <p className={classes.error}>Ошибка при создании опроса, попробуйте еще один раз</p>}
       </Flex>
+      <div ref={targetRef}></div>
     </form>
   )
 }
 
-export default SurveyForm
+export default CreateSurveyForm

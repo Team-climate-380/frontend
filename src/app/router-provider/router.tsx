@@ -1,4 +1,5 @@
 import { createBrowserRouter } from 'react-router'
+import { Navigate } from 'react-router-dom'
 import { routes } from '@shared/configs/routs'
 import { LazyLoginPage } from '@pages/login'
 import { LazyNotFound } from '@/pages/not-found'
@@ -14,6 +15,7 @@ import { ProtectedRoute } from '@/features/auth/index'
 import { LazyPasswordRecovery } from '@/pages/password-recovery'
 import { Menu } from '@/widgets/menu/ui/menu'
 import { ResultLayout } from '@/widgets/result-layout'
+import { LazyEditSurvey } from '@/pages/edit-survey'
 
 stateInitialization()
 
@@ -23,11 +25,7 @@ export const router = createBrowserRouter([
     children: [
       {
         path: routes.home(),
-        element: (
-          <ProtectedRoute>
-            <LazySurveys />
-          </ProtectedRoute>
-        )
+        element: <Navigate to={routes.surveys()} />
       },
 
       {
@@ -52,6 +50,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <LazyCreatingSurvey />
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: routes.edit_survey_path(),
+        element: (
+          <ProtectedRoute>
+            <LazyEditSurvey />
           </ProtectedRoute>
         )
       },

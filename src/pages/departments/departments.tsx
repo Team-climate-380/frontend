@@ -9,39 +9,55 @@ import { Department } from '@/shared/ui/department'
 import { Header } from '@/widgets/header/header'
 import { PopupMenu } from '@/shared/ui/popup-menu'
 import { departmentsContextMenu } from './configs/departments-context-menu.config'
-import { Loader } from '@/shared/ui/loader'
 import { SearchInput } from '@/widgets/search-input'
 import { useQueryParams } from '@/shared/hooks/useQueryParams'
+import { Skeleton } from '@/shared/ui/skeleton'
+import { TextNotification } from '@/shared/ui/text-notification'
+import { useClickOutside } from '@mantine/hooks'
+import { NotificationModal } from '@/shared/ui/notification-modal'
+import { getAllSurveys } from '@/entities/survey/api/api'
 
 export const Departments: React.FC = () => {
   const [isCreateNewFormVisible, setIsCreateNewFormVisible] = useState(false)
   const [selectedForEdit, setSelectedForEdit] = useState<null | number>(null)
-  const [filteredDepartments, setFilteredDepartments] = useState<DepartmentInfo[]>()
+  const [deleteErrorModal, setDeleteErrorModal] = useState<{
+    isVisible: boolean
+    variant: 'has-employees' | 'has-surveys' | 'has-both' | 'empty'
+  }>({ isVisible: false, variant: 'empty' })
+  const [filteredDepartments, setFilteredDepartments] = useState<DepartmentInfo[]>([])
+
+  const editFormRef = useClickOutside(() => {
+    setSelectedForEdit(null)
+  })
+  const createFormRef = useClickOutside(() => {
+    setIsCreateNewFormVisible(false)
+  })
 
   const { contextMenu, setContextMenu, handleRightClick, handleContextMenuClose } = useContextMenu()
+
+  const { data, isPending, isError, isSuccess } = useDepartmentQuery()
+  const { createDepartmentMutation, editDepartmentMutation, deleteDepartmentMutation } = useDepartmentMutations()
+
   const menuItems = departmentsContextMenu({
     handleEdit: handleEditClick,
     handleDelete: handleDeleteClick,
     id: contextMenu.selectedId
   })
 
-  const { data, isPending, isError } = useDepartmentQuery()
-  const { createDepartmentMutation, editDepartmentMutation, deleteDepartmentMutation } = useDepartmentMutations()
-
   const { getDecodedSearch } = useQueryParams()
   const searchQuery = getDecodedSearch().trim().toLowerCase()
-  const searchDepartments = () => {
-    if (searchQuery && data) {
-      const filtered = data.filter(department => department.department_name.toLowerCase().includes(searchQuery))
+  const setDepartments = () => {
+    if (isSuccess) {
+      const filtered = searchQuery
+        ? data.filter(department => department.department_name.toLowerCase().includes(searchQuery))
+        : data
       setFilteredDepartments(filtered)
-      return
     }
-    setFilteredDepartments(data)
   }
 
   useEffect(() => {
     if (!data) return
-    searchDepartments()
+    setDepartments()
   }, [data, searchQuery])
 
   const handleSubmit = (values: Partial<ValuesFormGroups>) => {
@@ -49,24 +65,57 @@ export const Departments: React.FC = () => {
       return
     }
     if (selectedForEdit) {
-      editDepartmentMutation.mutate({ id: selectedForEdit, new_name: values.name })
-      setSelectedForEdit(null)
+      editDepartmentMutation.mutate({
+        id: selectedForEdit,
+        new_name: values.name,
+        onEditSuccess: () => setSelectedForEdit(null)
+      })
     } else {
-      createDepartmentMutation.mutate(values.name)
-      setIsCreateNewFormVisible(false)
+      createDepartmentMutation.mutate({
+        newGroupName: values.name,
+        onCreateSuccess: () => setIsCreateNewFormVisible(false)
+      })
     }
+  }
+
+  function handleCreateClick() {
+    setIsCreateNewFormVisible(true)
+    setSelectedForEdit(null)
   }
 
   function handleEditClick(id: number | null | undefined) {
     if (!id) return
+    setIsCreateNewFormVisible(false)
     setSelectedForEdit(id)
     setContextMenu({ ...contextMenu, isVisible: false, selectedId: null })
   }
 
-  function handleDeleteClick(id: number | null | undefined) {
+  async function handleDeleteClick(id: number | null | undefined) {
     if (!id) return
-    deleteDepartmentMutation.mutate(id)
+    const employeesCount = data?.find(dep => dep.id === id)?.employees_count
+    const department = data?.find(dep => dep.id === id)?.department_name
+    if (!department || employeesCount === undefined) return
+    if (employeesCount > 0) {
+      setDeleteErrorModal({ isVisible: true, variant: 'has-employees' })
+      setContextMenu({ ...contextMenu, isVisible: false, selectedId: null })
+      return
+    }
+    await getAllSurveys(1, 'all', department, '').then(res => {
+      if (res.total === 0) {
+        deleteDepartmentMutation.mutate({
+          id,
+          onFullDepartmentError: () => setDeleteErrorModal({ isVisible: true, variant: 'has-both' })
+        })
+      } else {
+        setDeleteErrorModal({ isVisible: true, variant: 'has-surveys' })
+      }
+    })
     setContextMenu({ ...contextMenu, isVisible: false, selectedId: null })
+  }
+
+  function handleCancelDelete(id: number | null | undefined) {
+    if (!id) return
+    editDepartmentMutation.mutate({ id: id, to_delete: false })
   }
 
   return (
@@ -76,7 +125,7 @@ export const Departments: React.FC = () => {
         actions={
           <>
             <SearchInput />
-            <Button className={styles.header_button} onClick={() => setIsCreateNewFormVisible(!isCreateNewFormVisible)}>
+            <Button className={styles.header_button} onClick={handleCreateClick} disabled={isCreateNewFormVisible}>
               Создать группу
             </Button>
           </>
@@ -84,26 +133,40 @@ export const Departments: React.FC = () => {
       ></Header>
       <div className={styles.main}>
         <ScrollArea type="scroll">
-          {isCreateNewFormVisible && <GroupForm onSubmit={handleSubmit} />}
-          <List listStyleType="none">
-            {isPending && <Loader />}
-            {!data && isError && 'Ошибка загрузки данных о группах...'}
-            {filteredDepartments &&
-              filteredDepartments.map(department => {
-                return (
-                  <List.Item key={department.id}>
-                    <Department
-                      department={department}
-                      onContextMenu={e => {
-                        handleRightClick(e, department.id)
-                      }}
-                      isEdited={department.id === selectedForEdit ? true : false}
-                      onSubmit={handleSubmit}
-                    />
-                  </List.Item>
-                )
-              })}
-          </List>
+          {isCreateNewFormVisible && (
+            <GroupForm
+              onSubmit={handleSubmit}
+              closeForm={() => setIsCreateNewFormVisible(false)}
+              formRef={createFormRef}
+            />
+          )}
+          {isPending && <Skeleton />}
+          {isError && <TextNotification variant="data_not_loaded" />}
+          {isSuccess &&
+            (searchQuery && filteredDepartments.length === 0 ? (
+              <TextNotification variant="no_search_result" />
+            ) : (
+              <List listStyleType="none" aria-label="Список групп">
+                {filteredDepartments.map(department => {
+                  return (
+                    <List.Item key={department.id}>
+                      <Department
+                        department={department}
+                        onContextMenu={e => {
+                          if (department.to_delete) return
+                          handleRightClick(e, department.id)
+                        }}
+                        isEdited={department.id === selectedForEdit ? true : false}
+                        onSubmit={handleSubmit}
+                        handleCancelDelete={() => handleCancelDelete(department.id)}
+                        closeGroupForm={() => setSelectedForEdit(null)}
+                        formRef={editFormRef}
+                      />
+                    </List.Item>
+                  )
+                })}
+              </List>
+            ))}
         </ScrollArea>
       </div>
       {contextMenu.isVisible && (
@@ -115,6 +178,21 @@ export const Departments: React.FC = () => {
           positionY={contextMenu.top}
         ></PopupMenu>
       )}
+      <NotificationModal
+        type="error"
+        opened={deleteErrorModal.isVisible}
+        onClose={() => {
+          setDeleteErrorModal({ isVisible: false, variant: 'empty' })
+        }}
+        title={'Невозможно удалить группу'}
+        text={
+          deleteErrorModal.variant === 'has-employees'
+            ? 'Похоже, в этой группе ещё есть люди. Удалите или переместите их, и тогда группу можно будет удалить.'
+            : deleteErrorModal.variant === 'has-surveys'
+              ? 'Похоже, в этой группе есть созданные опросы. Удалите их, и тогда группу можно будет удалить.'
+              : 'Похоже, в этой группе еще есть сотрудники или опросы. Удалите их, и тогда группу можно будет удалить.'
+        }
+      />
     </div>
   )
 }

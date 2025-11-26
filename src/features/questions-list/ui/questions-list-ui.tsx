@@ -1,30 +1,49 @@
 import { Question } from '@/entities/question'
 import { IQuestion } from '@/entities/question/type'
-import { FC } from 'react'
+import { NotificationModal } from '@/shared/ui/notification-modal'
+import { FC, useState } from 'react'
 
-interface IQProp {
+interface IQuestionsListUIProps {
   questions: IQuestion[]
+  allowContextMenu?: boolean
+  setQuestion?: (item: IQuestion | undefined) => void
 }
 
-export const QuestionsListUI: FC<IQProp> = ({ questions }) => {
+export const QuestionsListUI: FC<IQuestionsListUIProps> = ({ questions, allowContextMenu, setQuestion }) => {
+  const [deleteModalIsVisible, setDeleteModalIsVisible] = useState(false)
   return (
     <>
       {questions
-        ? Object.entries(questions).map(question => {
+        ? questions.map(question => {
             return (
-              <>
+              <div key={question.id}>
                 <Question
-                  key={question[1].id}
-                  id={question[1].id}
-                  text={question[1].text}
-                  is_favorite={question[1].is_favorite}
-                  surveys={question[1].surveys}
-                  question_type={question[1].question_type}
+                  numeration={question.numeration}
+                  id={question.id}
+                  text={question.text}
+                  is_favorite={question.is_favorite}
+                  surveys={question.surveys}
+                  question_type={question.question_type}
+                  allowContextMenu={allowContextMenu}
+                  setQuestion={setQuestion}
+                  to_delete={question.to_delete}
+                  openDeleteErrorModal={() => setDeleteModalIsVisible(true)}
                 />
-              </>
+              </div>
             )
           })
         : null}
+      <NotificationModal
+        type="error"
+        opened={deleteModalIsVisible}
+        onClose={() => {
+          setDeleteModalIsVisible(false)
+        }}
+        title={'Невозможно удалить вопрос'}
+        text={
+          'Этот вопрос уже используется в существующих опросах. Чтобы удалить его, сначала удалите опросы, в которых он встречается.'
+        }
+      />
     </>
   )
 }

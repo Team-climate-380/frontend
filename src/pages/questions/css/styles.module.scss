@@ -2,25 +2,31 @@
   display: flex;
   flex-direction: column;
   background-color: rgb(255, 255, 255);
-  height: 100vh;
+  min-height: 100vh;
   max-width: 100%;
   grid-row: 1 / -1;
-  border-radius: 10px;
+  border-radius: 6px;
   justify-content: space-between;
 
   .main-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    background-color: rgb(255, 255, 255);
-    border-bottom-right-radius: 10px;
-    border-bottom-left-radius: 10px;
+    padding: 40px 98px 41px 31px;
   }
 
   .question-form {
-    background-color: rgb(252, 252, 252);
     min-height: 134px;
+    width: 10%;
+  }
+
+  .no-data {
+    color: rgb(44, 44, 44);
+    font-size: 20px;
+    font-weight: 400;
+  }
+
+  .error-message {
+    color: rgb(177, 32, 32);
+    font-size: 20px;
+    font-weight: 400;
   }
 
   .questions-list {
@@ -37,4 +43,5 @@
   max-height: 100%;
   display: flex;
   justify-content: center;
+  padding: 30px;
 }

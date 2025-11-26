@@ -25,7 +25,7 @@ export type ContextMenuProps = {
   onClose: () => void
   positionX?: number
   positionY?: number
-  classname?: 'string'
+  classname?: string
 }
 
 export type PopupMenuItem =
@@ -33,7 +33,8 @@ export type PopupMenuItem =
       type: 'action'
       label: string
       important?: boolean
-      action: () => void
+      disabled?: boolean
+      action: (e?: React.MouseEvent<HTMLButtonElement>) => void
     }
   | {
       type: 'link'
