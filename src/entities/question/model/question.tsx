@@ -3,7 +3,11 @@ import { QuestionUI } from '../ui/question-ui'
 import { IQuestion } from '../type'
 
 export const Question: FC<
-  IQuestion & { allowContextMenu?: boolean; setQuestion?: (item: IQuestion | undefined) => void }
+  IQuestion & {
+    allowContextMenu?: boolean
+    setQuestion?: (item: IQuestion | undefined) => void
+    openDeleteErrorModal?: () => void
+  }
 > = question => {
   return (
     <QuestionUI
@@ -15,6 +19,8 @@ export const Question: FC<
       allowContextMenu={question.allowContextMenu}
       setQuestion={question.setQuestion}
       to_delete={question.to_delete}
+      surveys={question.surveys}
+      openDeleteErrorModal={question.openDeleteErrorModal}
     />
   )
 }

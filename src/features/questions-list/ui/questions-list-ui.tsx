@@ -1,6 +1,7 @@
 import { Question } from '@/entities/question'
 import { IQuestion } from '@/entities/question/type'
-import { FC } from 'react'
+import { NotificationModal } from '@/shared/ui/notification-modal'
+import { FC, useState } from 'react'
 
 interface IQuestionsListUIProps {
   questions: IQuestion[]
@@ -9,6 +10,7 @@ interface IQuestionsListUIProps {
 }
 
 export const QuestionsListUI: FC<IQuestionsListUIProps> = ({ questions, allowContextMenu, setQuestion }) => {
+  const [deleteModalIsVisible, setDeleteModalIsVisible] = useState(false)
   return (
     <>
       {questions
@@ -25,11 +27,23 @@ export const QuestionsListUI: FC<IQuestionsListUIProps> = ({ questions, allowCon
                   allowContextMenu={allowContextMenu}
                   setQuestion={setQuestion}
                   to_delete={question.to_delete}
+                  openDeleteErrorModal={() => setDeleteModalIsVisible(true)}
                 />
               </div>
             )
           })
         : null}
+      <NotificationModal
+        type="error"
+        opened={deleteModalIsVisible}
+        onClose={() => {
+          setDeleteModalIsVisible(false)
+        }}
+        title={'Невозможно удалить вопрос'}
+        text={
+          'Этот вопрос уже используется в существующих опросах. Чтобы удалить его, сначала удалите опросы, в которых он встречается.'
+        }
+      />
     </>
   )
 }
