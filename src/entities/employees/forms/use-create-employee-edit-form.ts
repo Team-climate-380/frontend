@@ -35,7 +35,8 @@ export const useCreateEmployeeEditForm = (initialValues?: TEmployeeForm) => {
         return null
       },
       email: value => {
-        if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
+        const trimmed = value.trim()
+        if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(trimmed)) {
           return 'Почта в формате mail@mail.ru'
         }
         if (value.length > 256) {
@@ -44,16 +45,17 @@ export const useCreateEmployeeEditForm = (initialValues?: TEmployeeForm) => {
         return null
       },
       tg_username: value => {
-        if (value && value[0] !== '@') {
+        const trimmed = value.trim()
+        if (trimmed && trimmed[0] !== '@') {
           return 'Введите имя в формате @telegram'
         }
-        if (value && !/^@[A-Za-z0-9][A-Za-z0-9_]+$/.test(value)) {
+        if (trimmed && !/^@[A-Za-z0-9][A-Za-z0-9_]+$/.test(trimmed)) {
           return 'Неверный формат для имени в telegram'
         }
-        if (value && value.length < 6) {
+        if (trimmed && trimmed.length < 6) {
           return 'Минимум 6 символов.'
         }
-        if (value && value.length > 33) {
+        if (trimmed && trimmed.length > 33) {
           return 'Максимум 33 символа.'
         }
         return null
