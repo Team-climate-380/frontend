@@ -50,7 +50,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
 
     fields.forEach(field => {
       if (form.isDirty(field)) {
-        changedData[field] = data[field]
+        changedData[field] = data[field]?.trim()
       }
     })
     return changedData
